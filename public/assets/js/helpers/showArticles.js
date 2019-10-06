@@ -8,8 +8,8 @@ hbs.registerHelper('showArticles', articles => {
           <div class='w3-card-4'>
             <img src='${article.image}' style='width:100%;opacity:0.85'>
             <div class='w3-container'>
-              <h3>${article.price}</h3>
-              <p>${article.description}</p>
+              <h4>${article.description}</h3>
+              <p>$${article.price}</p>
             </div>
           </div>
         </article>`;

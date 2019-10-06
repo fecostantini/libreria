@@ -1,26 +1,34 @@
 "use strict";
 
-const Sequelize = require('sequelize');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
-require('../database/database');
+var _sequelize = _interopRequireDefault(require("sequelize"));
 
-const Article = sequelize.define('article', {
+var _database = require("../database/database");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const Article = _database.sequelize.define('article', {
   id: {
-    type: Sequelize.INTEGER,
+    type: _sequelize.default.INTEGER,
     primaryKey: true
   },
   price: {
-    type: Sequelize.REAL
+    type: _sequelize.default.REAL
   },
   description: {
-    type: Sequelize.TEXT
+    type: _sequelize.default.TEXT
   },
   image: {
-    type: Sequelize.TEXT
+    type: _sequelize.default.TEXT
   }
 }, {
-  timestamps: false
+  timestamps: false,
+  freezeTableName: true
 });
-module.exports = {
-  Article
-};
+
+var _default = Article;
+exports.default = _default;

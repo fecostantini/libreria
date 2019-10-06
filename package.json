@@ -5,12 +5,14 @@
 	"main": "index.js",
 	"scripts": {
 		"build": "./node_modules/.bin/babel src --out-dir dist",
-		"hotreload": "nodemon server.js"
+		"start": "node dist/index.js",
+		"dev": "npm run build && npm start"
 	},
 	"author": "Costantini, Ghiglione, Pretto",
 	"license": "ISC",
 	"dependencies": {
 		"@babel/polyfill": "^7.6.0",
+		"core-js": "^3.2.1",
 		"express": "^4.17.1",
 		"firebase-tools": "^7.4.0",
 		"hbs": "^4.0.5",

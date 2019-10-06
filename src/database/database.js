@@ -1,6 +1,6 @@
-const Sequelize = require('sequelize');
+import Sequelize from 'sequelize';
 
-const sequelize = new Sequelize('libreria', 'postgres', 'admin', {
+export const sequelize = new Sequelize('libreria', 'postgres', 'admin', {
 	host: 'localhost',
 	dialect: 'postgres',
 	pool: {
@@ -11,5 +11,3 @@ const sequelize = new Sequelize('libreria', 'postgres', 'admin', {
 	},
 	logging: false
 });
-
-module.exports = { sequelize };

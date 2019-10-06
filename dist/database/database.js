@@ -1,8 +1,15 @@
 "use strict";
 
-const Sequelize = require('sequelize');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.sequelize = void 0;
 
-const sequelize = new Sequelize('libreria', 'postgres', 'admin', {
+var _sequelize = _interopRequireDefault(require("sequelize"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const sequelize = new _sequelize.default('libreria', 'postgres', 'admin', {
   host: 'localhost',
   dialect: 'postgres',
   pool: {
@@ -13,6 +20,4 @@ const sequelize = new Sequelize('libreria', 'postgres', 'admin', {
   },
   logging: false
 });
-module.exports = {
-  sequelize
-};
+exports.sequelize = sequelize;

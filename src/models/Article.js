@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize');
-require('../database/database');
+import Sequelize from 'sequelize';
+import { sequelize } from '../database/database';
 
 const Article = sequelize.define(
 	'article',
@@ -18,9 +18,7 @@ const Article = sequelize.define(
 			type: Sequelize.TEXT
 		}
 	},
-	{
-		timestamps: false
-	}
+	{ timestamps: false, freezeTableName: true }
 );
 
-module.exports = { Article };
+export default Article;
