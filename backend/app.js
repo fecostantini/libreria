@@ -36,29 +36,10 @@ app.post('/Libro', (req, res) => {
 	);
 });
 /*
-app.post('/data', function(req, res) {
-	Ninja.create({
-		nombre: req.body.nombre,
-		edad: req.body.edad
-	}).then(ninja => {
-		console.log('Datos recibidos!', ninja.dataValues);
-		res.send({
-			status: 'Datos ingresados exitosamente!',
-			nombre: req.body.nombre,
-			edad: req.body.edad
-		});
-	});
-});
+TODO: usando Libro.destroy borrar un libro.
+app.delete()
 */
 
 app.listen(3210, () => {
 	console.log('Corriendo en el puerto 3210');
 });
-
-/*
-Libro.findAll().then(libros => {
-	libros.forEach(libro => {
-		console.log(libro.dataValues);
-	});
-});
-*/
