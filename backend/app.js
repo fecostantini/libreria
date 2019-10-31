@@ -5,12 +5,12 @@ const cors = require('cors');
 
 const { Libro } = require('./database/models/Libro');
 
+
 app.use(bodyParser.json());
 app.use(cors());
 
 app.get('/Libro', function(req, res) {
 	Libro.findAll().then(libros => {
-		console.log(libros);
 		res.send(libros);
 	});
 });
@@ -22,7 +22,7 @@ app.post('/Libro', (req, res) => {
 		idioma: req.body.idioma,
 		edicion: req.body.edicion,
 		descripcion: req.body.descripcion,
-		stock_libro: parseInt(req.body.stock_libro)
+		stock: parseInt(req.body.stock_libro)
 	};
 	Libro.findOrCreate({ where: { isbn: isbn }, defaults: libroACrear }).then(
 		([libro, libroCreado]) => {

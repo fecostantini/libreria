@@ -1,3 +1,5 @@
+import Editorial from './Editorial';
+import Saga from './Saga';
 const db = require('../database');
 
 const Libro = db.sequelize.define(
@@ -8,9 +10,11 @@ const Libro = db.sequelize.define(
 		idioma: { type: db.Sequelize.STRING, allowNull: false },
 		edicion: { type: db.Sequelize.STRING },
 		descripcion: { type: db.Sequelize.STRING },
-		stock_libro: { type: db.Sequelize.INTEGER, allowNull: false }
+		stock: { type: db.Sequelize.INTEGER, allowNull: false },
 	},
 	{ timestamps: false, freezeTableName: true }
 );
+Libro.belongsTo(Editorial)
+Libro.belongsTo(Saga)
 
 module.exports = { Libro };
