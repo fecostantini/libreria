@@ -1,14 +1,13 @@
-const db = require('../database');
+const pool = require('../database');
 
-const Autor = db.sequelize.define(
-	'autor',
-	{
-		id_autor: { type: db.Sequelize.INTEGER, allowNull: false, primaryKey: true },
-		nombre: { type: db.Sequelize.STRING, allowNull: false },
-		apellido: { type: db.Sequelize.STRING, allowNull: false },
-		nacionalidad: { type: db.Sequelize.STRING },
-	},
-	{ timestamps: false, freezeTableName: true }
-);
+const querys = {
+	GET_ALL: 'select * from autor;'
+};
 
-module.exports = { Autor };
+let getAutores = async () => {
+	let response = await pool.query(querys.GET_ALL);
+	let autores = response.rows;
+	return autores;
+};
+
+module.exports = { getAutores };

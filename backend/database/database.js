@@ -8,6 +8,8 @@ const pool = new Pool({
 	port: 5432
 });
 
+module.exports = pool;
+/*
 let agregarAutor = (nombre, nacionalidad) => {
 	pool.query(`INSERT INTO autor(\"autor\",\"nacionalidad\") VALUES(\'${nombre}\',\'${nacionalidad}\');`, (err, res) => {
 		console.log(res)
@@ -33,5 +35,4 @@ let updateAutor = async (id, nuevoAutor) => {
 getAutores().then(autores => {
 	autores.forEach(autor => {console.log(autor);})
 })
-
-pool.end();
+*/
