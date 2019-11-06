@@ -44,7 +44,7 @@ constraint FK_saga_libro foreign key ("id_saga") references "saga"("id_saga")
 
 CREATE TABLE "autor" (
 "id_autor" serial not null,
-"autor" varchar not null,
+"autor" varchar not null unique,
 "nacionalidad" varchar,
 constraint PK_autor primary key ("id_autor")
 );

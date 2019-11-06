@@ -8,10 +8,30 @@ const pool = new Pool({
 	port: 5432
 });
 
-pool.query('select * from autor;', (err, res) => {
-	const autores = res.rows;
-	autores.forEach(autor => {
-		console.log(`${autor.autor}`);
+let agregarAutor = (nombre, nacionalidad) => {
+	pool.query(`INSERT INTO autor(\"autor\",\"nacionalidad\") VALUES(\'${nombre}\',\'${nacionalidad}\');`, (err, res) => {
+		console.log(res)
 	});
-	pool.end();
-});
+}
+
+let getAutores = async () => {
+	const response = await pool.query('select * from autor;');
+	const autores = response.rows;
+	return autores;
+}
+
+let updateAutor = async (id, nuevoAutor) => {
+	//chequear campos vacios
+	if (nuevo)
+	//actualizar en base a eso
+	const response = await pool.query('select * from autor;');
+	const autores = response.rows;
+	return autores;
+}
+
+// agregarAutor('jorge bucay', 'argentina')
+getAutores().then(autores => {
+	autores.forEach(autor => {console.log(autor);})
+})
+
+pool.end();
