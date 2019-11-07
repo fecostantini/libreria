@@ -49,6 +49,7 @@ CREATE TRIGGER uppercase_saga_trigger BEFORE INSERT OR UPDATE ON saga
 CREATE OR REPLACE FUNCTION uppercase_libro() RETURNS trigger AS $uppercase_libro$
     BEGIN        
         NEW.idioma = UPPER(NEW.idioma);
+        NEW.titulo = UPPER(NEW.titulo);
         NEW.edicion = UPPER(NEW.edicion);
         NEW.descripcion = UPPER(NEW.descripcion);
         RETURN NEW;

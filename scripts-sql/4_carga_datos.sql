@@ -34,3 +34,6 @@ INSERT INTO categoria("nombre_categoria") VALUES('poesia');
 INSERT INTO categoria("nombre_categoria") VALUES('religioso');
 INSERT INTO categoria("nombre_categoria") VALUES('biografia');
 INSERT INTO categoria("nombre_categoria") VALUES('infantil');
+
+
+call new_libro(16,'espaniol','el titulo 2',255,'tercera','este libro es mas o menos',6, array['dan brown','agatha christie'], array['novela','terror']);

@@ -11,7 +11,7 @@ CREATE TABLE "producto" (
 "titulo" varchar not null,
 "stock" smallint not null default 0,
 "precio" real not null,
-"id_promocion" integer not null,
+"id_promocion" integer default null,
 constraint PK_producto primary key ("id_producto"),
 constraint FK_producto_promocion foreign key ("id_promocion") references "promocion"("id_promocion")
 );
@@ -38,7 +38,7 @@ CREATE TABLE "libro" (
 "edicion" varchar,
 "descripcion" varchar,
 "id_editorial" integer,
-"id_saga" integer,
+"id_saga" integer default null,
 constraint PK_libro primary key ("isbn"),
 constraint FK_editorial_libro foreign key ("id_editorial") references "editorial"("id_editorial"),
 constraint FK_saga_libro foreign key ("id_saga") references "saga"("id_saga")
@@ -66,9 +66,9 @@ CREATE TABLE "pedido" (
 "cantidad" smallint not null,
 "fecha_pedido" date not null,
 "anticipo_pagado" boolean DEFAULT false,
-"pedido_aceptado" boolean DEFAULT false,
+"pedido_aceptado" boolean DEFAULT null,
 "pedido_entregado" boolean DEFAULT false,
-"fecha_llegada" date,
+"fecha_llegada" date default null,
 "isbn" integer not null,
 constraint FK_pedido_isbn foreign key ("isbn") references "libro"("isbn"),
 constraint PK_pedido primary key ("id_pedido")
