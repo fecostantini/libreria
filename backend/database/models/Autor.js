@@ -35,10 +35,10 @@ let getAutores = async () => {
 	}
 };
 
-// status=EXITO si lo inserta y autor es el autor que se insertó
-// status=AUTOR_YA_EXISTE si falla porque ya existe el autor con ese nombre y nacionalidad
-// status=FRACASO si no inserta nada
-// status=ERROR_DESCONOCIDO si ocurre otra cosa imprevista
+// EXITO si lo inserta y autor es el autor que se insertó
+// AUTOR_YA_EXISTE si falla porque ya existe el autor con ese nombre y nacionalidad
+// FRACASO si no inserta nada
+// ERROR_DESCONOCIDO si ocurre otra cosa imprevista
 let createAutor = async nuevoAutor => {
 	try {
 		let response = await pool.query(querys.INSERT.format(nuevoAutor));

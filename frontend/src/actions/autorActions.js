@@ -38,7 +38,7 @@ export const deleteAutor = idAutorABorrar => dispatch => {
 	const autorABorrar = { id_autor: idAutorABorrar };
 	axios.delete(URL, { data: autorABorrar }).then(resp => {
 		const autorBorrado = resp.data.status === 'EXITO';
-
+		console.log(resp.data.status);
 		if (autorBorrado) {
 			dispatch({
 				type: DELETE_AUTOR,

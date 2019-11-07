@@ -20,9 +20,10 @@ export default function(state = initialState, action) {
 				items: autores
 			};
 		case CREATE_AUTOR:
+			const autorCreado = action.payload;
 			return {
 				...state,
-				items: [...state.items, action.payload]
+				items: [...state.items, autorCreado]
 			};
 		case DELETE_AUTOR:
 			const idBorrado = action.payload.idBorrado;
