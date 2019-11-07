@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import { Provider } from 'react-redux';
 import store from './store';
 //import Zoom from 'react-reveal/Zoom';
@@ -9,18 +8,6 @@ import store from './store';
 import MostrarAutores from './components/MostrarAutores';
 
 class App extends Component {
-	componentDidMount() {
-		const URL = 'http://localhost:3210/autor';
-		const nuevoAutor = {
-			id_autor: 1,
-			autor: 'asd',
-			nacionalidad: 'arg'
-		};
-		axios.post(URL, nuevoAutor).then(resp => {
-			console.log(resp.data);
-		});
-	}
-
 	render() {
 		return (
 			<Provider store={store}>

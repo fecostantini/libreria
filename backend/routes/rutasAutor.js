@@ -8,14 +8,17 @@ rutasAutor.get('/', function(req, res) {
 
 rutasAutor.post('/', function(req, res) {
 	const nuevoAutor = req.body;
-	Autor.createAutor(nuevoAutor).then(autorCreado => res.send(autorCreado));
+	Autor.createAutor(nuevoAutor).then(respuesta => res.send(respuesta));
 });
 
 rutasAutor.put('/', function(req, res) {
 	const nuevoAutor = req.body;
-	Autor.updateAutor(nuevoAutor).then(autorActualizado =>
-		res.send(autorActualizado)
-	);
+	Autor.updateAutor(nuevoAutor).then(respuesta => res.send(respuesta));
+});
+
+rutasAutor.delete('/', function(req, res) {
+	const idAutorABorrar = req.body.id_autor;
+	Autor.deleteAutor(idAutorABorrar).then(respuesta => res.send(respuesta));
 });
 
 module.exports = rutasAutor;

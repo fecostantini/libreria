@@ -2,11 +2,38 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { connect } from 'react-redux';
-import { fetchAutores } from '../actions/autorActions';
+import {
+	fetchAutores,
+	createAutor,
+	deleteAutor,
+	updateAutor
+} from '../actions/autorActions';
 
 class MostrarAutores extends Component {
 	componentDidMount() {
 		this.props.fetchAutores();
+		/*
+    //CREAR AUTOR
+		const nuevoAutor = {
+			id_autor: 1,
+			autor: 'nininini',
+			nacionalidad: 'pibito'
+		};
+    this.props.createAutor(nuevoAutor);
+    */
+		/*
+		const idABorrar = 69;
+    this.props.deleteAutor(idABorrar);
+    
+
+		//ACTUALIZAR AUTOR
+		const nuevoAutor = {
+			id_autor: 74,
+			autor: 'estoy recontra',
+			nacionalidad: 'cambiado amigo'
+		};
+    this.props.updateAutor(nuevoAutor);
+    */
 	}
 
 	render() {
@@ -28,6 +55,9 @@ class MostrarAutores extends Component {
 
 MostrarAutores.propTypes = {
 	fetchAutores: PropTypes.func.isRequired,
+	createAutor: PropTypes.func.isRequired,
+	deleteAutor: PropTypes.func.isRequired,
+	updateAutor: PropTypes.func.isRequired,
 	autores: PropTypes.array.isRequired
 };
 
@@ -38,5 +68,5 @@ const mapStateToProps = state => {
 };
 export default connect(
 	mapStateToProps,
-	{ fetchAutores }
+	{ fetchAutores, createAutor, deleteAutor, updateAutor }
 )(MostrarAutores);
