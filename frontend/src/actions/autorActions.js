@@ -1,10 +1,11 @@
-import { FETCH_AUTORES, POST_AUTORES } from './types';
+import { FETCH_AUTORES, CREATE_AUTOR } from './types';
 import axios from 'axios';
 
+const URL = 'http://localhost:3210/autor';
+
 export const fetchAutores = () => dispatch => {
-	console.log('fetcheando..');
-	var url = 'http://localhost:3210/Autor';
-	axios.get(url).then(resp => {
+	console.log('action fetchAutores..');
+	axios.get(URL).then(resp => {
 		console.log(resp.data);
 		dispatch({
 			type: FETCH_AUTORES,
@@ -13,17 +14,19 @@ export const fetchAutores = () => dispatch => {
 	});
 };
 
-/*
-export function fetchAutores() {
-	return function(dispatch) {
-		var url = 'http://localhost:3210/Libro';
-		axios.get(url).then(resp => {
-			console.log(resp.data);
+export const createAutor = nuevoAutor => dispatch => {
+	console.log('action createAutor..');
+	axios.post(URL, nuevoAutor).then(resp => {
+		const autorCreado = resp.data;
+		console.log(autorCreado);
+
+		if (autorCreado) {
 			dispatch({
-				type: FETCH_AUTORES,
+				type: CREATE_AUTOR,
 				payload: resp.data
 			});
-		});
-	};
-}
-*/
+		}
+	});
+};
+
+//TODO: updateAutor, deleteAutor

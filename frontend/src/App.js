@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import axios from 'axios';
 import { Provider } from 'react-redux';
 import store from './store';
 //import Zoom from 'react-reveal/Zoom';
@@ -9,89 +9,19 @@ import store from './store';
 import MostrarAutores from './components/MostrarAutores';
 
 class App extends Component {
-	componentDidMount() {}
-	/*
-	constructor() {
-		super();
-		this.state = {
-			libro: {
-				isbn: 0,
-				titulo: '',
-				idioma: '',
-				edicion: '',
-				descripcion: '',
-				stock_libro: 0
-			},
-			libros: []
+	componentDidMount() {
+		const URL = 'http://localhost:3210/autor';
+		const nuevoAutor = {
+			id_autor: 1,
+			autor: 'asd',
+			nacionalidad: 'arg'
 		};
-	}
-
-	async handleSubmit(form) {
-		form.preventDefault();
-
-		const {
-			isbn,
-			titulo,
-			idioma,
-			edicion,
-			descripcion,
-			stock_libro
-		} = this.state.libro;
-
-		if (
-			isbn !== 0 &&
-			titulo !== '' &&
-			idioma !== '' &&
-			edicion !== '' &&
-			descripcion !== '' &&
-			stock_libro !== 0
-		) {
-			var url = 'http://localhost:3210/Libro';
-			let respuesta = await axios.post(url, {
-				isbn,
-				titulo,
-				idioma,
-				edicion,
-				descripcion,
-				stock_libro
-			});
-			console.log(respuesta);
-			if (respuesta.data.creado) {
-				this.setState({
-					libros: [...this.state.libros, this.state.libro]
-				});
-			}
-		}
-	}
-
-	handleChange = e => {
-		this.setState({
-			libro: {
-				...this.state.libro,
-				[e.target.name]: e.target.value
-			}
-		});
-		console.log(this.state.libro);
-	};
-
-	getLibros(e) {
-		e.preventDefault();
-		var url = 'http://localhost:3210/Libro';
-		axios.get(url).then(resp => {
+		axios.post(URL, nuevoAutor).then(resp => {
 			console.log(resp.data);
-			this.setState({
-				libros: resp.data
-			});
 		});
 	}
-  */
+
 	render() {
-		/*
-		const librosObtenidos = this.state.libros.map((libro, index) => {
-			const text = `Titulo: ${libro.titulo} ISBN: ${libro.isbn}`;
-			return <p key={index}>{text}</p>;
-		});
-    */
 		return (
 			<Provider store={store}>
 				<MostrarAutores />

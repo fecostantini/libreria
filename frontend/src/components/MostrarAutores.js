@@ -16,6 +16,7 @@ class MostrarAutores extends Component {
 				<p>Nacionalidad: {autor.nacionalidad}</p>
 			</div>
 		));
+
 		return (
 			<div>
 				<h1>Autores</h1>
