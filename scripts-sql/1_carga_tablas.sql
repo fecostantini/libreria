@@ -9,7 +9,7 @@ constraint PK_promocion primary key ("id_promocion")
 CREATE TABLE "producto" (
 "id_producto" serial not null,
 "titulo" varchar not null,
-"stock" smallint not null,
+"stock" smallint not null default 0,
 "precio" real not null,
 "id_promocion" integer not null,
 constraint PK_producto primary key ("id_producto"),
@@ -20,13 +20,15 @@ constraint FK_producto_promocion foreign key ("id_promocion") references "promoc
 CREATE TABLE "editorial" (
 "id_editorial" serial not null,
 "nombre_editorial" varchar not null,
-constraint PK_editorial primary key ("id_editorial")
+constraint PK_editorial primary key ("id_editorial"),
+UNIQUE(nombre_editorial)
 );
 
 CREATE TABLE "saga" (
 "id_saga" serial not null,
 "nombre_saga" varchar not null,
 "stock_saga" SMALLINT not null,
+UNIQUE(nombre_saga),
 constraint PK_saga primary key ("id_saga")
 );
 
@@ -44,14 +46,16 @@ constraint FK_saga_libro foreign key ("id_saga") references "saga"("id_saga")
 
 CREATE TABLE "autor" (
 "id_autor" serial not null,
-"autor" varchar not null unique,
+"autor" varchar not null,
 "nacionalidad" varchar,
+UNIQUE(autor),
 constraint PK_autor primary key ("id_autor")
 );
 
 CREATE TABLE "categoria" (
 "id_categoria" serial not null,
 "nombre_categoria" varchar not null,
+UNIQUE(nombre_categoria),
 constraint PK_categoria primary key ("id_categoria")
 );
 
@@ -59,11 +63,11 @@ constraint PK_categoria primary key ("id_categoria")
 
 CREATE TABLE "pedido" (
 "id_pedido" serial not null,
-"cantidad" smallint,
-"fecha_pedido" date,
-"anticipo_pagado" boolean,
-"pedido_aceptado" boolean,
-"pedido_entregado" boolean,
+"cantidad" smallint not null,
+"fecha_pedido" date not null,
+"anticipo_pagado" boolean DEFAULT false,
+"pedido_aceptado" boolean DEFAULT false,
+"pedido_entregado" boolean DEFAULT false,
 "fecha_llegada" date,
 "isbn" integer not null,
 constraint FK_pedido_isbn foreign key ("isbn") references "libro"("isbn"),
@@ -72,7 +76,7 @@ constraint PK_pedido primary key ("id_pedido")
 
 CREATE TABLE "valoracion" (
 "id_valoracion" serial not null,
-"puntaje" smallint,
+"puntaje" smallint not null,
 "comentario" varchar,
 "isbn" integer not null,
 constraint FK_valoracion_isbn foreign key ("isbn") references "libro"("isbn"),
@@ -101,6 +105,7 @@ CREATE TABLE "usuario" (
 "apellido" varchar,
 "password" varchar,
 "rol" varchar,
+UNIQUE(mail),
 constraint PK_usuario primary key ("id_usuario")); 
 
 CREATE TABLE "carrito" (
@@ -112,8 +117,8 @@ constraint FK_carrito_usuario foreign key ("id_usuario") references "usuario"("i
 
 CREATE TABLE "compra" (
 "id_compra" serial not null,
-"fecha_compra" date,
-"precio_total" real,
+"fecha_compra" date not null,
+"precio_total" real not null,
 "id_carrito" integer not null,
 constraint FK_compra_carrito foreign key ("id_carrito") references "carrito"("id_carrito"),
 constraint PK_compra primary key ("id_compra")
