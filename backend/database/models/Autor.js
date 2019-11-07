@@ -25,8 +25,6 @@ let getAutores = async () => {
 		};
 	} catch (error) {
 		switch (error.code) {
-			case errores.AUTOR_YA_EXISTE:
-				return { status: 'AUTOR_YA_EXISTE' };
 			case errores.CONEXION_FALLIDA:
 				return { status: 'CONEXION_FALLIDA' };
 			default:

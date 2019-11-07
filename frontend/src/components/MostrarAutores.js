@@ -32,8 +32,11 @@ class MostrarAutores extends Component {
 			autor: 'estoy recontra',
 			nacionalidad: 'cambiado amigo'
 		};
-		this.props.updateAutor(nuevoAutor);*/
+		this.props.updateAutor(nuevoAutor);
 		const idABorrar = 8;
+		this.props.deleteAutor(idABorrar);
+		*/
+		const idABorrar = 18;
 		this.props.deleteAutor(idABorrar);
 	}
 

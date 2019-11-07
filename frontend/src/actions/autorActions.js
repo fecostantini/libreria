@@ -61,4 +61,3 @@ export const updateAutor = autorActualizado => dispatch => {
 	});
 };
 
-//TODO: updateAutor, deleteAutor
