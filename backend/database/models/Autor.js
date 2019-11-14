@@ -11,7 +11,7 @@ const querys = {
 };
 
 const errores = {
-	AUTOR_YA_EXISTE: '23505',
+	YA_EXISTE: '23505',
 	CONEXION_FALLIDA: 'ECONNREFUSED'
 };
 
@@ -34,7 +34,7 @@ let getAutores = async () => {
 };
 
 // EXITO si lo inserta y autor es el autor que se insertó
-// AUTOR_YA_EXISTE si falla porque ya existe el autor con ese nombre y nacionalidad
+// YA_EXISTE si falla porque ya existe el autor con ese nombre y nacionalidad
 // FRACASO si no inserta nada
 // ERROR_DESCONOCIDO si ocurre otra cosa imprevista
 let createAutor = async nuevoAutor => {
@@ -52,8 +52,8 @@ let createAutor = async nuevoAutor => {
 		} else return { status: 'FRACASO' };
 	} catch (error) {
 		switch (error.code) {
-			case errores.AUTOR_YA_EXISTE:
-				return { status: 'AUTOR_YA_EXISTE' };
+			case errores.YA_EXISTE:
+				return { status: 'YA_EXISTE' };
 			case errores.CONEXION_FALLIDA:
 				return { status: 'CONEXION_FALLIDA' };
 			default:
@@ -63,7 +63,7 @@ let createAutor = async nuevoAutor => {
 };
 
 // EXITO si lo actualiza
-// AUTOR_YA_EXISTE si falla porque ya existe el autor con ese nombre y nacionalidad
+// YA_EXISTE si falla porque ya existe el autor con ese nombre y nacionalidad
 // FRACASO si no lo encuentra
 // ERROR_DESCONOCIDO si ocurre otra cosa imprevista
 let updateAutor = async autorCambiado => {
@@ -74,8 +74,8 @@ let updateAutor = async autorCambiado => {
 		return { status: autorActualizado ? 'EXITO' : 'FRACASO' };
 	} catch (error) {
 		switch (error.code) {
-			case errores.AUTOR_YA_EXISTE:
-				return { status: 'AUTOR_YA_EXISTE' };
+			case errores.YA_EXISTE:
+				return { status: 'YA_EXISTE' };
 			case errores.CONEXION_FALLIDA:
 				return { status: 'CONEXION_FALLIDA' };
 			default:
