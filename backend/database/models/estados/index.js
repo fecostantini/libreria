@@ -1,0 +1,9 @@
+const estados = {
+	EXITO: 'EXITO',
+	FRACASO: 'FRACASO',
+	YA_EXISTE: '23505',
+	CONEXION_FALLIDA: 'ECONNREFUSED',
+	ERROR_DESCONOCIDO: 'ERROR_DESCONOCIDO'
+};
+
+module.exports = estados;

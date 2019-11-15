@@ -3,5 +3,6 @@ const router = express.Router();
 
 router.use('/autor', require('./rutasAutor'));
 router.use('/libro', require('./rutasLibro'));
+router.use('/editorial', require('./rutasEditorial'));
 
 module.exports = router;
