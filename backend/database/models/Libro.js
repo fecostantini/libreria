@@ -1,4 +1,5 @@
 const pool = require('../database');
+const estados = require('./estados');
 //Para poder formatear strings
 const format = require('string-format');
 format.extend(String.prototype, {});
@@ -17,11 +18,6 @@ const querys = {
 	INSERT: String.raw`call new_libro({isbn}, '{idioma}', '{titulo}', {precio}, '{edicion}', '{descripcion}', {id_editorial}, array[{autores}], array[{categorias}]);`
 };
 
-const errores = {
-	YA_EXISTE: '23505',
-	CONEXION_FALLIDA: 'ECONNREFUSED'
-};
-
 let createLibro = async nuevoLibro => {
 	try {
 		// Formatea los arrays de manera que se pueda formatear la consulta
@@ -34,7 +30,7 @@ let createLibro = async nuevoLibro => {
 		let response = await pool.query(querys.INSERT.format(nuevoLibro));
 		if (response) {
 			return {
-				status: 'EXITO',
+				status: estados.EXITO,
 				libro: nuevoLibro
 			};
 		}
@@ -42,12 +38,12 @@ let createLibro = async nuevoLibro => {
 		console.log(error);
 		console.log(error.code);
 		switch (error.code) {
-			case errores.YA_EXISTE:
-				return { status: 'YA_EXISTE' };
-			case errores.CONEXION_FALLIDA:
-				return { status: 'CONEXION_FALLIDA' };
+			case estados.YA_EXISTE:
+				return { status: estados.YA_EXISTE };
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
 			default:
-				return { status: 'ERROR_DESCONOCIDO' };
+				return { status: estados.ERROR_DESCONOCIDO };
 		}
 	}
 };
