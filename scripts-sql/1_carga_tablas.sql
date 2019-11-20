@@ -59,8 +59,6 @@ UNIQUE(nombre_categoria),
 constraint PK_categoria primary key ("id_categoria")
 );
 
-
-
 CREATE TABLE "pedido" (
 "id_pedido" serial not null,
 "cantidad" smallint not null,
