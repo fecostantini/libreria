@@ -21,7 +21,7 @@ class MostrarAutores extends Component {
 			};
 		this.props.createAutor(nuevoAutor);
 		*/
-			/*
+		/*
 			const idABorrar = 69;
 		this.props.deleteAutor(idABorrar);
 		
@@ -35,9 +35,10 @@ class MostrarAutores extends Component {
 		this.props.updateAutor(nuevoAutor);
 		const idABorrar = 8;
 		this.props.deleteAutor(idABorrar);
-		*/
+		
 		const idABorrar = 18;
-		this.props.deleteAutor(idABorrar);
+    this.props.deleteAutor(idABorrar);
+    */
 	}
 
 	render() {
@@ -70,7 +71,9 @@ const mapStateToProps = state => {
 	// items es el nombre que le asignamos en el reducer de autores.
 	return { autores: state.autores.items };
 };
-export default connect(
-	mapStateToProps,
-	{ fetchAutores, createAutor, deleteAutor, updateAutor }
-)(MostrarAutores);
+export default connect(mapStateToProps, {
+	fetchAutores,
+	createAutor,
+	deleteAutor,
+	updateAutor
+})(MostrarAutores);
