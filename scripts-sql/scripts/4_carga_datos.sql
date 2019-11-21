@@ -103,6 +103,52 @@ INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'He leído me
 INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Muy malo. No lo lean.', 9);
 INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Genial!!', 10);
 
+-- FOTOCOPIAS
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Cálculo I', 1, 100, 'Apuntes de Cálculo I de primer año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Lógica y Álgebra', 1, 200, 'Apuntes de Lógica y Álgebra de primer año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Sistemas y Organizaciones', 1, 300, 'Apuntes de Sistemas y Organizaciones de primer año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Introducción a la Programación', 1, 400, 'Apuntes de Introducción a la Programación de primer año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Cálculo II', 2, 500, 'Apuntes de Cálculo II de segundo año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Ingeniería de Software I', 3, 600, 'Apuntes de Ingeniería de Software I de segundo año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Ingeniería de Software II', 1, 700, 'Apuntes de Ingeniería de Software II de primer año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Arquitectura de Computadoras', 3, 800, 'Apuntes de Arquitectura de Computadoras de segundo año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Inglés', 2, 900, 'Apuntes de Inglés de primer año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Probabilidad y Estadística', 1, 1000, 'Apuntes de Probabilidad y Estadística de primer año de Sistemas.');
+
+-- SUGERENCIAS
+INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar El universo en una cáscara de nuez, de Stephen Hawking');
+INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Breve historia del tiempo, de Stephen Hawking');
+INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar El gran diseño, de Stephen Hawking');
+INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Breves respuestas a las grandes preguntas, de Stephen Hawking');
+INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Agujeros negros, de Stephen Hawking');
+INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Mi visión del mundo, de Albert Einstein');
+INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Sobre la teoría de la relatividad general y especial, de Albert Einstein');
+INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar El futuro de nuestra mente, de Michio Kaku');
+INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Mundos Paralelos, de Michio Kaku');
+INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar La energía nuclear, de Michio Kaku');
 
 
-call new_libro(16,'espaniol','el titulo 2',255,'tercera','este libro es mas o menos',6, array['dan brown','agatha christie'], array['novela','terror']);
+-- USUARIOS
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('fecostantini@hotmail.com', 'Francisco', 'Costantini', 'password1', 'ADMIN');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('maximiliano.pretto@gmail.com', 'Maximiliano', 'Pretto', 'password2', 'ADMIN');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('belwalerv@hotmail.com', 'Walter', 'Bel', 'password3', 'GESTOR_PEDIDOS');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo1@hotmail.com', 'Juan', 'Langoni', 'superpassword1', 'USUARIO_NORMAL');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo2@hotmail.com', 'Julian', 'Gómez', 'superpassword2', 'USUARIO_NORMAL');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo3@hotmail.com', 'Pedro', 'Martinez', 'superpassword3', 'USUARIO_NORMAL');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo4@hotmail.com', 'Liliana', 'Gonzales', 'superpassword4', 'USUARIO_NORMAL');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo5@hotmail.com', 'Mariano', 'Muller', 'superpassword5', 'USUARIO_NORMAL');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo6@hotmail.com', 'Silvia', 'Romero', 'superpassword6', 'USUARIO_NORMAL');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo7@hotmail.com', 'Gabriel', 'Soria', 'superpassword7', 'USUARIO_NORMAL');
+
+
+-- CARRITOS
+INSERT INTO carrito("id_usuario") VALUES (1);
+INSERT INTO carrito("id_usuario") VALUES (2);
+INSERT INTO carrito("id_usuario") VALUES (3);
+INSERT INTO carrito("id_usuario") VALUES (4);
+INSERT INTO carrito("id_usuario") VALUES (5);
+INSERT INTO carrito("id_usuario") VALUES (6);
+INSERT INTO carrito("id_usuario") VALUES (7);
+INSERT INTO carrito("id_usuario") VALUES (8);
+INSERT INTO carrito("id_usuario") VALUES (9);
+INSERT INTO carrito("id_usuario") VALUES (10);
