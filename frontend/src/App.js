@@ -9,6 +9,7 @@ import { Route, Switch } from 'react-router-dom';
 
 //componentes
 import MostrarAutores from './components/MostrarAutores';
+import Administrar from './components/Administrar';
 import Header from './components/Header';
 
 class App extends Component {
@@ -20,7 +21,8 @@ class App extends Component {
 					<main className='container mt-5'>
 						<Switch>
 							<Route exact path='/' component={() => <h1>Home</h1>} />
-							<Route exact path='/administrar' component={MostrarAutores} />
+							<Route path='/administrar' component={Administrar} />
+							<Route path='/mostrar_autores' component={MostrarAutores} />
 							<Route render={() => <h1>Error 404. Página no encontrada.</h1>} />
 						</Switch>
 					</main>
