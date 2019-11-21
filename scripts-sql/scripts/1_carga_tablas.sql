@@ -125,7 +125,7 @@ constraint FK_carrito_usuario foreign key ("id_usuario") references "usuario"("i
 
 CREATE TABLE "compra" (
 "id_compra" serial not null,
-"fecha_compra" date not null,
+"fecha_compra" date default to_date(to_char(NOW(), 'YYYY-MM-DD'), 'YYYY-MM-DD'), -- FECHA ACTUAL POR DEFECTO (EJEMPLO: 2019-11-20)
 "precio_total" real not null,
 "id_carrito" integer not null,
 constraint FK_compra_carrito foreign key ("id_carrito") references "carrito"("id_carrito"),
