@@ -1,3 +1,13 @@
+/*    
+    ######## ##     ## ##    ##  ######  ####  #######  ##    ## ########  ######  
+    ##       ##     ## ###   ## ##    ##  ##  ##     ## ###   ## ##       ##    ## 
+    ##       ##     ## ####  ## ##        ##  ##     ## ####  ## ##       ##       
+    ######   ##     ## ## ## ## ##        ##  ##     ## ## ## ## ######    ######  
+    ##       ##     ## ##  #### ##        ##  ##     ## ##  #### ##             ## 
+    ##       ##     ## ##   ### ##    ##  ##  ##     ## ##   ### ##       ##    ## 
+    ##        #######  ##    ##  ######  ####  #######  ##    ## ########  ######                 
+*/  
+
 CREATE OR REPLACE PROCEDURE new_libro (isbn integer , idioma varchar,titulo varchar,precio real, edicion varchar, descripcion varchar, id_editorial integer,autores varchar[], categorias varchar[])
 AS $$
 DECLARE
@@ -19,6 +29,7 @@ LOOP
 END LOOP;
 END $$
 LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE PROCEDURE new_pedido (isbn integer , cantidad integer)
 AS $$

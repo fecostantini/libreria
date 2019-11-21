@@ -1,3 +1,13 @@
+/*    
+    ########    ###    ########  ##          ###     ######  
+      ##      ## ##   ##     ## ##         ## ##   ##    ## 
+      ##     ##   ##  ##     ## ##        ##   ##  ##       
+      ##    ##     ## ########  ##       ##     ##  ######  
+      ##    ######### ##     ## ##       #########       ## 
+      ##    ##     ## ##     ## ##       ##     ## ##    ## 
+      ##    ##     ## ########  ######## ##     ##  ######                        
+*/                               
+                              
 CREATE TABLE "promocion" (
 "id_promocion" serial not null,
 "nombre_promocion" varchar not null,
@@ -159,12 +169,4 @@ constraint PK_productoxcarrito primary key ("id_producto","id_carrito"),
 -- constraint FK_producto_carrito foreign key ("id_producto") references "producto"("id_producto"),
 Constraint FK_carrito_producto foreign key ("id_carrito") references "carrito"("id_carrito")
 );
-
-
-
-
-
-
-
-
 

@@ -1,3 +1,13 @@
+/*    
+    ########     ###    ########  #######   ######  
+    ##     ##   ## ##      ##    ##     ## ##    ## 
+    ##     ##  ##   ##     ##    ##     ## ##       
+    ##     ## ##     ##    ##    ##     ##  ######  
+    ##     ## #########    ##    ##     ##       ## 
+    ##     ## ##     ##    ##    ##     ## ##    ## 
+    ########  ##     ##    ##     #######   ######                        
+*/ 
+
 -- AUTORES
 INSERT INTO autor("autor","nacionalidad") VALUES('george r. r. martin','Estados unidos');
 INSERT INTO autor("autor","nacionalidad") VALUES('j. r. r. tolkien','sudafrica');
