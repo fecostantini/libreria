@@ -155,8 +155,9 @@ CREATE TABLE "productoxcarrito" (
 "id_producto" integer,
 "id_carrito" smallint,
 constraint PK_productoxcarrito primary key ("id_producto","id_carrito"),
-constraint FK_producto_carrito foreign key ("id_producto") references "producto"("id_producto"),
-Constraint FK_carrito_productoa foreign key ("id_carrito") references "carrito"("id_carrito")
+-- La herencia no permite hacer referencia a la tabla producto. (select * from only producto) --> devuelve vacío
+-- constraint FK_producto_carrito foreign key ("id_producto") references "producto"("id_producto"),
+Constraint FK_carrito_producto foreign key ("id_carrito") references "carrito"("id_carrito")
 );
 
 
