@@ -91,4 +91,18 @@ INSERT INTO pedido("cantidad", "fecha_pedido", "anticipo_pagado", "pedido_acepta
 INSERT INTO pedido("cantidad", "fecha_pedido", "anticipo_pagado", "pedido_aceptado", "pedido_entregado", "fecha_llegada", "isbn") VALUES(1, '2019-11-30', false, false, false, '2019-12-25', 10);
 
 
+-- VALORACION
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Genial el libro', 1);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Muy malo el libro', 2);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Mas o menos el libro', 3);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Bastante bueno el libro', 4);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'No de los mejores que he leído', 5);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'El mejor libro de la historia', 6);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Se los recomiendo a todos', 7);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'He leído mejores libros del autor', 8);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Muy malo. No lo lean.', 9);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Genial!!', 10);
+
+
+
 call new_libro(16,'espaniol','el titulo 2',255,'tercera','este libro es mas o menos',6, array['dan brown','agatha christie'], array['novela','terror']);
