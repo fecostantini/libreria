@@ -74,7 +74,7 @@ constraint PK_pedido primary key ("id_pedido")
 
 CREATE TABLE "valoracion" (
 "id_valoracion" serial not null,
-"puntaje" smallint not null,
+"puntaje" smallint not null CHECK ("puntaje" BETWEEN 1 AND 10),
 "comentario" varchar,
 "isbn" integer not null,
 constraint FK_valoracion_isbn foreign key ("isbn") references "libro"("isbn"),
