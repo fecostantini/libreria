@@ -152,3 +152,17 @@ INSERT INTO carrito("id_usuario") VALUES (7);
 INSERT INTO carrito("id_usuario") VALUES (8);
 INSERT INTO carrito("id_usuario") VALUES (9);
 INSERT INTO carrito("id_usuario") VALUES (10);
+
+-- PRODUCTO x CARRITO
+INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (1, 1); -- LIBRO
+INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (13, 1); -- FOTOCOPIA
+INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (15, 1); -- FOTOCOPIA
+INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (3, 2); 
+INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (4, 2);
+INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (19, 3);
+INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (16, 4);
+INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (6, 5);
+INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (2, 6);
+INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (9, 7);
+
+--TODOS: hacer función que devuelva el producto (si es libro un libro, si es fotocopia una fotocopia) cuando se busca en productoxcarrito. 
