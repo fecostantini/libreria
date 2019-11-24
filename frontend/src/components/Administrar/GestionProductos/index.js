@@ -6,7 +6,7 @@ import BajaProducto from '../GestionProductos/BajaProducto';
 import ModificarProducto from '../GestionProductos/ModificarProducto';
 
 const GestionProductos = () => (
-	<div className='col'>
+	<div className='col-lg col-sm-12'>
 		<ul className='nav nav-tabs'>
 			<li className='nav-item'>
 				<NavLink to='/administrar/gestion_productos/alta' className='nav-link'>

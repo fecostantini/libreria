@@ -40,7 +40,7 @@ let createCategoria = async nuevaCategoria => {
 		if (categoriaCreada) {
 			const idCategoriaCreada = response.rows[0].id_categoria;
 			return {
-				status: estados.EXITO,
+				status: estados.CREADO,
 				categoria: { ...nuevaCategoria, id_categoria: idCategoriaCreada }
 			};
 		} else return { status: estados.FRACASO };
@@ -61,7 +61,9 @@ let updateCategoria = async categoriaCambiada => {
 		let response = await pool.query(querys.UPDATE.format(categoriaCambiada));
 		let filasModificadas = response.rowCount;
 		let categoriaActualizada = filasModificadas > 0;
-		return { status: categoriaActualizada ? estados.EXITO : estados.FRACASO };
+		return {
+			status: categoriaActualizada ? estados.ACTUALIZADO : estados.FRACASO
+		};
 	} catch (error) {
 		switch (error.code) {
 			case estados.YA_EXISTE:
@@ -79,7 +81,7 @@ let deleteCategoria = async idCategoria => {
 		let response = await pool.query(querys.DELETE.format(idCategoria));
 		let filasModificadas = response.rowCount;
 		let categoriaBorrada = filasModificadas > 0;
-		return { status: categoriaBorrada ? estados.EXITO : estados.FRACASO };
+		return { status: categoriaBorrada ? estados.BORRADO : estados.FRACASO };
 	} catch (error) {
 		switch (error.code) {
 			case estados.CONEXION_FALLIDA:

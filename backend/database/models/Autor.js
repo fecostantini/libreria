@@ -38,7 +38,7 @@ let createAutor = async nuevoAutor => {
 		if (autorCreado) {
 			const idAutorCreado = response.rows[0].id_autor;
 			return {
-				status: estados.EXITO,
+				status: estados.CREADO,
 				autor: { ...nuevoAutor, id_autor: idAutorCreado }
 			};
 		} else return { status: estados.FRACASO };
@@ -59,7 +59,7 @@ let updateAutor = async autorCambiado => {
 		let response = await pool.query(querys.UPDATE.format(autorCambiado));
 		let filasModificadas = response.rowCount;
 		let autorActualizado = filasModificadas > 0;
-		return { status: autorActualizado ? estados.EXITO : estados.FRACASO };
+		return { status: autorActualizado ? estados.ACTUALIZADO : estados.FRACASO };
 	} catch (error) {
 		switch (error.code) {
 			case estados.YA_EXISTE:
@@ -77,7 +77,7 @@ let deleteAutor = async idAutor => {
 		let response = await pool.query(querys.DELETE.format(idAutor));
 		let filasModificadas = response.rowCount;
 		let autorBorrado = filasModificadas > 0;
-		return { status: autorBorrado ? estados.EXITO : estados.FRACASO };
+		return { status: autorBorrado ? estados.BORRADO : estados.FRACASO };
 	} catch (error) {
 		switch (error.code) {
 			case estados.CONEXION_FALLIDA:

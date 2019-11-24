@@ -7,7 +7,7 @@ import {
 import axios from 'axios';
 
 const URL = 'http://localhost:3210/autor';
-
+/*
 export const fetchAutores = () => dispatch => {
 	console.log('action fetchAutores..');
 	axios.get(URL).then(resp => {
@@ -16,12 +16,33 @@ export const fetchAutores = () => dispatch => {
 			const autores = resp.data.autores;
 			dispatch({
 				type: FETCH_AUTORES,
-				payload: autores
+				payload: { autores, status: resp.data.status }
 			});
 		}
 	});
 };
+*/
+export const fetchAutores = async () => {
+	var dispatchContent = { type: FETCH_AUTORES };
 
+	const resp = await axios.get(URL);
+	const autores = resp.data ? resp.data.autores : null;
+
+	if (autores) {
+		dispatchContent = {
+			...dispatchContent,
+			payload: { autores, status: resp.data.status }
+		};
+	} else {
+		dispatchContent = {
+			...dispatchContent,
+			payload: { status: resp.data.status }
+		};
+	}
+
+	return dispatchContent;
+};
+/*
 export const createAutor = nuevoAutor => dispatch => {
 	axios.post(URL, nuevoAutor).then(resp => {
 		const autorCreado = resp.data.status === 'EXITO';
@@ -32,6 +53,28 @@ export const createAutor = nuevoAutor => dispatch => {
 			});
 		}
 	});
+};
+*/
+
+export const createAutor = async nuevoAutor => {
+	var dispatchContent = { type: CREATE_AUTOR };
+
+	const resp = await axios.post(URL, nuevoAutor);
+	const autorCreado = resp.data ? resp.data.autor : null;
+
+	if (autorCreado) {
+		dispatchContent = {
+			...dispatchContent,
+			payload: { autorCreado, status: resp.data.status }
+		};
+	} else {
+		dispatchContent = {
+			...dispatchContent,
+			payload: { status: resp.data.status }
+		};
+	}
+
+	return dispatchContent;
 };
 
 export const deleteAutor = idAutorABorrar => dispatch => {
@@ -60,4 +103,3 @@ export const updateAutor = autorActualizado => dispatch => {
 		}
 	});
 };
-

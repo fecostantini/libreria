@@ -10,21 +10,36 @@ const initialState = {
 };
 
 export default function(state = initialState, action) {
-	console.log(action.type);
-
 	switch (action.type) {
 		case FETCH_AUTORES:
-			const autores = action.payload;
-			return {
-				...state,
-				items: autores
-			};
+			const autores = action.payload.autores;
+
+			if (autores)
+				return {
+					...state,
+					items: autores,
+					status: action.payload.status
+				};
+			else
+				return {
+					...state,
+					status: action.payload.status
+				};
+
 		case CREATE_AUTOR:
-			const autorCreado = action.payload;
-			return {
-				...state,
-				items: [...state.items, autorCreado]
-			};
+			const autorCreado = action.payload.autorCreado;
+
+			if (autorCreado)
+				return {
+					...state,
+					items: [...state.items, autorCreado],
+					status: action.payload.status
+				};
+			else
+				return {
+					...state,
+					status: action.payload.status
+				};
 		case DELETE_AUTOR:
 			const idBorrado = action.payload.idBorrado;
 			// eslint-disable-next-line

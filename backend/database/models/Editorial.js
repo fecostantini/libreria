@@ -40,7 +40,7 @@ let createEditorial = async nuevaEditorial => {
 		if (editorialCreada) {
 			const idEditorialCreada = response.rows[0].id_editorial;
 			return {
-				status: estados.EXITO,
+				status: estados.CREADO,
 				editorial: { ...nuevaEditorial, id_editorial: idEditorialCreada }
 			};
 		} else return { status: estados.FRACASO };
@@ -61,7 +61,9 @@ let updateEditorial = async editorialCambiada => {
 		let response = await pool.query(querys.UPDATE.format(editorialCambiada));
 		let filasModificadas = response.rowCount;
 		let editorialActualizada = filasModificadas > 0;
-		return { status: editorialActualizada ? estados.EXITO : estados.FRACASO };
+		return {
+			status: editorialActualizada ? estados.ACTUALIZADO : estados.FRACASO
+		};
 	} catch (error) {
 		switch (error.code) {
 			case estados.YA_EXISTE:
@@ -79,7 +81,7 @@ let deleteEditorial = async idEditorial => {
 		let response = await pool.query(querys.DELETE.format(idEditorial));
 		let filasModificadas = response.rowCount;
 		let editorialBorrada = filasModificadas > 0;
-		return { status: editorialBorrada ? estados.EXITO : estados.FRACASO };
+		return { status: editorialBorrada ? estados.BORRADO : estados.FRACASO };
 	} catch (error) {
 		switch (error.code) {
 			case estados.CONEXION_FALLIDA:
