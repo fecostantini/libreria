@@ -30,6 +30,13 @@ const AltaProducto = () => {
 	const todasLasSagas = useSelector(state => state.sagas.items);
 	const statusUltimaPeticion = useSelector(state => state.ultimaRequest.status);
 
+	const [error, setError] = useState({ activo: false, mensaje: '' }); // error en el formulario de producto
+	const [tipoProducto, setTipoProducto] = useState(''); // FOTOCOPIA o LIBRO
+
+	// determinan si se muestran o no los sub-formularios
+	const [formularioNuevoAutor, setFormularioNuevoAutor] = useState(false);
+	const [formularioNuevaCategoria, setFormularioNuevaCategoria] = useState(false);
+
 	// cargar los autores y las categorias cuando cargue la página
 	useEffect(() => {
 		fetchAutores(dispatch);
@@ -62,18 +69,19 @@ const AltaProducto = () => {
 		if (statusUltimaPeticion) Swal.fire(swalConfig);
 	}, [statusUltimaPeticion, todosLosAutores, todasLasCategorias]);
 
-	const [error, setError] = useState({ activo: false, mensaje: '' }); // error en el formulario de producto
-	const [tipoProducto, setTipoProducto] = useState(''); // FOTOCOPIA o LIBRO
+	const enviarFormulario = tipoProducto => {
+		if (tipoProducto === tiposProducto.LIBRO) {
+			console.log('creando nuevo libro..');
+		} else if (tipoProducto === tiposProducto.FOTOCOPIA) {
+			console.log('creando nueva fotocopia..');
+		}
 
-	// determinan si se muestran o no los sub-formularios
-	const [formularioNuevoAutor, setFormularioNuevoAutor] = useState(false);
-	const [formularioNuevaCategoria, setFormularioNuevaCategoria] = useState(false);
-
-	const limpiarFormulario = () => {
+		setError({ activo: false });
 		setTipoProducto(''); // para que no quede desplegado el formulario de la fotocopia o el libro
 		updateProducto(dispatch, estadoInicialProducto);
 	};
 
+	// Agrega al producto algún elemento que después se visualzará como una nueva etiqueta azul en la vista
 	const agregarElemento = (id, nombreElemento) => {
 		const idElemento = parseInt(id, 10);
 		var elemento;
@@ -93,6 +101,7 @@ const AltaProducto = () => {
 			});
 	};
 
+	// Borra algun elemento del producto que después se visualzará como una etiqueta azul menos en la vista
 	const borrarElemento = (id, nombreElemento) => {
 		var elementosSinElEliminado;
 
@@ -138,9 +147,7 @@ const AltaProducto = () => {
 				});
 				return;
 			} else {
-				console.log('creando nueva fotocopia..');
-				setError({ activo: false });
-				limpiarFormulario();
+				enviarFormulario(tiposProducto.FOTOCOPIA);
 			}
 		} else if (tipoProducto === tiposProducto.LIBRO) {
 			const informacionLibroSeteada =
@@ -160,9 +167,7 @@ const AltaProducto = () => {
 				});
 				return;
 			} else {
-				console.log('creando nuevo libro..');
-				setError({ activo: false });
-				limpiarFormulario();
+				enviarFormulario(tiposProducto.LIBRO);
 			}
 		}
 	};
@@ -175,10 +180,6 @@ const AltaProducto = () => {
 				[name]: todasLasSagas.find(saga => saga.id_saga === parseInt(value, 10))
 			});
 		else agregarElemento(value, name);
-	};
-
-	const leerTipoProducto = e => {
-		setTipoProducto(e.target.value);
 	};
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -352,7 +353,9 @@ const AltaProducto = () => {
 							type='radio'
 							checked={tipoProducto === tiposProducto.LIBRO}
 							value='LIBRO'
-							onChange={e => leerTipoProducto(e)}
+							onChange={e => {
+								setTipoProducto(e.target.value);
+							}}
 						/>
 						<label className='form-check-label'>Libro</label>
 					</div>
@@ -363,7 +366,9 @@ const AltaProducto = () => {
 							type='radio'
 							checked={tipoProducto === tiposProducto.FOTOCOPIA}
 							value='FOTOCOPIA'
-							onChange={e => leerTipoProducto(e)}
+							onChange={e => {
+								setTipoProducto(e.target.value);
+							}}
 						/>
 						<label className='form-check-label'>Fotocopia</label>
 					</div>
