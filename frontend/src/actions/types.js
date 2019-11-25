@@ -8,3 +8,6 @@ export const UPDATE_AUTOR = 'DELETE_AUTOR';
 
 export const FETCH_CATEGORIAS = 'FETCH_CATEGORIAS';
 export const CREATE_CATEGORIA = 'CREATE_CATEGORIA';
+
+// status global de la ultima request que se realizó al backend
+export const UPDATE_LAST_REQUEST_STATUS = 'UPDATE_LAST_REQUEST_STATUS';

@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useRef, Fragment } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import Swal from 'sweetalert2';
 
 import Error from '../../../Common/Error';
 import ItemEliminable from '../../../Common/ItemEliminable';
 import FormularioNuevoAutor from './FormularioNuevoAutor';
+import FormularioNuevaCategoria from './FormularioNuevaCategoria';
 
 import estados from '../../../../estados';
 import { fetchAutores } from '../../../../actions/autorActions';
+import { fetchCategorias } from '../../../../actions/categoriaActions';
 import { useSelector, useDispatch } from 'react-redux';
 
 const tiposProducto = {
@@ -33,11 +35,13 @@ const AltaProducto = () => {
 
 	// redux
 	const todosLosAutores = useSelector(state => state.autores.items);
-	const statusUltimaPeticion = useSelector(state => state.autores.status);
+	const todasLasCategorias = useSelector(state => state.categorias.items);
+	const statusUltimaPeticion = useSelector(state => state.ultimaRequest.status);
 
 	// cargar los autores cuando cargue la página
 	useEffect(() => {
 		fetchAutores(dispatch);
+		fetchCategorias(dispatch);
 	}, []);
 
 	// cada vez que se actualice el estado de la última petición se mostrará un mensaje
@@ -54,16 +58,16 @@ const AltaProducto = () => {
 		};
 
 		if (statusUltimaPeticion === estados.CREADO) {
-			swalConfig.title = 'El autor fue creado exitosamente';
+			swalConfig.title = 'La creación se realizó con éxito!';
 			setMostrarFormularioNuevoAutor(false);
 		} else if (statusUltimaPeticion === estados.YA_EXISTE)
-			swalConfig.title = 'El autor que ingresó ya existe';
+			swalConfig.title = 'El elemento que desea crear ya existe';
 		else if (statusUltimaPeticion === estados.CONEXION_FALLIDA)
 			swalConfig.title = 'Falló la conexión a la Base de Datos';
 
 		// statusUltimaPetición arranca en undefined, hay que hacer este chequeo
 		if (statusUltimaPeticion) Swal.fire(swalConfig);
-	}, [statusUltimaPeticion, todosLosAutores]);
+	}, [statusUltimaPeticion, todosLosAutores, todasLasCategorias]);
 
 	const [
 		{
@@ -94,6 +98,11 @@ const AltaProducto = () => {
 	const [
 		mostrarFormularioNuevoAutor,
 		setMostrarFormularioNuevoAutor
+	] = useState(false);
+	// determinante si aparece o no el formulario de la nueva categoria
+	const [
+		mostrarFormularioNuevaCategoria,
+		setMostrarFormularioNuevaCategoria
 	] = useState(false);
 
 	const limpiarFormulario = () => {
@@ -127,6 +136,31 @@ const AltaProducto = () => {
 		}));
 	};
 
+	const agregarCategoria = idCategoria => {
+		const idCategoriaSeleccionada = parseInt(idCategoria, 10);
+		const categoriaSeleccionada = todasLasCategorias.find(
+			categoria => categoria.id_categoria === idCategoriaSeleccionada
+		);
+
+		const categoriaYaAgregada = categorias.includes(categoriaSeleccionada);
+		if (!categoriaYaAgregada)
+			setProducto(estadoPrevio => ({
+				...estadoPrevio,
+				categorias: [...categorias, categoriaSeleccionada]
+			})); // agregarlo si no está
+	};
+
+	const borrarCategoria = idCategoriaAEliminar => {
+		const categoriasSinLaEliminada = categorias.filter(
+			categoria => categoria.id_categoria !== idCategoriaAEliminar
+		);
+
+		setProducto(estadoPrevio => ({
+			...estadoPrevio,
+			categorias: [...categoriasSinLaEliminada]
+		}));
+	};
+
 	const handleChange = e => {
 		let { name, value } = e.target;
 
@@ -135,6 +169,8 @@ const AltaProducto = () => {
 
 		if (seteoEspecial) {
 			if (name === 'autores') agregarAutor(value);
+			else if (name === 'categorias') agregarCategoria(value);
+
 			return;
 		} else if (seteoNumerico)
 			value = name === 'precio' ? parseFloat(value, 10) : parseInt(value, 10);
@@ -266,7 +302,7 @@ const AltaProducto = () => {
 						/>
 					</div>
 					<div className='form-group'>
-						<hr className='mt-5' />
+						<hr className='mt-4' />
 						<label>Autores</label>{' '}
 						<select onChange={handleChange} name='autores'>
 							{todosLosAutores
@@ -307,18 +343,53 @@ const AltaProducto = () => {
 					</div>
 					{mostrarFormularioNuevoAutor ? <FormularioNuevoAutor /> : null}
 					<div className='form-group'>
-						<hr className='mt-5' />
-						<label>Categorías (separarlas con coma)</label>
-						<input
-							type='text'
-							name='categorias'
-							className='form-control'
-							// convertimos el string a array (ejemplo: 'a1, a2, a3' se convierte en ['a1', 'a2, 'a3']
-							onChange={handleChange}
-						/>
+						<hr className='mt-4' />
+						<label>Categorías</label>{' '}
+						<select onChange={handleChange} name='categorias'>
+							{todasLasCategorias
+								.sort((a, b) => {
+									if (a.nombre_categoria > b.nombre_categoria) {
+										return 1;
+									}
+									if (a.nombre_categoria < b.nombre_categoria) {
+										return -1;
+									}
+									return 0;
+								})
+								.map(categoria => (
+									<option
+										value={categoria.id_categoria}
+										key={categoria.id_categoria}
+									>
+										{categoria.nombre_categoria}
+									</option>
+								))}
+						</select>{' '}
+						<label>
+							<input
+								type='checkbox'
+								checked={mostrarFormularioNuevaCategoria}
+								onChange={e => {
+									setMostrarFormularioNuevaCategoria(e.target.checked);
+								}}
+							/>{' '}
+							No encuentro la categoría
+						</label>
 					</div>
+					<div className='row'>
+						{categorias.map(categoria => (
+							<ItemEliminable
+								titulo={categoria.nombre_categoria}
+								id={categoria.id_categoria}
+								borrarElemento={borrarCategoria}
+							/>
+						))}
+					</div>
+					{mostrarFormularioNuevaCategoria ? (
+						<FormularioNuevaCategoria />
+					) : null}
 					<div className='form-group'>
-						<hr className='mt-5' />
+						<hr className='mt-4' />
 						<label>Saga (dejar vacío si no pertenece a ninguna)</label>
 						<input
 							type='text'
@@ -336,7 +407,7 @@ const AltaProducto = () => {
 
 	return (
 		<div className='col'>
-			<h1 className='text-center mt-5'>Dar de alta un producto</h1>
+			<h1 className='text-center mt-4'>Dar de alta un producto</h1>
 			{error.activo ? <Error mensaje={error.mensaje} /> : null}
 			<form onSubmit={agregarProducto} id='formulario-producto'>
 				<div className='form-row'>

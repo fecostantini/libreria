@@ -78,6 +78,7 @@ let FormularioNuevoAutor = () => {
 
 			<div className='col-lg-4 col-sm-12'>
 				<label>
+					{/* Caracteres invisibles para ubicar correctamente el botón */}
 					<span style={{ opacity: '0' }}>asd</span>
 				</label>
 				<button

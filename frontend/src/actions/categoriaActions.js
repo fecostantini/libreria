@@ -1,7 +1,11 @@
-import { FETCH_CATEGORIAS, CREATE_CATEGORIA } from './types';
+import {
+	FETCH_CATEGORIAS,
+	CREATE_CATEGORIA,
+	UPDATE_LAST_REQUEST_STATUS
+} from './types';
 import axios from 'axios';
 
-const URL = 'http://localhost:3210/autor';
+const URL = 'http://localhost:3210/categoria';
 
 export const fetchCategorias = async dispatch => {
 	var dispatchContent = { type: FETCH_CATEGORIAS };
@@ -22,6 +26,10 @@ export const fetchCategorias = async dispatch => {
 	}
 
 	dispatch(dispatchContent);
+	dispatch({
+		type: UPDATE_LAST_REQUEST_STATUS,
+		payload: { status: resp.data.status }
+	});
 };
 
 export const createCategoria = async (dispatch, nuevaCategoria) => {
@@ -43,4 +51,8 @@ export const createCategoria = async (dispatch, nuevaCategoria) => {
 	}
 
 	dispatch(dispatchContent);
+	dispatch({
+		type: UPDATE_LAST_REQUEST_STATUS,
+		payload: { status: resp.data.status }
+	});
 };

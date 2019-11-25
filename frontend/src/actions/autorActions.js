@@ -2,66 +2,45 @@ import {
 	FETCH_AUTORES,
 	CREATE_AUTOR,
 	DELETE_AUTOR,
-	UPDATE_AUTOR
+	UPDATE_AUTOR,
+	UPDATE_LAST_REQUEST_STATUS
 } from './types';
 import axios from 'axios';
 
 const URL = 'http://localhost:3210/autor';
 
 export const fetchAutores = async dispatch => {
-	var dispatchContent = { type: FETCH_AUTORES };
-
 	const resp = await axios.get(URL);
 	const autores = resp.data ? resp.data.autores : null;
 
 	if (autores) {
-		dispatchContent = {
-			...dispatchContent,
-			payload: { autores, status: resp.data.status }
-		};
-	} else {
-		dispatchContent = {
-			...dispatchContent,
-			payload: { status: resp.data.status }
-		};
+		dispatch({
+			type: FETCH_AUTORES,
+			payload: { autores }
+		});
 	}
 
-	dispatch(dispatchContent);
-};
-
-/*
-export const createAutor = nuevoAutor => dispatch => {
-	axios.post(URL, nuevoAutor).then(resp => {
-		const autorCreado = resp.data.status === 'EXITO';
-		if (autorCreado) {
-			dispatch({
-				type: CREATE_AUTOR,
-				payload: resp.data.autor
-			});
-		}
+	dispatch({
+		type: UPDATE_LAST_REQUEST_STATUS,
+		payload: { status: resp.data.status }
 	});
 };
-*/
 
 export const createAutor = async (dispatch, nuevoAutor) => {
-	var dispatchContent = { type: CREATE_AUTOR };
-
 	const resp = await axios.post(URL, nuevoAutor);
 	const autorCreado = resp.data ? resp.data.autor : null;
 
 	if (autorCreado) {
-		dispatchContent = {
-			...dispatchContent,
-			payload: { autorCreado, status: resp.data.status }
-		};
-	} else {
-		dispatchContent = {
-			...dispatchContent,
-			payload: { status: resp.data.status }
-		};
+		dispatch({
+			type: CREATE_AUTOR,
+			payload: { autorCreado }
+		});
 	}
 
-	dispatch(dispatchContent);
+	dispatch({
+		type: UPDATE_LAST_REQUEST_STATUS,
+		payload: { status: resp.data.status }
+	});
 };
 
 export const deleteAutor = idAutorABorrar => dispatch => {

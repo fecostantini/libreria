@@ -17,13 +17,7 @@ export default function(state = initialState, action) {
 			if (autores)
 				return {
 					...state,
-					items: autores,
-					status: action.payload.status
-				};
-			else
-				return {
-					...state,
-					status: action.payload.status
+					items: autores
 				};
 
 		case CREATE_AUTOR:
@@ -32,14 +26,9 @@ export default function(state = initialState, action) {
 			if (autorCreado)
 				return {
 					...state,
-					items: [...state.items, autorCreado],
-					status: action.payload.status
+					items: [...state.items, autorCreado]
 				};
-			else
-				return {
-					...state,
-					status: action.payload.status
-				};
+
 		case DELETE_AUTOR:
 			const idBorrado = action.payload.idBorrado;
 			// eslint-disable-next-line

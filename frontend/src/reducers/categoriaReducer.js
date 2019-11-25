@@ -12,13 +12,7 @@ export default function(state = initialState, action) {
 			if (categorias)
 				return {
 					...state,
-					items: categorias,
-					status: action.payload.status
-				};
-			else
-				return {
-					...state,
-					status: action.payload.status
+					items: categorias
 				};
 
 		case CREATE_CATEGORIA:
@@ -27,13 +21,7 @@ export default function(state = initialState, action) {
 			if (categoriaCreada)
 				return {
 					...state,
-					status: action.payload.status,
 					items: [...state.items, categoriaCreada]
-				};
-			else
-				return {
-					...state,
-					status: action.payload.status
 				};
 
 		default:
