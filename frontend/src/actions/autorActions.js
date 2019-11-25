@@ -7,22 +7,8 @@ import {
 import axios from 'axios';
 
 const URL = 'http://localhost:3210/autor';
-/*
-export const fetchAutores = () => dispatch => {
-	console.log('action fetchAutores..');
-	axios.get(URL).then(resp => {
-		const autoresTraidosConExito = resp.data.status === 'EXITO';
-		if (autoresTraidosConExito) {
-			const autores = resp.data.autores;
-			dispatch({
-				type: FETCH_AUTORES,
-				payload: { autores, status: resp.data.status }
-			});
-		}
-	});
-};
-*/
-export const fetchAutores = async () => {
+
+export const fetchAutores = async dispatch => {
 	var dispatchContent = { type: FETCH_AUTORES };
 
 	const resp = await axios.get(URL);
@@ -40,8 +26,9 @@ export const fetchAutores = async () => {
 		};
 	}
 
-	return dispatchContent;
+	dispatch(dispatchContent);
 };
+
 /*
 export const createAutor = nuevoAutor => dispatch => {
 	axios.post(URL, nuevoAutor).then(resp => {
@@ -56,7 +43,7 @@ export const createAutor = nuevoAutor => dispatch => {
 };
 */
 
-export const createAutor = async nuevoAutor => {
+export const createAutor = async (dispatch, nuevoAutor) => {
 	var dispatchContent = { type: CREATE_AUTOR };
 
 	const resp = await axios.post(URL, nuevoAutor);
@@ -74,7 +61,7 @@ export const createAutor = async nuevoAutor => {
 		};
 	}
 
-	return dispatchContent;
+	dispatch(dispatchContent);
 };
 
 export const deleteAutor = idAutorABorrar => dispatch => {
