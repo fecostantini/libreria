@@ -5,10 +5,14 @@ import Error from '../../../Common/Error';
 import ItemEliminable from '../../../Common/ItemEliminable';
 import FormularioNuevoAutor from './FormularioNuevoAutor';
 import FormularioNuevaCategoria from './FormularioNuevaCategoria';
+import InputFormulario from './InputFormulario';
 
 import estados from '../../../../estados';
 import { fetchAutores } from '../../../../actions/autorActions';
 import { fetchCategorias } from '../../../../actions/categoriaActions';
+import { fetchSagas } from '../../../../actions/sagaActions';
+import { updateProducto } from '../../../../actions/productoActions';
+import { estadoInicialProducto } from '../../../../reducers/productoReducer';
 import { useSelector, useDispatch } from 'react-redux';
 
 const tiposProducto = {
@@ -16,32 +20,21 @@ const tiposProducto = {
 	LIBRO: 'LIBRO'
 };
 
-const estadoInicialProducto = {
-	titulo: '',
-	stock: 0,
-	precio: 0,
-	descuento: '',
-	descripcion: '',
-	isbn: 0,
-	idioma: '',
-	edicion: '',
-	editorial: '',
-	autores: [],
-	categorias: []
-};
-
 const AltaProducto = () => {
 	const dispatch = useDispatch();
 
 	// redux
+	const producto = useSelector(state => state.producto);
 	const todosLosAutores = useSelector(state => state.autores.items);
 	const todasLasCategorias = useSelector(state => state.categorias.items);
+	const todasLasSagas = useSelector(state => state.sagas.items);
 	const statusUltimaPeticion = useSelector(state => state.ultimaRequest.status);
 
-	// cargar los autores cuando cargue la página
+	// cargar los autores y las categorias cuando cargue la página
 	useEffect(() => {
 		fetchAutores(dispatch);
 		fetchCategorias(dispatch);
+		fetchSagas(dispatch);
 	}, []);
 
 	// cada vez que se actualice el estado de la última petición se mostrará un mensaje
@@ -59,9 +52,9 @@ const AltaProducto = () => {
 
 		if (statusUltimaPeticion === estados.CREADO) {
 			swalConfig.title = 'La creación se realizó con éxito!';
-			setMostrarFormularioNuevoAutor(false);
-		} else if (statusUltimaPeticion === estados.YA_EXISTE)
-			swalConfig.title = 'El elemento que desea crear ya existe';
+			setFormularioNuevoAutor(false);
+			setFormularioNuevaCategoria(false);
+		} else if (statusUltimaPeticion === estados.YA_EXISTE) swalConfig.title = 'El elemento que desea crear ya existe';
 		else if (statusUltimaPeticion === estados.CONEXION_FALLIDA)
 			swalConfig.title = 'Falló la conexión a la Base de Datos';
 
@@ -69,117 +62,48 @@ const AltaProducto = () => {
 		if (statusUltimaPeticion) Swal.fire(swalConfig);
 	}, [statusUltimaPeticion, todosLosAutores, todasLasCategorias]);
 
-	const [
-		{
-			titulo,
-			stock,
-			precio,
-			autores,
-			descuento,
-			descripcion,
-			isbn,
-			idioma,
-			edicion,
-			editorial,
-			categorias,
-			saga
-		},
-		setProducto
-	] = useState(estadoInicialProducto);
-
-	const [error, setError] = useState({
-		activo: false,
-		mensaje: ''
-	}); // error en el formulario de producto
-
+	const [error, setError] = useState({ activo: false, mensaje: '' }); // error en el formulario de producto
 	const [tipoProducto, setTipoProducto] = useState(''); // FOTOCOPIA o LIBRO
 
-	// determinante si aparece o no el formulario del nuevo autor
-	const [
-		mostrarFormularioNuevoAutor,
-		setMostrarFormularioNuevoAutor
-	] = useState(false);
-	// determinante si aparece o no el formulario de la nueva categoria
-	const [
-		mostrarFormularioNuevaCategoria,
-		setMostrarFormularioNuevaCategoria
-	] = useState(false);
+	// determinan si se muestran o no los sub-formularios
+	const [formularioNuevoAutor, setFormularioNuevoAutor] = useState(false);
+	const [formularioNuevaCategoria, setFormularioNuevaCategoria] = useState(false);
 
 	const limpiarFormulario = () => {
-		document.getElementById('formulario-producto').reset();
-		setTipoProducto(''); // fix para que no quede desplegado el formulario de la fotocopia o el libro
-		setProducto(estadoInicialProducto);
+		setTipoProducto(''); // para que no quede desplegado el formulario de la fotocopia o el libro
+		updateProducto(dispatch, estadoInicialProducto);
 	};
 
-	const agregarAutor = idAutor => {
-		const idAutorSeleccionado = parseInt(idAutor, 10);
-		const autorSeleccionado = todosLosAutores.find(
-			autor => autor.id_autor === idAutorSeleccionado
-		);
+	const agregarElemento = (id, nombreElemento) => {
+		const idElemento = parseInt(id, 10);
+		var elemento;
+		var elementoYaAgregado;
+		if (nombreElemento === 'autores') {
+			elemento = todosLosAutores.find(autor => autor.id_autor === idElemento);
+			elementoYaAgregado = producto.autores.includes(elemento);
+		} else if (nombreElemento === 'categorias') {
+			elemento = todasLasCategorias.find(categoria => categoria.id_categoria === idElemento);
+			elementoYaAgregado = producto.categorias.includes(elemento);
+		}
 
-		const autorYaAgregado = autores.includes(autorSeleccionado);
-		if (!autorYaAgregado)
-			setProducto(estadoPrevio => ({
-				...estadoPrevio,
-				autores: [...autores, autorSeleccionado]
-			})); // agregarlo si no está
+		if (!elementoYaAgregado)
+			updateProducto(dispatch, {
+				...producto,
+				[nombreElemento]: [...producto[nombreElemento], elemento]
+			});
 	};
 
-	const borrarAutor = idAutorAEliminar => {
-		const autoresSinElEliminado = autores.filter(
-			autor => autor.id_autor !== idAutorAEliminar
-		);
+	const borrarElemento = (id, nombreElemento) => {
+		var elementosSinElEliminado;
 
-		setProducto(estadoPrevio => ({
-			...estadoPrevio,
-			autores: [...autoresSinElEliminado]
-		}));
-	};
+		if (nombreElemento === 'autores') elementosSinElEliminado = producto.autores.filter(autor => autor.id_autor !== id);
+		else if (nombreElemento === 'categorias')
+			elementosSinElEliminado = producto.categorias.filter(categoria => categoria.id_categoria !== id);
 
-	const agregarCategoria = idCategoria => {
-		const idCategoriaSeleccionada = parseInt(idCategoria, 10);
-		const categoriaSeleccionada = todasLasCategorias.find(
-			categoria => categoria.id_categoria === idCategoriaSeleccionada
-		);
-
-		const categoriaYaAgregada = categorias.includes(categoriaSeleccionada);
-		if (!categoriaYaAgregada)
-			setProducto(estadoPrevio => ({
-				...estadoPrevio,
-				categorias: [...categorias, categoriaSeleccionada]
-			})); // agregarlo si no está
-	};
-
-	const borrarCategoria = idCategoriaAEliminar => {
-		const categoriasSinLaEliminada = categorias.filter(
-			categoria => categoria.id_categoria !== idCategoriaAEliminar
-		);
-
-		setProducto(estadoPrevio => ({
-			...estadoPrevio,
-			categorias: [...categoriasSinLaEliminada]
-		}));
-	};
-
-	const handleChange = e => {
-		let { name, value } = e.target;
-
-		const seteoNumerico = 'isbn|stock|precio'.split('|').includes(name);
-		const seteoEspecial = 'autores|categorias|saga'.split('|').includes(name);
-
-		if (seteoEspecial) {
-			if (name === 'autores') agregarAutor(value);
-			else if (name === 'categorias') agregarCategoria(value);
-
-			return;
-		} else if (seteoNumerico)
-			value = name === 'precio' ? parseFloat(value, 10) : parseInt(value, 10);
-
-		setProducto(estadoPrevio => ({ ...estadoPrevio, [name]: value }));
-	};
-
-	const leerTipoProducto = e => {
-		setTipoProducto(e.target.value);
+		updateProducto(dispatch, {
+			...producto,
+			[nombreElemento]: [...elementosSinElEliminado]
+		});
 	};
 
 	// agregar el producto
@@ -187,13 +111,12 @@ const AltaProducto = () => {
 		e.preventDefault();
 
 		// no chequeamos el descuento porque puede no tener
-		const informacionCompartidaSeteada = titulo && stock && precio;
+		const informacionCompartidaSeteada = producto.titulo && producto.stock && producto.precio;
 
 		if (!informacionCompartidaSeteada) {
 			setError({
 				activo: true,
-				mensaje:
-					'Debe rellenar todos los campos del producto (titulo, stock, precio)'
+				mensaje: 'Debe rellenar todos los campos del producto (titulo, stock, precio)'
 			});
 			return;
 		}
@@ -207,7 +130,7 @@ const AltaProducto = () => {
 		}
 
 		if (tipoProducto === tiposProducto.FOTOCOPIA) {
-			const informacionFotocopiaSeteada = descripcion !== '';
+			const informacionFotocopiaSeteada = producto.descripcion !== '';
 			if (!informacionFotocopiaSeteada) {
 				setError({
 					activo: true,
@@ -221,13 +144,13 @@ const AltaProducto = () => {
 			}
 		} else if (tipoProducto === tiposProducto.LIBRO) {
 			const informacionLibroSeteada =
-				descripcion &&
-				isbn &&
-				idioma &&
-				edicion &&
-				editorial &&
-				autores.length &&
-				categorias;
+				producto.descripcion &&
+				producto.isbn &&
+				producto.idioma &&
+				producto.edicion &&
+				producto.editorial &&
+				producto.autores.length &&
+				producto.categorias.length;
 
 			if (!informacionLibroSeteada) {
 				setError({
@@ -244,75 +167,57 @@ const AltaProducto = () => {
 		}
 	};
 
-	let FormularioRestante = () => {
+	const handleChange = e => {
+		let { name, value } = e.target;
+		if (name === 'saga')
+			updateProducto(dispatch, {
+				...producto,
+				[name]: todasLasSagas.find(saga => saga.id_saga === parseInt(value, 10))
+			});
+		else agregarElemento(value, name);
+	};
+
+	const leerTipoProducto = e => {
+		setTipoProducto(e.target.value);
+	};
+
+	///////////////////////////////////////////////////////////////////////////////////////////
+	//                                    FORMULARIO                                         //
+	///////////////////////////////////////////////////////////////////////////////////////////
+
+	let formularioRestante = () => {
 		// Ambos poseen una descripción, reutilizamos esta porción.
-		const inputDescripcion = (
-			<div className='form-group'>
-				<label>Descripción</label>
-				<textarea
-					className='form-control'
-					name='descripcion'
-					rows='3'
-					onChange={handleChange}
-				></textarea>
-			</div>
-		);
+		const inputDescripcion = () =>
+			[{ titulo: 'Descripción', type: 'textarea', name: 'descripcion' }].map(e => (
+				<InputFormulario titulo={e.titulo} type={e.type} name={e.name} containterClass='form-group' />
+			));
 
 		if (tipoProducto === tiposProducto.LIBRO) {
 			return (
 				<Fragment>
-					{inputDescripcion}
+					{inputDescripcion()}
 					<div className='form-row'>
-						<div className='col-4'>
-							<label>ISBN</label>
-							<input
-								type='number'
-								name='isbn'
-								className='form-control'
-								onChange={handleChange}
-							/>
-						</div>
-						<div className='col-4'>
-							<label>Idioma</label>
-							<input
-								type='text'
-								name='idioma'
-								className='form-control'
-								onChange={handleChange}
-							/>
-						</div>
-						<div className='col-4'>
-							<label>Edición</label>
-							<input
-								type='text'
-								name='edicion'
-								className='form-control'
-								onChange={handleChange}
-							/>
-						</div>
+						{[
+							{ titulo: 'ISBN', type: 'number', name: 'isbn' },
+							{ titulo: 'Idioma', type: 'text', name: 'idioma' },
+							{ titulo: 'Edicion', type: 'text', name: 'edicion' }
+						].map(e => (
+							<InputFormulario titulo={e.titulo} type={e.type} name={e.name} containterClass='col-4' />
+						))}
 					</div>
 
-					<div className='form-group'>
-						<label>Editorial</label>
-						<input
-							type='text'
-							name='editorial'
-							className='form-control'
-							onChange={handleChange}
-						/>
-					</div>
+					{[{ titulo: 'Editorial', type: 'text', name: 'editorial' }].map(e => (
+						<InputFormulario titulo={e.titulo} type={e.type} name={e.name} containterClass='form-group' />
+					))}
+
 					<div className='form-group'>
 						<hr className='mt-4' />
 						<label>Autores</label>{' '}
 						<select onChange={handleChange} name='autores'>
 							{todosLosAutores
 								.sort((a, b) => {
-									if (a.autor > b.autor) {
-										return 1;
-									}
-									if (a.autor < b.autor) {
-										return -1;
-									}
+									if (a.autor > b.autor) return 1;
+									if (a.autor < b.autor) return -1;
 									return 0;
 								})
 								.map(autor => (
@@ -324,43 +229,32 @@ const AltaProducto = () => {
 						<label>
 							<input
 								type='checkbox'
-								checked={mostrarFormularioNuevoAutor}
+								checked={formularioNuevoAutor}
 								onChange={e => {
-									setMostrarFormularioNuevoAutor(e.target.checked);
+									setFormularioNuevoAutor(e.target.checked);
 								}}
 							/>{' '}
 							No encuentro el autor
 						</label>
 					</div>
 					<div className='row'>
-						{autores.map(autor => (
-							<ItemEliminable
-								titulo={autor.autor}
-								id={autor.id_autor}
-								borrarElemento={borrarAutor}
-							/>
+						{producto.autores.map(autor => (
+							<ItemEliminable titulo={autor.autor} id={autor.id_autor} name='autores' borrarElemento={borrarElemento} />
 						))}
 					</div>
-					{mostrarFormularioNuevoAutor ? <FormularioNuevoAutor /> : null}
+					{formularioNuevoAutor ? <FormularioNuevoAutor /> : null}
 					<div className='form-group'>
 						<hr className='mt-4' />
 						<label>Categorías</label>{' '}
 						<select onChange={handleChange} name='categorias'>
 							{todasLasCategorias
 								.sort((a, b) => {
-									if (a.nombre_categoria > b.nombre_categoria) {
-										return 1;
-									}
-									if (a.nombre_categoria < b.nombre_categoria) {
-										return -1;
-									}
+									if (a.nombre_categoria > b.nombre_categoria) return 1;
+									if (a.nombre_categoria < b.nombre_categoria) return -1;
 									return 0;
 								})
 								.map(categoria => (
-									<option
-										value={categoria.id_categoria}
-										key={categoria.id_categoria}
-									>
+									<option value={categoria.id_categoria} key={categoria.id_categoria}>
 										{categoria.nombre_categoria}
 									</option>
 								))}
@@ -368,40 +262,46 @@ const AltaProducto = () => {
 						<label>
 							<input
 								type='checkbox'
-								checked={mostrarFormularioNuevaCategoria}
+								checked={formularioNuevaCategoria}
 								onChange={e => {
-									setMostrarFormularioNuevaCategoria(e.target.checked);
+									setFormularioNuevaCategoria(e.target.checked);
 								}}
 							/>{' '}
 							No encuentro la categoría
 						</label>
 					</div>
 					<div className='row'>
-						{categorias.map(categoria => (
+						{producto.categorias.map(categoria => (
 							<ItemEliminable
 								titulo={categoria.nombre_categoria}
 								id={categoria.id_categoria}
-								borrarElemento={borrarCategoria}
+								name='categorias'
+								borrarElemento={borrarElemento}
 							/>
 						))}
 					</div>
-					{mostrarFormularioNuevaCategoria ? (
-						<FormularioNuevaCategoria />
-					) : null}
+					{formularioNuevaCategoria ? <FormularioNuevaCategoria /> : null}
 					<div className='form-group'>
 						<hr className='mt-4' />
-						<label>Saga (dejar vacío si no pertenece a ninguna)</label>
-						<input
-							type='text'
-							name='saga'
-							className='form-control'
-							onChange={handleChange}
-						/>
+						<label>Saga</label>{' '}
+						<select onChange={handleChange} name='saga'>
+							{[...todasLasSagas]
+								.concat({ nombre_saga: '- NO PERTENECE A NINGUNA -', id_saga: 0 })
+								.sort((a, b) => {
+									if (a.nombre_saga > b.nombre_saga) return 1;
+									if (a.nombre_saga < b.nombre_saga) return -1;
+									return 0;
+								})
+								.map(saga => (
+									<option value={saga.id_saga} key={saga.id_saga}>
+										{saga.nombre_saga}
+									</option>
+								))}
+						</select>
 					</div>
 				</Fragment>
 			);
-		} else if (tipoProducto === tiposProducto.FOTOCOPIA)
-			return <Fragment>{inputDescripcion}</Fragment>;
+		} else if (tipoProducto === tiposProducto.FOTOCOPIA) return <Fragment>{inputDescripcion()}</Fragment>;
 		else return null;
 	};
 
@@ -411,39 +311,36 @@ const AltaProducto = () => {
 			{error.activo ? <Error mensaje={error.mensaje} /> : null}
 			<form onSubmit={agregarProducto} id='formulario-producto'>
 				<div className='form-row'>
-					<div className='col-6'>
-						<label>Titulo</label>
-						<input
-							type='text'
-							name='titulo'
-							className='form-control'
-							onChange={handleChange}
-						/>
-					</div>
-					<div className='col-3'>
-						<label>Stock</label>
-						<input
-							type='number'
-							name='stock'
-							className='form-control'
-							onChange={handleChange}
-						/>
-					</div>
-					<div className='col-3'>
-						<label>Precio</label>
-						<input
-							type='number'
-							name='precio'
-							className='form-control'
-							onChange={handleChange}
-						/>
-					</div>
+					{[
+						{
+							titulo: 'Titulo',
+							type: 'text',
+							name: 'titulo',
+							containerClass: 'col-6'
+						},
+						{
+							titulo: 'Stock',
+							type: 'number',
+							name: 'stock',
+							containerClass: 'col-3'
+						},
+						{
+							titulo: 'Precio',
+							type: 'number',
+							name: 'precio',
+							containerClass: 'col-3'
+						}
+					].map(e => (
+						<InputFormulario titulo={e.titulo} type={e.type} name={e.name} containterClass={e.containerClass} />
+					))}
 				</div>
 				<div className='form-group mt-3'>
 					<label>Descuento promoción </label>{' '}
 					<select onChange={handleChange} defaultValue={''} name='descuento'>
 						{'0|5|10|15|20|25|30|35|40|45|50'.split('|').map(descuento => (
-							<option value={descuento}>{descuento}%</option>
+							<option key={descuento} value={descuento}>
+								{descuento}%
+							</option>
 						))}
 					</select>
 				</div>
@@ -453,7 +350,7 @@ const AltaProducto = () => {
 						<input
 							className='form-check-input'
 							type='radio'
-							name='tipo_producto'
+							checked={tipoProducto === tiposProducto.LIBRO}
 							value='LIBRO'
 							onChange={e => leerTipoProducto(e)}
 						/>
@@ -464,14 +361,16 @@ const AltaProducto = () => {
 						<input
 							className='form-check-input'
 							type='radio'
-							name='tipo_producto'
+							checked={tipoProducto === tiposProducto.FOTOCOPIA}
 							value='FOTOCOPIA'
 							onChange={e => leerTipoProducto(e)}
 						/>
 						<label className='form-check-label'>Fotocopia</label>
 					</div>
 				</div>
-				<FormularioRestante />
+
+				{formularioRestante()}
+
 				<input
 					type='submit'
 					className='font-weight-bold text-uppercase mt-5 btn btn-primary btn-block py-3'

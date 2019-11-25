@@ -19,6 +19,7 @@ export default function(state = initialState, action) {
 					...state,
 					items: autores
 				};
+			break;
 
 		case CREATE_AUTOR:
 			const autorCreado = action.payload.autorCreado;
@@ -28,6 +29,7 @@ export default function(state = initialState, action) {
 					...state,
 					items: [...state.items, autorCreado]
 				};
+			break;
 
 		case DELETE_AUTOR:
 			const idBorrado = action.payload.idBorrado;

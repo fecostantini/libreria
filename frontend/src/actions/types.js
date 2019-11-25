@@ -5,9 +5,15 @@ export const DELETE_AUTOR = 'DELETE_AUTOR';
 export const UPDATE_AUTOR = 'DELETE_AUTOR';
 
 // acciones de categoria
-
 export const FETCH_CATEGORIAS = 'FETCH_CATEGORIAS';
 export const CREATE_CATEGORIA = 'CREATE_CATEGORIA';
 
+// acciones de saga
+export const FETCH_SAGAS = 'FETCH_SAGAS';
+export const CREATE_SAGA = 'CREATE_SAGA';
+
 // status global de la ultima request que se realizó al backend
 export const UPDATE_LAST_REQUEST_STATUS = 'UPDATE_LAST_REQUEST_STATUS';
+
+// producto que se maneja en GestionProductos
+export const UPDATE_PRODUCTO_FORMULARIO = 'UPDATE_PRODUCTO_FORMULARIO';

@@ -1,3 +1,13 @@
+/*    
+    ########    ###    ########  ##          ###     ######  
+      ##      ## ##   ##     ## ##         ## ##   ##    ## 
+      ##     ##   ##  ##     ## ##        ##   ##  ##       
+      ##    ##     ## ########  ##       ##     ##  ######  
+      ##    ######### ##     ## ##       #########       ## 
+      ##    ##     ## ##     ## ##       ##     ## ##    ## 
+      ##    ##     ## ########  ######## ##     ##  ######                        
+*/                               
+                              
 CREATE TABLE "promocion" (
 "id_promocion" serial not null,
 "nombre_promocion" varchar not null,
@@ -155,17 +165,20 @@ CREATE TABLE "productoxcarrito" (
 "id_producto" integer,
 "id_carrito" smallint,
 constraint PK_productoxcarrito primary key ("id_producto","id_carrito"),
+-- La herencia no permite hacer referencia a la tabla producto. (select * from only producto) --> devuelve vacío
 -- constraint FK_producto_carrito foreign key ("id_producto") references "producto"("id_producto"),
 Constraint FK_carrito_producto foreign key ("id_carrito") references "carrito"("id_carrito")
 );
 
-
-
-
-
-
-
-
+/*    
+    ######## ########  ####  ######    ######   ######## ########   ######  
+      ##    ##     ##  ##  ##    ##  ##    ##  ##       ##     ## ##    ## 
+      ##    ##     ##  ##  ##        ##        ##       ##     ## ##       
+      ##    ########   ##  ##   #### ##   #### ######   ########   ######  
+      ##    ##   ##    ##  ##    ##  ##    ##  ##       ##   ##         ## 
+      ##    ##    ##   ##  ##    ##  ##    ##  ##       ##    ##  ##    ## 
+      ##    ##     ## ####  ######    ######   ######## ##     ##  ######              
+*/    
 
 CREATE OR REPLACE FUNCTION uppercase_promocion() RETURNS trigger AS $uppercase_promocion$
     BEGIN        
@@ -176,7 +189,6 @@ $uppercase_promocion$ LANGUAGE plpgsql;
 
 CREATE TRIGGER uppercase_promocion_trigger BEFORE INSERT OR UPDATE ON promocion
     FOR EACH ROW EXECUTE PROCEDURE uppercase_promocion();
---------
 
 
 CREATE OR REPLACE FUNCTION uppercase_producto() RETURNS trigger AS $uppercase_producto$
@@ -188,7 +200,6 @@ $uppercase_producto$ LANGUAGE plpgsql;
 
 CREATE TRIGGER uppercase_producto_trigger BEFORE INSERT OR UPDATE ON producto
     FOR EACH ROW EXECUTE PROCEDURE uppercase_producto();
--------
 
 
 CREATE OR REPLACE FUNCTION uppercase_editorial() RETURNS trigger AS $uppercase_editorial$
@@ -200,7 +211,6 @@ $uppercase_editorial$ LANGUAGE plpgsql;
 
 CREATE TRIGGER uppercase_editorial_trigger BEFORE INSERT OR UPDATE ON editorial
     FOR EACH ROW EXECUTE PROCEDURE uppercase_editorial();
-------------
 
 
 CREATE OR REPLACE FUNCTION uppercase_saga() RETURNS trigger AS $uppercase_saga$
@@ -212,7 +222,6 @@ $uppercase_saga$ LANGUAGE plpgsql;
 
 CREATE TRIGGER uppercase_saga_trigger BEFORE INSERT OR UPDATE ON saga
     FOR EACH ROW EXECUTE PROCEDURE uppercase_saga();
--------------
 
 
 CREATE OR REPLACE FUNCTION uppercase_libro() RETURNS trigger AS $uppercase_libro$
@@ -227,7 +236,6 @@ $uppercase_libro$ LANGUAGE plpgsql;
 
 CREATE TRIGGER uppercase_libro_trigger BEFORE INSERT OR UPDATE ON libro
     FOR EACH ROW EXECUTE PROCEDURE uppercase_libro();
------------
 
 
 CREATE OR REPLACE FUNCTION uppercase_autor() RETURNS trigger AS $uppercase_autor$
@@ -240,7 +248,6 @@ $uppercase_autor$ LANGUAGE plpgsql;
 
 CREATE TRIGGER uppercase_autor_trigger BEFORE INSERT OR UPDATE ON autor
     FOR EACH ROW EXECUTE PROCEDURE uppercase_autor();
-------------
 
 
 CREATE OR REPLACE FUNCTION uppercase_categoria() RETURNS trigger AS $uppercase_categoria$
@@ -252,7 +259,6 @@ $uppercase_categoria$ LANGUAGE plpgsql;
 
 CREATE TRIGGER uppercase_categoria_trigger BEFORE INSERT OR UPDATE ON categoria
     FOR EACH ROW EXECUTE PROCEDURE uppercase_categoria();
----------------
 
 
 CREATE OR REPLACE FUNCTION uppercase_usuario() RETURNS trigger AS $uppercase_usuario$
@@ -266,8 +272,16 @@ $uppercase_usuario$ LANGUAGE plpgsql;
 
 CREATE TRIGGER uppercase_usuario_trigger BEFORE INSERT OR UPDATE ON usuario
     FOR EACH ROW EXECUTE PROCEDURE uppercase_usuario();
-------------------
 
+/*    
+    ######## ##     ## ##    ##  ######  ####  #######  ##    ## ########  ######  
+    ##       ##     ## ###   ## ##    ##  ##  ##     ## ###   ## ##       ##    ## 
+    ##       ##     ## ####  ## ##        ##  ##     ## ####  ## ##       ##       
+    ######   ##     ## ## ## ## ##        ##  ##     ## ## ## ## ######    ######  
+    ##       ##     ## ##  #### ##        ##  ##     ## ##  #### ##             ## 
+    ##       ##     ## ##   ### ##    ##  ##  ##     ## ##   ### ##       ##    ## 
+    ##        #######  ##    ##  ######  ####  #######  ##    ## ########  ######                 
+*/  
 
 CREATE OR REPLACE PROCEDURE new_libro (isbn integer , idioma varchar,titulo varchar,precio real, edicion varchar, descripcion varchar, id_editorial integer,autores varchar[], categorias varchar[])
 AS $$
@@ -291,13 +305,24 @@ END LOOP;
 END $$
 LANGUAGE plpgsql;
 
+
 CREATE OR REPLACE PROCEDURE new_pedido (isbn integer , cantidad integer)
 AS $$
 DECLARE
 BEGIN
 insert into pedido ("isbn","cantidad","fecha_pedido") values (isbn,cantidad,now());
 END $$
-LANGUAGE plpgsql;-- AUTORES
+LANGUAGE plpgsql;/*    
+    ########     ###    ########  #######   ######  
+    ##     ##   ## ##      ##    ##     ## ##    ## 
+    ##     ##  ##   ##     ##    ##     ## ##       
+    ##     ## ##     ##    ##    ##     ##  ######  
+    ##     ## #########    ##    ##     ##       ## 
+    ##     ## ##     ##    ##    ##     ## ##    ## 
+    ########  ##     ##    ##     #######   ######                        
+*/ 
+
+-- AUTORES
 INSERT INTO autor("autor","nacionalidad") VALUES('george r. r. martin','Estados unidos');
 INSERT INTO autor("autor","nacionalidad") VALUES('j. r. r. tolkien','sudafrica');
 INSERT INTO autor("autor","nacionalidad") VALUES('j. k. rowling','inglaterra');

@@ -15,6 +15,8 @@ export default function(state = initialState, action) {
 					items: categorias
 				};
 
+			break;
+
 		case CREATE_CATEGORIA:
 			const categoriaCreada = action.payload.categoriaCreada;
 
@@ -23,6 +25,7 @@ export default function(state = initialState, action) {
 					...state,
 					items: [...state.items, categoriaCreada]
 				};
+			break;
 
 		default:
 			return state;

@@ -27,7 +27,7 @@ const Administrar = () => (
 			<Switch>
 				<Route
 					path='/administrar/gestion_productos'
-					component={GestionProductos}
+					render={() => <GestionProductos />}
 				/>
 				<Route
 					path='/administrar/gestion_usuarios'

@@ -4,6 +4,9 @@ import { connectRouter } from 'connected-react-router';
 
 import autoresReducer from './autorReducer';
 import categoriaReducer from './categoriaReducer';
+import sagaReducer from './sagaReducer';
+
+import productoReducer from './productoReducer';
 import ultimaRequestReducer from './ultimaRequestReducer';
 
 const createRootReducer = history =>
@@ -11,6 +14,8 @@ const createRootReducer = history =>
 		router: connectRouter(history),
 		autores: autoresReducer,
 		categorias: categoriaReducer,
+		sagas: sagaReducer,
+		producto: productoReducer,
 		ultimaRequest: ultimaRequestReducer
 	});
 

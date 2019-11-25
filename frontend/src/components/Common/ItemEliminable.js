@@ -1,6 +1,6 @@
 import React from 'react';
 
-let ItemEliminable = ({ titulo, id, borrarElemento }) => {
+let ItemEliminable = ({ titulo, id, name, borrarElemento }) => {
 	return (
 		<div className='col-auto'>
 			<h5>
@@ -10,7 +10,7 @@ let ItemEliminable = ({ titulo, id, borrarElemento }) => {
 					<a
 						className='text-dark'
 						style={{ textDecoration: 'none', cursor: 'pointer' }}
-						onClick={() => borrarElemento(id)}
+						onClick={() => borrarElemento(id, name)}
 					>
 						&times;
 					</a>
