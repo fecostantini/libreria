@@ -116,6 +116,7 @@ constraint PK_sugerencia primary key ("id_sugerencia")
 
 CREATE TABLE "usuario" (
 "id_usuario" serial not null,
+"id_facebook" varchar default null,
 "mail" varchar not null,
 "nombre" varchar,
 "apellido" varchar,
