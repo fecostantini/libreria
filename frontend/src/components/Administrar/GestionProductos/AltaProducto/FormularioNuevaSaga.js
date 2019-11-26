@@ -1,42 +1,44 @@
 import React, { useState } from 'react';
 import Error from '../../../Common/Error';
-import { createCategoria } from '../../../../actions/categoriaActions';
+import { createSaga } from '../../../../actions/sagaActions';
 import { useDispatch } from 'react-redux';
 
-let FormularioNuevaCategoria = () => {
+let FormularioNuevaSaga = () => {
 	const dispatch = useDispatch();
-	const [nuevaCategoria, setNuevaCategoria] = useState({
-		nombre_categoria: ''
+	const [nuevaSaga, setNuevaSaga] = useState({
+		nombre_saga: '',
+		stock_saga: 0
 	});
 	const [error, setError] = useState({
 		activo: false,
 		mensaje: ''
 	});
 
-	const crearNuevaCategoria = () => {
-		if (nuevaCategoria.nombre_categoria) {
-			const nombreCategoriaUpper = nuevaCategoria.nombre_categoria.toUpperCase();
-			createCategoria(dispatch, { nombre_categoria: nombreCategoriaUpper });
+	// crea una nueva saga con el stock_saga en 0 por defecto
+	const crearNuevaSaga = () => {
+		if (nuevaSaga.nombre_saga) {
+			const nombreSagaUpper = nuevaSaga.nombre_saga.toUpperCase();
+			createSaga(dispatch, { nombre_saga: nombreSagaUpper, stock_saga: nuevaSaga.stock_saga });
 		} else
 			setError({
 				activo: true,
-				mensaje: 'Debe ingresar el nombre de la categoría'
+				mensaje: 'Debe ingresar el nombre de la saga'
 			});
 	};
 
 	return (
 		<div className='form-row'>
 			<div className='col-12'>{error.activo ? <Error mensaje={error.mensaje} /> : null}</div>
-			<legend className='text-center'>Ingresar una nueva categoria</legend>
+			<legend className='text-center'>Ingresar una nueva saga</legend>
 			<div className='col-lg-8 col-sm-6'>
 				<label>Nombre:</label>
 				<input
 					type='text'
-					name='nombre_categoria'
-					value={nuevaCategoria.nombre_categoria}
+					name='nombre_saga'
+					value={nuevaSaga.nombre_saga}
 					className='form-control'
 					onChange={e => {
-						setNuevaCategoria({ nombre_categoria: e.target.value });
+						setNuevaSaga({ nombre_saga: e.target.value, stock_saga: nuevaSaga.stock_saga });
 					}}
 				/>
 			</div>
@@ -49,13 +51,13 @@ let FormularioNuevaCategoria = () => {
 				<button
 					type='button'
 					className='font-weight-bold text-uppercase btn btn-primary btn-block'
-					onClick={crearNuevaCategoria}
+					onClick={crearNuevaSaga}
 				>
-					Crear nueva categoria
+					Crear nueva saga
 				</button>
 			</div>
 		</div>
 	);
 };
 
-export default FormularioNuevaCategoria;
+export default FormularioNuevaSaga;

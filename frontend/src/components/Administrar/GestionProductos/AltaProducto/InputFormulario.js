@@ -28,8 +28,23 @@ let InputFormulario = ({ titulo, name, type, containterClass }) => {
 					onChange={handleChange}
 				></textarea>
 			);
-		else
-			return <input type={type} name={name} value={producto[name]} className='form-control' onChange={handleChange} />;
+		else {
+			if (type === 'number')
+				return (
+					<input
+						type={type}
+						name={name}
+						value={producto[name]}
+						className='form-control'
+						onChange={handleChange}
+						min='0'
+					/>
+				);
+			else
+				return (
+					<input type={type} name={name} value={producto[name]} className='form-control' onChange={handleChange} />
+				);
+		}
 	};
 	return (
 		<div className={containterClass}>

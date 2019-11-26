@@ -12,6 +12,10 @@ export const CREATE_CATEGORIA = 'CREATE_CATEGORIA';
 export const FETCH_SAGAS = 'FETCH_SAGAS';
 export const CREATE_SAGA = 'CREATE_SAGA';
 
+// acciones de editorial
+export const FETCH_EDITORIALES = 'FETCH_EDITORIALES';
+export const CREATE_EDITORIAL = 'CREATE_EDITORIAL';
+
 // status global de la ultima request que se realizó al backend
 export const UPDATE_LAST_REQUEST_STATUS = 'UPDATE_LAST_REQUEST_STATUS';
 

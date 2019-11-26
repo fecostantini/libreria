@@ -9,7 +9,7 @@ export const estadoInicialProducto = {
 	isbn: 0,
 	idioma: '',
 	edicion: '',
-	editorial: '',
+	editorial: null,
 	saga: null,
 	autores: [],
 	categorias: []

@@ -5,15 +5,26 @@ import Error from '../../../Common/Error';
 import ItemEliminable from '../../../Common/ItemEliminable';
 import FormularioNuevoAutor from './FormularioNuevoAutor';
 import FormularioNuevaCategoria from './FormularioNuevaCategoria';
+import FormularioNuevaSaga from './FormularioNuevaSaga';
+import FormularioNuevaEditorial from './FormularioNuevaEditorial';
 import InputFormulario from './InputFormulario';
 
 import estados from '../../../../estados';
 import { fetchAutores } from '../../../../actions/autorActions';
 import { fetchCategorias } from '../../../../actions/categoriaActions';
 import { fetchSagas } from '../../../../actions/sagaActions';
+import { fetchEditoriales } from '../../../../actions/editorialActions';
 import { updateProducto } from '../../../../actions/productoActions';
 import { estadoInicialProducto } from '../../../../reducers/productoReducer';
 import { useSelector, useDispatch } from 'react-redux';
+
+const ordenar = campo => {
+	return (a, b) => {
+		if (a[campo] > b[campo]) return 1;
+		if (a[campo] < b[campo]) return -1;
+		return 0;
+	};
+};
 
 const tiposProducto = {
 	FOTOCOPIA: 'FOTOCOPIA',
@@ -25,9 +36,23 @@ const AltaProducto = () => {
 
 	// redux
 	const producto = useSelector(state => state.producto);
-	const todosLosAutores = useSelector(state => state.autores.items);
-	const todasLasCategorias = useSelector(state => state.categorias.items);
-	const todasLasSagas = useSelector(state => state.sagas.items);
+	const todasLasEditoriales = useSelector(state =>
+		state.editoriales.items
+			.concat({ nombre_editorial: '-SELECCIONE UNA EDITORIAL -', id_editorial: 0 })
+			.sort(ordenar('nombre_editorial'))
+	);
+	const todosLosAutores = useSelector(state =>
+		state.autores.items.concat({ autor: '-SELECCIONE LOS AUTORES-', id_autor: 0 }).sort(ordenar('autor'))
+	);
+	const todasLasCategorias = useSelector(state =>
+		state.categorias.items
+			.concat({ nombre_categoria: '-SELECCIONE LAS CATEGORIAS -', id_categoria: 0 })
+			.sort(ordenar('nombre_categoria'))
+	);
+	const todasLasSagas = useSelector(state =>
+		state.sagas.items.concat({ nombre_saga: '-NO PERTENECE A NINGUNA-', id_saga: 0 }).sort(ordenar('nombre_saga'))
+	);
+
 	const statusUltimaPeticion = useSelector(state => state.ultimaRequest.status);
 
 	const [error, setError] = useState({ activo: false, mensaje: '' }); // error en el formulario de producto
@@ -36,12 +61,15 @@ const AltaProducto = () => {
 	// determinan si se muestran o no los sub-formularios
 	const [formularioNuevoAutor, setFormularioNuevoAutor] = useState(false);
 	const [formularioNuevaCategoria, setFormularioNuevaCategoria] = useState(false);
+	const [formularioNuevaSaga, setFormularioNuevaSaga] = useState(false);
+	const [formularioNuevaEditorial, setFormularioNuevaEditorial] = useState(false);
 
 	// cargar los autores y las categorias cuando cargue la página
 	useEffect(() => {
 		fetchAutores(dispatch);
 		fetchCategorias(dispatch);
 		fetchSagas(dispatch);
+		fetchEditoriales(dispatch);
 	}, []);
 
 	// cada vez que se actualice el estado de la última petición se mostrará un mensaje
@@ -61,6 +89,8 @@ const AltaProducto = () => {
 			swalConfig.title = 'La creación se realizó con éxito!';
 			setFormularioNuevoAutor(false);
 			setFormularioNuevaCategoria(false);
+			setFormularioNuevaSaga(false);
+			setFormularioNuevaEditorial(false);
 		} else if (statusUltimaPeticion === estados.YA_EXISTE) swalConfig.title = 'El elemento que desea crear ya existe';
 		else if (statusUltimaPeticion === estados.CONEXION_FALLIDA)
 			swalConfig.title = 'Falló la conexión a la Base de Datos';
@@ -157,7 +187,8 @@ const AltaProducto = () => {
 				producto.edicion &&
 				producto.editorial &&
 				producto.autores.length &&
-				producto.categorias.length;
+				producto.categorias.length &&
+				producto.editorial.id_editorial; // id_editorial !== 0  (la opción default tiene id_editorial === 0)
 
 			if (!informacionLibroSeteada) {
 				setError({
@@ -178,6 +209,11 @@ const AltaProducto = () => {
 			updateProducto(dispatch, {
 				...producto,
 				[name]: todasLasSagas.find(saga => saga.id_saga === parseInt(value, 10))
+			});
+		else if (name === 'editorial')
+			updateProducto(dispatch, {
+				...producto,
+				[name]: todasLasEditoriales.find(editorial => editorial.id_editorial === parseInt(value, 10))
 			});
 		else agregarElemento(value, name);
 	};
@@ -207,36 +243,56 @@ const AltaProducto = () => {
 						))}
 					</div>
 
-					{[{ titulo: 'Editorial', type: 'text', name: 'editorial' }].map(e => (
-						<InputFormulario titulo={e.titulo} type={e.type} name={e.name} containterClass='form-group' />
-					))}
-
-					<div className='form-group'>
-						<hr className='mt-4' />
-						<label>Autores</label>{' '}
-						<select onChange={handleChange} name='autores'>
-							{todosLosAutores
-								.sort((a, b) => {
-									if (a.autor > b.autor) return 1;
-									if (a.autor < b.autor) return -1;
-									return 0;
-								})
-								.map(autor => (
+					<hr className='mt-4' />
+					<div className='form-row'>
+						<div className='col-lg-9 col-sm-12'>
+							<label>Editorial</label>{' '}
+							<select onChange={handleChange} name='editorial'>
+								{todasLasEditoriales.map(editorial => (
+									<option value={editorial.id_editorial} key={editorial.id_editorial}>
+										{editorial.nombre_editorial}
+									</option>
+								))}
+							</select>
+						</div>{' '}
+						<div className='col-lg-3 col-sm-12'>
+							<label>
+								<input
+									type='checkbox'
+									checked={formularioNuevaEditorial}
+									onChange={e => {
+										setFormularioNuevaEditorial(e.target.checked);
+									}}
+								/>{' '}
+								No encuentro la editorial
+							</label>
+						</div>
+					</div>
+					{formularioNuevaEditorial ? <FormularioNuevaEditorial /> : null}
+					<hr className='mt-4' />
+					<div className='form-row'>
+						<div className='col-lg-9 col-sm-12'>
+							<label>Autores</label>{' '}
+							<select onChange={handleChange} name='autores'>
+								{todosLosAutores.map(autor => (
 									<option value={autor.id_autor} key={autor.id_autor}>
 										{autor.autor}
 									</option>
 								))}
-						</select>{' '}
-						<label>
-							<input
-								type='checkbox'
-								checked={formularioNuevoAutor}
-								onChange={e => {
-									setFormularioNuevoAutor(e.target.checked);
-								}}
-							/>{' '}
-							No encuentro el autor
-						</label>
+							</select>
+						</div>{' '}
+						<div className='col-lg-3 col-sm-12'>
+							<label>
+								<input
+									type='checkbox'
+									checked={formularioNuevoAutor}
+									onChange={e => {
+										setFormularioNuevoAutor(e.target.checked);
+									}}
+								/>{' '}
+								No encuentro el autor
+							</label>
+						</div>
 					</div>
 					<div className='row'>
 						{producto.autores.map(autor => (
@@ -244,32 +300,30 @@ const AltaProducto = () => {
 						))}
 					</div>
 					{formularioNuevoAutor ? <FormularioNuevoAutor /> : null}
-					<div className='form-group'>
-						<hr className='mt-4' />
-						<label>Categorías</label>{' '}
-						<select onChange={handleChange} name='categorias'>
-							{todasLasCategorias
-								.sort((a, b) => {
-									if (a.nombre_categoria > b.nombre_categoria) return 1;
-									if (a.nombre_categoria < b.nombre_categoria) return -1;
-									return 0;
-								})
-								.map(categoria => (
+					<hr className='mt-4' />
+					<div className='form-row'>
+						<div className='col-lg-9 col-sm-12'>
+							<label>Categorías</label>{' '}
+							<select onChange={handleChange} name='categorias'>
+								{todasLasCategorias.map(categoria => (
 									<option value={categoria.id_categoria} key={categoria.id_categoria}>
 										{categoria.nombre_categoria}
 									</option>
 								))}
-						</select>{' '}
-						<label>
-							<input
-								type='checkbox'
-								checked={formularioNuevaCategoria}
-								onChange={e => {
-									setFormularioNuevaCategoria(e.target.checked);
-								}}
-							/>{' '}
-							No encuentro la categoría
-						</label>
+							</select>
+						</div>{' '}
+						<div className='col-lg-3 col-sm-12'>
+							<label>
+								<input
+									type='checkbox'
+									checked={formularioNuevaCategoria}
+									onChange={e => {
+										setFormularioNuevaCategoria(e.target.checked);
+									}}
+								/>{' '}
+								No encuentro la categoría
+							</label>
+						</div>
 					</div>
 					<div className='row'>
 						{producto.categorias.map(categoria => (
@@ -282,24 +336,32 @@ const AltaProducto = () => {
 						))}
 					</div>
 					{formularioNuevaCategoria ? <FormularioNuevaCategoria /> : null}
-					<div className='form-group'>
-						<hr className='mt-4' />
-						<label>Saga</label>{' '}
-						<select onChange={handleChange} name='saga'>
-							{[...todasLasSagas]
-								.concat({ nombre_saga: '- NO PERTENECE A NINGUNA -', id_saga: 0 })
-								.sort((a, b) => {
-									if (a.nombre_saga > b.nombre_saga) return 1;
-									if (a.nombre_saga < b.nombre_saga) return -1;
-									return 0;
-								})
-								.map(saga => (
+					<hr className='mt-4' />
+					<div className='form-row'>
+						<div className='col-lg-9 col-sm-12'>
+							<label>Saga</label>{' '}
+							<select onChange={handleChange} name='saga'>
+								{todasLasSagas.map(saga => (
 									<option value={saga.id_saga} key={saga.id_saga}>
 										{saga.nombre_saga}
 									</option>
 								))}
-						</select>
+							</select>{' '}
+						</div>
+						<div className='col-lg-3 col-sm-12'>
+							<label>
+								<input
+									type='checkbox'
+									checked={formularioNuevaSaga}
+									onChange={e => {
+										setFormularioNuevaSaga(e.target.checked);
+									}}
+								/>{' '}
+								No encuentro la saga
+							</label>
+						</div>
 					</div>
+					{formularioNuevaSaga ? <FormularioNuevaSaga /> : null}
 				</Fragment>
 			);
 		} else if (tipoProducto === tiposProducto.FOTOCOPIA) return <Fragment>{inputDescripcion()}</Fragment>;

@@ -1,42 +1,43 @@
 import React, { useState } from 'react';
 import Error from '../../../Common/Error';
-import { createCategoria } from '../../../../actions/categoriaActions';
+import { createEditorial } from '../../../../actions/editorialActions';
 import { useDispatch } from 'react-redux';
 
-let FormularioNuevaCategoria = () => {
+let FormularioNuevaEditorial = () => {
 	const dispatch = useDispatch();
-	const [nuevaCategoria, setNuevaCategoria] = useState({
-		nombre_categoria: ''
+	const [nuevaEditorial, setNuevaEditorial] = useState({
+		nombre_editorial: ''
 	});
 	const [error, setError] = useState({
 		activo: false,
 		mensaje: ''
 	});
 
-	const crearNuevaCategoria = () => {
-		if (nuevaCategoria.nombre_categoria) {
-			const nombreCategoriaUpper = nuevaCategoria.nombre_categoria.toUpperCase();
-			createCategoria(dispatch, { nombre_categoria: nombreCategoriaUpper });
+	// crea una nueva saga con el stock_saga en 0 por defecto
+	const crearNuevaEditorial = () => {
+		if (nuevaEditorial.nombre_editorial) {
+			const nombreEditorialUpper = nuevaEditorial.nombre_editorial.toUpperCase();
+			createEditorial(dispatch, { nombre_editorial: nombreEditorialUpper });
 		} else
 			setError({
 				activo: true,
-				mensaje: 'Debe ingresar el nombre de la categoría'
+				mensaje: 'Debe ingresar el nombre de la editorial'
 			});
 	};
 
 	return (
 		<div className='form-row'>
 			<div className='col-12'>{error.activo ? <Error mensaje={error.mensaje} /> : null}</div>
-			<legend className='text-center'>Ingresar una nueva categoria</legend>
+			<legend className='text-center'>Ingresar una nueva editorial</legend>
 			<div className='col-lg-8 col-sm-6'>
 				<label>Nombre:</label>
 				<input
 					type='text'
-					name='nombre_categoria'
-					value={nuevaCategoria.nombre_categoria}
+					name='nombre_editorial'
+					value={nuevaEditorial.nombre_editorial}
 					className='form-control'
 					onChange={e => {
-						setNuevaCategoria({ nombre_categoria: e.target.value });
+						setNuevaEditorial({ nombre_editorial: e.target.value });
 					}}
 				/>
 			</div>
@@ -49,13 +50,13 @@ let FormularioNuevaCategoria = () => {
 				<button
 					type='button'
 					className='font-weight-bold text-uppercase btn btn-primary btn-block'
-					onClick={crearNuevaCategoria}
+					onClick={crearNuevaEditorial}
 				>
-					Crear nueva categoria
+					Crear nueva editorial
 				</button>
 			</div>
 		</div>
 	);
 };
 
-export default FormularioNuevaCategoria;
+export default FormularioNuevaEditorial;
