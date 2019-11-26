@@ -63,42 +63,29 @@ INSERT INTO promocion("nombre_promocion","descuento","fecha_vencimiento") VALUES
 
 
 -- SAGAS
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Harry Potter', 1);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Percy Jackson y los dioses del Olimpo', 1);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Los juegos del hambre', 1);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('El señor de los anillos', 1);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Guerreros', 1);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('El diario de un chico en apuros', 1);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Canción del hielo y fuego', 1);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Los héroes del olimpo', 1);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Las crónicas de Narnia', 1);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('The Maze Runner', 1);
+INSERT INTO saga("nombre_saga","stock_saga") VALUES('Harry Potter', 4);
+INSERT INTO saga("nombre_saga","stock_saga") VALUES('Percy Jackson y los dioses del Olimpo', 5);
+INSERT INTO saga("nombre_saga","stock_saga") VALUES('Los juegos del hambre', 8);
+INSERT INTO saga("nombre_saga","stock_saga") VALUES('El señor de los anillos', 8);
+INSERT INTO saga("nombre_saga","stock_saga") VALUES('Guerreros', 7);
+INSERT INTO saga("nombre_saga","stock_saga") VALUES('El diario de un chico en apuros', 4);
+INSERT INTO saga("nombre_saga","stock_saga") VALUES('Canción del hielo y fuego', 9);
+INSERT INTO saga("nombre_saga","stock_saga") VALUES('Los héroes del olimpo', 12);
+INSERT INTO saga("nombre_saga","stock_saga") VALUES('Las crónicas de Narnia', 4);
+INSERT INTO saga("nombre_saga","stock_saga") VALUES('The Maze Runner', 6);
 
 
 -- LIBROS
-call new_libro(1,'inglés','Juego de Tronos', 100, 'primera','descripcion1', 1, array['george r. r. martin'], array['novela','fantasia']);
-call new_libro(2,'español','El hobbit', 200, 'segunda','descripcion2',2, array['j. r. r. tolkien'], array['novela','terror']);
-call new_libro(3,'portugués','Harry Potter y la Piedra Filosofal', 300, 'tercera','descripcion3',3, array['j. k. rowling'], array['novela','terror']);
-call new_libro(4,'italiano','El Aleph', 400, 'cuarta','descripcion4',4, array['jorge luis borges'], array['novela','terror']);
-call new_libro(5,'aleman','Gran Hermano', 500, 'quinta','descripcion5',5, array['george orwell','agatha christie'], array['novela','terror']);
-call new_libro(6,'francés','El código Da Vinci', 600, 'sexta','descripcion6',6, array['dan brown','stephen king'], array['novela','thriller']);
-call new_libro(7,'guaraní','Yo robot', 700, 'séptima','descripcion7',7, array['isaac asimov'], array['novela','fantasia', 'ciencia ficcion']);
-call new_libro(8,'chino','Cien años de soledad', 800, 'octava','descripcion8',8, array['gabriel garcia marquez'], array['biografia']);
-call new_libro(9,'japonés','La carta robada', 900, 'novena','descripcion9',9, array['edgar allan poe'], array['aventuras']);
-call new_libro(10,'sueco','Las venas abiertas de América Latina', 1000, 'décima','descripcion10',10, array['eduardo galeano','gabriel garcia marquez'], array['novela','religioso', 'poesia']);
-
-
--- PEDIDOS
-INSERT INTO pedido("cantidad", "fecha_pedido", "anticipo_pagado", "pedido_aceptado", "pedido_entregado", "fecha_llegada", "isbn") VALUES(1, '2019-11-30', false, false, false, '2019-12-25', 1);
-INSERT INTO pedido("cantidad", "fecha_pedido", "anticipo_pagado", "pedido_aceptado", "pedido_entregado", "fecha_llegada", "isbn") VALUES(1, '2019-11-30', false, false, false, '2019-12-25', 2);
-INSERT INTO pedido("cantidad", "fecha_pedido", "anticipo_pagado", "pedido_aceptado", "pedido_entregado", "fecha_llegada", "isbn") VALUES(1, '2019-11-30', false, false, false, '2019-12-25', 3);
-INSERT INTO pedido("cantidad", "fecha_pedido", "anticipo_pagado", "pedido_aceptado", "pedido_entregado", "fecha_llegada", "isbn") VALUES(1, '2019-11-30', false, false, false, '2019-12-25', 4);
-INSERT INTO pedido("cantidad", "fecha_pedido", "anticipo_pagado", "pedido_aceptado", "pedido_entregado", "fecha_llegada", "isbn") VALUES(1, '2019-11-30', false, false, false, '2019-12-25', 5);
-INSERT INTO pedido("cantidad", "fecha_pedido", "anticipo_pagado", "pedido_aceptado", "pedido_entregado", "fecha_llegada", "isbn") VALUES(1, '2019-11-30', false, false, false, '2019-12-25', 6);
-INSERT INTO pedido("cantidad", "fecha_pedido", "anticipo_pagado", "pedido_aceptado", "pedido_entregado", "fecha_llegada", "isbn") VALUES(1, '2019-11-30', false, false, false, '2019-12-25', 7);
-INSERT INTO pedido("cantidad", "fecha_pedido", "anticipo_pagado", "pedido_aceptado", "pedido_entregado", "fecha_llegada", "isbn") VALUES(1, '2019-11-30', false, false, false, '2019-12-25', 8);
-INSERT INTO pedido("cantidad", "fecha_pedido", "anticipo_pagado", "pedido_aceptado", "pedido_entregado", "fecha_llegada", "isbn") VALUES(1, '2019-11-30', false, false, false, '2019-12-25', 9);
-INSERT INTO pedido("cantidad", "fecha_pedido", "anticipo_pagado", "pedido_aceptado", "pedido_entregado", "fecha_llegada", "isbn") VALUES(1, '2019-11-30', false, false, false, '2019-12-25', 10);
+call new_libro(1,'inglés','Juego de Tronos', 4, 100, 'primera','descripcion1', 1, array['george r. r. martin'], array['novela','fantasia']);
+call new_libro(2,'español','El hobbit', 5, 200, 'segunda','descripcion2',2, array['j. r. r. tolkien'], array['novela','terror']);
+call new_libro(3,'portugués','Harry Potter y la Piedra Filosofal', 6, 300, 'tercera','descripcion3',3, array['j. k. rowling'], array['novela','terror']);
+call new_libro(4,'italiano','El Aleph', 9, 400, 'cuarta','descripcion4',4, array['jorge luis borges'], array['novela','terror']);
+call new_libro(5,'aleman','Gran Hermano', 8, 500, 'quinta','descripcion5',5, array['george orwell','agatha christie'], array['novela','terror']);
+call new_libro(6,'francés','El código Da Vinci', 6, 600, 'sexta','descripcion6',6, array['dan brown','stephen king'], array['novela','thriller']);
+call new_libro(7,'guaraní','Yo robot', 5, 700, 'séptima','descripcion7',7, array['isaac asimov'], array['novela','fantasia', 'ciencia ficcion']);
+call new_libro(8,'chino','Cien años de soledad', 5, 800, 'octava','descripcion8',8, array['gabriel garcia marquez'], array['biografia']);
+call new_libro(9,'japonés','La carta robada', 7, 900, 'novena','descripcion9',9, array['edgar allan poe'], array['aventuras']);
+call new_libro(10,'sueco','Las venas abiertas de América Latina', 10, 1000, 'décima','descripcion10',10, array['eduardo galeano','gabriel garcia marquez'], array['novela','religioso', 'poesia']);
 
 
 -- VALORACION
@@ -114,16 +101,16 @@ INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Muy malo. No
 INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Genial!!', 10);
 
 -- FOTOCOPIAS
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Cálculo I', 1, 100, 'Apuntes de Cálculo I de primer año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Lógica y Álgebra', 1, 200, 'Apuntes de Lógica y Álgebra de primer año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Sistemas y Organizaciones', 1, 300, 'Apuntes de Sistemas y Organizaciones de primer año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Introducción a la Programación', 1, 400, 'Apuntes de Introducción a la Programación de primer año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Cálculo II', 2, 500, 'Apuntes de Cálculo II de segundo año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Ingeniería de Software I', 3, 600, 'Apuntes de Ingeniería de Software I de segundo año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Ingeniería de Software II', 1, 700, 'Apuntes de Ingeniería de Software II de primer año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Arquitectura de Computadoras', 3, 800, 'Apuntes de Arquitectura de Computadoras de segundo año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Inglés', 2, 900, 'Apuntes de Inglés de primer año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Probabilidad y Estadística', 1, 1000, 'Apuntes de Probabilidad y Estadística de primer año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Cálculo I', 5, 100, 'Apuntes de Cálculo I de primer año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Lógica y Álgebra', 6, 200, 'Apuntes de Lógica y Álgebra de primer año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Sistemas y Organizaciones', 4, 300, 'Apuntes de Sistemas y Organizaciones de primer año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Introducción a la Programación', 8, 400, 'Apuntes de Introducción a la Programación de primer año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Cálculo II', 9, 500, 'Apuntes de Cálculo II de segundo año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Ingeniería de Software I', 4, 600, 'Apuntes de Ingeniería de Software I de segundo año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Ingeniería de Software II', 5, 700, 'Apuntes de Ingeniería de Software II de primer año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Arquitectura de Computadoras', 6, 800, 'Apuntes de Arquitectura de Computadoras de segundo año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Inglés', 6, 900, 'Apuntes de Inglés de primer año de Sistemas.');
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Probabilidad y Estadística', 9, 1000, 'Apuntes de Probabilidad y Estadística de primer año de Sistemas.');
 
 -- SUGERENCIAS
 INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar El universo en una cáscara de nuez, de Stephen Hawking');
@@ -150,6 +137,18 @@ INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ej
 INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo6@hotmail.com', 'Silvia', 'Romero', 'superpassword6', 'USUARIO_NORMAL');
 INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo7@hotmail.com', 'Gabriel', 'Soria', 'superpassword7', 'USUARIO_NORMAL');
 
+-- PEDIDOS
+call new_pedido(2,1,5);
+call new_pedido(3,1,8);
+call new_pedido(7,3,7);
+call new_pedido(1,1,8);
+call new_pedido(7,2,6);
+call new_pedido(4,1,10);
+call new_pedido(3,1,9);
+call new_pedido(10,2,7);
+call new_pedido(9,1,4);
+call new_pedido(1,1,9);
+
 
 -- CARRITOS
 INSERT INTO carrito("id_usuario") VALUES (1);
@@ -163,16 +162,40 @@ INSERT INTO carrito("id_usuario") VALUES (8);
 INSERT INTO carrito("id_usuario") VALUES (9);
 INSERT INTO carrito("id_usuario") VALUES (10);
 
--- PRODUCTO x CARRITO
-INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (1, 1); -- LIBRO
-INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (13, 1); -- FOTOCOPIA
-INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (15, 1); -- FOTOCOPIA
-INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (3, 2); 
-INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (4, 2);
-INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (19, 3);
-INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (16, 4);
-INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (6, 5);
-INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (2, 6);
-INSERT INTO productoxcarrito("id_producto", "id_carrito") VALUES (9, 7);
+-- LIBRO x CARRITO
+INSERT INTO libroxcarrito("isbn", "id_carrito", "cantidad") VALUES (1, 1, 1); 
+INSERT INTO libroxcarrito("isbn", "id_carrito", "cantidad") VALUES (8, 1, 3); 
+INSERT INTO libroxcarrito("isbn", "id_carrito", "cantidad") VALUES (5, 1, 2); 
+INSERT INTO libroxcarrito("isbn", "id_carrito", "cantidad") VALUES (6, 2, 1); 
+INSERT INTO libroxcarrito("isbn", "id_carrito", "cantidad") VALUES (4, 2, 1);
+INSERT INTO libroxcarrito("isbn", "id_carrito", "cantidad") VALUES (7, 3, 1);
+INSERT INTO libroxcarrito("isbn", "id_carrito", "cantidad") VALUES (6, 4, 2);
+INSERT INTO libroxcarrito("isbn", "id_carrito", "cantidad") VALUES (3, 5, 3);
+INSERT INTO libroxcarrito("isbn", "id_carrito", "cantidad") VALUES (2, 6, 1);
+INSERT INTO libroxcarrito("isbn", "id_carrito", "cantidad") VALUES (9, 7, 2);
+
+-- FOTOCOPIA x CARRITO
+INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (5, 3, 1); 
+INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (8, 1, 2); 
+INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (7, 6, 1); 
+INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (2, 5, 1); 
+INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (8, 7, 1);
+INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (3, 9, 2);
+INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (5, 4, 1);
+INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (1, 7, 1);
+INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (7, 9, 1);
+INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (1, 3, 2);
+
+-- SAGA x CARRITO
+INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (9, 1, 1); 
+INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (10, 4, 1); 
+INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (6, 3, 1); 
+INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (1, 2, 2); 
+INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (4, 2, 1);
+INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (5, 10, 1);
+INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (3, 8, 1);
+INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (6, 9, 1);
+INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (8, 1, 1);
+INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (4, 7, 1);
 
 --TODOS: hacer función que devuelva el producto (si es libro un libro, si es fotocopia una fotocopia) cuando se busca en productoxcarrito. 

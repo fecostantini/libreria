@@ -57,7 +57,6 @@ CREATE OR REPLACE FUNCTION uppercase_libro() RETURNS trigger AS $uppercase_libro
         NEW.idioma = UPPER(NEW.idioma);
         NEW.titulo = UPPER(NEW.titulo);
         NEW.edicion = UPPER(NEW.edicion);
-        NEW.descripcion = UPPER(NEW.descripcion);
         RETURN NEW;
     END;
 $uppercase_libro$ LANGUAGE plpgsql;
@@ -65,6 +64,26 @@ $uppercase_libro$ LANGUAGE plpgsql;
 CREATE TRIGGER uppercase_libro_trigger BEFORE INSERT OR UPDATE ON libro
     FOR EACH ROW EXECUTE PROCEDURE uppercase_libro();
 
+CREATE OR REPLACE FUNCTION saga_libro() RETURNS trigger AS $saga_libro$
+    BEGIN
+        IF (TG_OP = 'INSERT') THEN
+            IF NEW.id_saga > 0 THEN
+                call actualizar_precio_saga(NEW.id_saga);
+            END IF;
+        ELSIF (TG_OP = 'UPDATE') THEN
+            IF NEW.id_saga > 0 THEN
+                call actualizar_precio_saga(NEW.id_saga);
+            END IF;
+            IF (OLD.id_Saga > 0) THEN
+                call actualizar_precio_saga(OLD.id_saga);
+            END IF;
+		END IF;
+        RETURN NEW;
+    END;
+$saga_libro$ LANGUAGE plpgsql;
+
+CREATE TRIGGER saga_libro_trigger AFTER INSERT OR UPDATE ON libro
+    FOR EACH ROW EXECUTE PROCEDURE saga_libro();
 
 CREATE OR REPLACE FUNCTION uppercase_autor() RETURNS trigger AS $uppercase_autor$
     BEGIN        

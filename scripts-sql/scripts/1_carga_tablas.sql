@@ -20,7 +20,7 @@ constraint PK_promocion primary key ("id_promocion")
 CREATE TABLE "producto" (
 "id_producto" serial not null,
 "titulo" varchar not null,
-"stock" smallint not null default 0,
+"stock" smallint not null CHECK("stock" >= 0),
 "precio" real not null,
 "id_promocion" integer default null,
 constraint PK_producto primary key ("id_producto"),
@@ -40,6 +40,7 @@ CREATE TABLE "saga" (
 "id_saga" serial not null,
 "nombre_saga" varchar not null,
 "stock_saga" SMALLINT not null,
+"precio_saga" real DEFAULT 0,
 UNIQUE(nombre_saga),
 constraint PK_saga primary key ("id_saga")
 );
@@ -74,19 +75,6 @@ UNIQUE(nombre_categoria),
 constraint PK_categoria primary key ("id_categoria")
 );
 
-
-CREATE TABLE "pedido" (
-"id_pedido" serial not null,
-"cantidad" smallint not null,
-"fecha_pedido" date not null,
-"anticipo_pagado" boolean DEFAULT false,
-"pedido_aceptado" boolean DEFAULT null,
-"pedido_entregado" boolean DEFAULT false,
-"fecha_llegada" date default null,
-"isbn" integer not null,
-constraint FK_pedido_isbn foreign key ("isbn") references "libro"("isbn"),
-constraint PK_pedido primary key ("id_pedido")
-);
 
 
 CREATE TABLE "valoracion" (
@@ -125,9 +113,26 @@ UNIQUE(mail),
 constraint PK_usuario primary key ("id_usuario")); 
 
 
+CREATE TABLE "pedido" (
+"id_pedido" serial not null,
+"isbn" integer not null,
+"cantidad" smallint not null,
+"fecha_pedido" date not null,
+"id_usuario" integer not null,
+"anticipo_pagado" boolean DEFAULT false,
+"pedido_aceptado" boolean DEFAULT null,
+"pedido_entregado" boolean DEFAULT false,
+"fecha_llegada" date default null,
+constraint FK_pedido_isbn foreign key ("isbn") references "libro"("isbn"),
+constraint FK_pedido_usuario foreign key ("id_usuario") references "usuario"("id_usuario"),
+constraint PK_pedido primary key ("id_pedido")
+);
+
+
 CREATE TABLE "carrito" (
 "id_carrito" serial not null,
 "id_usuario" integer not null,
+"activo" boolean DEFAULT true,
 constraint PK_carrito primary key ("id_carrito"),
 constraint FK_carrito_usuario foreign key ("id_usuario") references "usuario"("id_usuario")
 );
@@ -161,12 +166,30 @@ Constraint FK_isbn_libro_categoria foreign key ("isbn") references "libro"("isbn
 );
 
 
-CREATE TABLE "productoxcarrito" (
-"id_producto" integer,
+CREATE TABLE "libroxcarrito" (
+"isbn" integer,
 "id_carrito" smallint,
-constraint PK_productoxcarrito primary key ("id_producto","id_carrito"),
--- La herencia no permite hacer referencia a la tabla producto. (select * from only producto) --> devuelve vacío
--- constraint FK_producto_carrito foreign key ("id_producto") references "producto"("id_producto"),
+"cantidad" integer,
+constraint PK_libroxcarrito primary key ("isbn","id_carrito"),
+Constraint FK_libro_carrito foreign key ("isbn") references "libro"("isbn"),
 Constraint FK_carrito_producto foreign key ("id_carrito") references "carrito"("id_carrito")
+);
+
+CREATE TABLE "fotocopiaxcarrito" (
+"id_fotocopia" integer,
+"id_carrito" smallint,
+"cantidad" integer,
+constraint PK_fotocopiaxcarrito primary key ("id_fotocopia","id_carrito"),
+Constraint FK_fotocopia_carrito foreign key ("id_fotocopia") references "fotocopia"("id_fotocopia"),
+Constraint FK_carrito_fotocopia foreign key ("id_carrito") references "carrito"("id_carrito")
+);
+
+CREATE TABLE "sagaxcarrito" (
+"id_saga" integer,
+"id_carrito" smallint,
+"cantidad" integer,
+constraint PK_sagaxcarrito primary key ("id_saga","id_carrito"),
+Constraint FK_saga_carrito foreign key ("id_saga") references "saga"("id_saga"),
+Constraint FK_carrito_saga foreign key ("id_carrito") references "carrito"("id_carrito")
 );
 
