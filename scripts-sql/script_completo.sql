@@ -105,11 +105,13 @@ constraint PK_sugerencia primary key ("id_sugerencia")
 CREATE TABLE "usuario" (
 "id_usuario" serial not null,
 "id_facebook" varchar default null,
+"id_google" varchar default null,
 "mail" varchar not null,
 "nombre" varchar,
-"apellido" varchar,
-"password" varchar,
-"rol" varchar CHECK (UPPER("rol") in ('ADMIN', 'GESTOR_PEDIDOS', 'USUARIO_NORMAL')),
+"apellido" varchar default null,
+"password" varchar default null,
+"imagen" varchar default null,
+"rol" varchar default 'USUARIO_NORMAL' CHECK (UPPER("rol") in ('ADMIN', 'GESTOR_PEDIDOS', 'USUARIO_NORMAL')),
 UNIQUE(mail),
 constraint PK_usuario primary key ("id_usuario")); 
 

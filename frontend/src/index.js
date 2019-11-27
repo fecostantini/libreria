@@ -3,4 +3,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+import { Provider } from 'react-redux';
+import store, { history } from './store';
+import { ConnectedRouter as Router } from 'connected-react-router';
+
+let Main = () => (
+	<Provider store={store}>
+		<Router history={history}>
+			<App />
+		</Router>
+	</Provider>
+);
+
+ReactDOM.render(<Main />, document.getElementById('root'));
