@@ -16,6 +16,10 @@ export const CREATE_SAGA = 'CREATE_SAGA';
 export const FETCH_EDITORIALES = 'FETCH_EDITORIALES';
 export const CREATE_EDITORIAL = 'CREATE_EDITORIAL';
 
+// acciones de usuario
+export const FETCH_USUARIO_FACEBOOK = 'FETCH_USUARIO_FACEBOOK';
+export const SET_USUARIO_ACTUAL = 'SET_USUARIO_ACTUAL';
+
 // status global de la ultima request que se realizó al backend
 export const UPDATE_LAST_REQUEST_STATUS = 'UPDATE_LAST_REQUEST_STATUS';
 

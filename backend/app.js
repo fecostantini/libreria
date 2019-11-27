@@ -1,12 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const { passport, rutasLogin } = require('./login/rutasLogin');
 
 const port = 3210;
 const app = express();
 // middlewares
 app.use(bodyParser.json());
 app.use(cors());
+app.use(passport.initialize());
 
 // headers
 app.use(function(req, res, next) {
@@ -18,6 +20,7 @@ app.use(function(req, res, next) {
 
 // rutas
 app.use(require('./routes'));
+app.use(rutasLogin);
 
 app.listen(port, () => {
 	console.log(`Corriendo en el puerto ${port}`);
