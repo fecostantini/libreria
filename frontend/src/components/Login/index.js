@@ -4,8 +4,8 @@ import LoginGoogle from './LoginGoogle';
 function Login() {
 	return (
 		<div className='row'>
-			<LoginFacebook className='col-6' />
-			<LoginGoogle className='col-6' />
+			<LoginFacebook className='col-lg-6 col-sm-12 col-md-12' />
+			<LoginGoogle className='col-lg-6 col-sm-12 col-md-12' />
 		</div>
 	);
 }

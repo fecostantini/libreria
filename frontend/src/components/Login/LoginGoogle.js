@@ -23,12 +23,12 @@ function LoginGoogle() {
 		<div>
 			<GoogleLogin
 				clientId='747302210477-6hc48cst5ljqu4057cb4qcf719b2i492.apps.googleusercontent.com'
-				buttonText={''}
+				buttonText={'Loggear con Google'}
 				onSuccess={responseGoogle}
 				onFailure={responseGoogle}
 				cookiePolicy={'single_host_origin'}
+				className='btnGoogle'
 			/>
-			,
 		</div>
 	);
 }

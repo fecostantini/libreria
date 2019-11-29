@@ -19,15 +19,16 @@ function LoginFacebook() {
 	};
 
 	return (
-		<div>
+		<div style={{ display: 'flex', flexWrap: 'wrap' }}>
 			<FacebookLogin
 				size='small'
 				appId='2604956162886248'
 				autoLoad={false}
 				fields='name,email,picture'
 				callback={responseFacebook}
-				textButton={''}
-				icon={<i class='fab fa-facebook-f'></i>}
+				textButton='Loggear con Facebook'
+				cssClass='btnFacebook'
+				icon={<i class='fab fa-facebook-f' style={{ marginRight: '5px' }}></i>}
 			/>
 		</div>
 	);
