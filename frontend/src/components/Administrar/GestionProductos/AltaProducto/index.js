@@ -214,7 +214,7 @@ const AltaProducto = () => {
 		// Ambos poseen una descripción, reutilizamos esta porción.
 		const inputDescripcion = () =>
 			[{ titulo: 'Descripción', type: 'textarea', name: 'descripcion' }].map(e => (
-				<InputFormulario titulo={e.titulo} type={e.type} name={e.name} containterClass='form-group' />
+				<InputFormulario key={e.titulo} titulo={e.titulo} type={e.type} name={e.name} containterClass='form-group' />
 			));
 
 		if (tipoProducto === tiposProducto.LIBRO) {
@@ -227,7 +227,7 @@ const AltaProducto = () => {
 							{ titulo: 'Idioma', type: 'text', name: 'idioma' },
 							{ titulo: 'Edicion', type: 'text', name: 'edicion' }
 						].map(e => (
-							<InputFormulario titulo={e.titulo} type={e.type} name={e.name} containterClass='col-4' />
+							<InputFormulario key={e.titulo} titulo={e.titulo} type={e.type} name={e.name} containterClass='col-4' />
 						))}
 					</div>
 
@@ -394,7 +394,13 @@ const AltaProducto = () => {
 							containerClass: 'col-3'
 						}
 					].map(e => (
-						<InputFormulario titulo={e.titulo} type={e.type} name={e.name} containterClass={e.containerClass} />
+						<InputFormulario
+							key={e.titulo}
+							titulo={e.titulo}
+							type={e.type}
+							name={e.name}
+							containterClass={e.containerClass}
+						/>
 					))}
 				</div>
 				<div className='form-group mt-3'>

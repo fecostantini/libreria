@@ -1,4 +1,4 @@
-import { FETCH_USUARIO_FACEBOOK, SET_USUARIO_ACTUAL } from '../actions/types';
+import { FETCH_USUARIO_FACEBOOK, SET_USUARIO_ACTUAL, UPDATE_USUARIO } from '../actions/types';
 
 const usuarioActualLocalStorage = JSON.parse(localStorage.getItem('usuarioActual'));
 
@@ -14,6 +14,16 @@ export default function(state = initialState, action) {
 				...state,
 				usuarioActual
 			};
+
+		case UPDATE_USUARIO:
+			const usuarioActualizado = action.payload;
+
+			if (usuarioActualizado)
+				return {
+					...state,
+					usuarioActual: usuarioActualizado
+				};
+			break;
 
 		default:
 			return state;

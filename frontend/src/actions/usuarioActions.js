@@ -1,24 +1,7 @@
-import { FETCH_USUARIO_FACEBOOK, SET_USUARIO_ACTUAL, UPDATE_LAST_REQUEST_STATUS } from './types';
+import { SET_USUARIO_ACTUAL, UPDATE_LAST_REQUEST_STATUS, UPDATE_USUARIO } from './types';
 import axios from 'axios';
 
 const URL = 'http://localhost:3210/usuario';
-
-export const fetchUsuarioByFacebookId = async (dispatch, facebookId) => {
-	const resp = await axios.get(`${URL}/getByFacebookId`, { data: { id: facebookId } });
-
-	const usuario = resp.data ? resp.data.usuario : null;
-
-	if (usuario)
-		dispatch({
-			type: FETCH_USUARIO_FACEBOOK,
-			payload: { usuario }
-		});
-
-	dispatch({
-		type: UPDATE_LAST_REQUEST_STATUS,
-		payload: { status: resp.data.status }
-	});
-};
 
 export const loggearORegistrarUsuario = async (dispatch, usuario) => {
 	const resp = await axios.post(`${URL}/findOrCreateUsuario`, usuario);
@@ -88,4 +71,24 @@ export const registrarUsuario = async (dispatch, usuario) => {
 	});
 
 	return;
+};
+
+export const updateUsuario = async (dispatch, usuarioCambiado) => {
+	const resp = await axios.put(URL, usuarioCambiado);
+	const usuarioActualizado = resp.data.status === 'ACTUALIZADO';
+
+	if (usuarioActualizado) {
+		usuarioCambiado.nombre = usuarioCambiado.nombre.toUpperCase(); // poner nombre en mayuscula
+
+		localStorage.setItem('usuarioActual', JSON.stringify(usuarioCambiado));
+		dispatch({
+			type: UPDATE_USUARIO,
+			payload: usuarioCambiado
+		});
+	}
+
+	dispatch({
+		type: UPDATE_LAST_REQUEST_STATUS,
+		payload: { status: resp.data.status }
+	});
 };

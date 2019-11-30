@@ -1,17 +1,17 @@
 import React, { Fragment } from 'react';
 import { useSelector } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
-//import Zoom from 'react-reveal/Zoom';
-//import Flip from 'react-reveal/Flip';
 
 //componentes
-import MostrarAutores from './components/MostrarAutores';
 import Administrar from './components/Administrar';
+import EditarPerfil from './components/EditarPerfil';
 import Header from './components/Header';
 
 let App = () => {
 	const usuarioActual = useSelector(state => state.usuario.usuarioActual);
+
 	const rutaAdministrar = <Route path='/administrar' component={Administrar} />;
+	const editarPerfil = <Route path='/editar_perfil' component={EditarPerfil} />;
 	return (
 		<Fragment>
 			<Header />
@@ -19,7 +19,8 @@ let App = () => {
 				<Switch>
 					<Route exact path='/' component={() => <h1>Home</h1>} />
 					{usuarioActual && usuarioActual.rol === 'ADMIN' ? rutaAdministrar : null}
-					<Route path='/mostrar_autores' component={MostrarAutores} />
+					{usuarioActual ? editarPerfil : null}
+
 					<Route render={() => <h1>Error 404. Página no encontrada.</h1>} />
 				</Switch>
 			</main>

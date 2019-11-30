@@ -44,7 +44,7 @@ function Login() {
 	const handleClose = () => setMostrarModal(false);
 
 	useEffect(() => {
-		// solo queremos mostrar estos errores, y solo queremos mostrar el error si mostrarAlerta es verdadero
+		// solo queremos mostrar el error si mostrarAlerta es verdadero
 		if (!mostrarAlerta) return;
 
 		// solo queremos mostrar estos estados
@@ -126,8 +126,8 @@ function Login() {
 
 	let formulario = (
 		<Form>
-			{/* Si se va a registrar también debe ingresar nombre y apellido */}
 			{error.activo ? <Error mensaje={error.mensaje} /> : null}
+			{/* Si se va a registrar también debe ingresar nombre y apellido */}
 			{infoModal.titulo === 'Registrarse' ? (
 				<Form.Group>
 					<Form.Label>Nombre y apellido</Form.Label>

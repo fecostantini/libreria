@@ -31,4 +31,9 @@ rutasUsuario.post('/', function(req, res) {
 	Usuario.createUsuario(nuevoUsuario).then(respuesta => res.send(respuesta));
 });
 
+rutasUsuario.put('/', function(req, res) {
+	const usuarioCambiado = req.body;
+	Usuario.updateUsuario(usuarioCambiado).then(respuesta => res.send(respuesta));
+});
+
 module.exports = rutasUsuario;

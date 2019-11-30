@@ -17,7 +17,7 @@ const querys = {
 	INSERT: String.raw`INSERT INTO usuario("id_facebook", "id_google",  "mail","nombre", "apellido", "password", "imagen") VALUES('{id_facebook}', '{id_google}', '{mail}','{nombre}','{apellido}','{password}', '{imagen}') RETURNING id_usuario;`,
 	INSERT_FACEBOOK: String.raw`INSERT INTO usuario("id_facebook", "nombre", "mail", "imagen") VALUES('{id_facebook}','{nombre}', '{mail}', '{imagen}') RETURNING id_usuario;`,
 	INSERT_GOOGLE: String.raw`INSERT INTO usuario("id_google", "nombre", "mail", "imagen") VALUES('{id_google}','{nombre}', '{mail}', '{imagen}') RETURNING id_usuario;`,
-	UPDATE: String.raw`UPDATE usuario SET mail = '{mail}', id_facebook='{id_facebook}' nombre='{nombre}', apellido='{apellido}', password='{password}', rol='{rol}' WHERE id_usuario='{id_usuario}';`
+	UPDATE: String.raw`UPDATE usuario SET mail='{mail}', nombre='{nombre}', apellido='{apellido}', password='{password}' WHERE id_usuario='{id_usuario}';`
 };
 
 // si se le pasa un tipoID e id buscará el usuario correspondiendo a esa información
@@ -87,7 +87,6 @@ let getUsuarioByGoogleId = async id => {
 
 let getUsuarioById = async id => {
 	try {
-		console.log(querys.GET_BY_NORMAL_ID.format(id));
 		let response = await pool.query(querys.GET_BY_NORMAL_ID.format(id));
 		let usuarioEncontrado = response.rows.length > 0;
 
@@ -130,10 +129,9 @@ let getUsuarioByMailAndPassword = async usuarioBuscado => {
 
 let createUsuario = async nuevoUsuario => {
 	try {
-		console.log(nuevoUsuario);
 		let usuario = { id_facebook: '', id_google: '', mail: '', nombre: '', apellido: '', password: '' };
 		nuevoUsuario = { ...usuario, ...nuevoUsuario }; // si nuevoUsuario viene incompleto tendrá al menos los valores vacíos
-		console.log(nuevoUsuario);
+
 		let response = await pool.query(querys.INSERT.format(nuevoUsuario));
 		let filasModificadas = response.rowCount;
 		let usuarioCreado = filasModificadas > 0;
@@ -182,11 +180,32 @@ let findOrCreateUsuario = async nuevoUsuario => {
 	}
 };
 
+let updateUsuario = async usuarioCambiado => {
+	try {
+		let response = await pool.query(querys.UPDATE.format(usuarioCambiado));
+		let filasModificadas = response.rowCount;
+		let usuarioActualizado = filasModificadas > 0;
+		return {
+			status: usuarioActualizado ? estados.ACTUALIZADO : estados.FRACASO
+		};
+	} catch (error) {
+		switch (error.code) {
+			case estados.YA_EXISTE:
+				return { status: estados.YA_EXISTE };
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
+			default:
+				return { status: estados.ERROR_DESCONOCIDO };
+		}
+	}
+};
+
 module.exports = {
 	getUsuarios,
 	createUsuario,
 	getUsuarioById,
 	getUsuarioByFacebookId,
 	findOrCreateUsuario,
-	getUsuarioByMailAndPassword
+	getUsuarioByMailAndPassword,
+	updateUsuario
 };
