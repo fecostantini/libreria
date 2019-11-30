@@ -16,6 +16,11 @@ rutasUsuario.get('/getByFacebookId', function(req, res) {
 	Usuario.getUsuarioByFacebookId(idUsuario).then(respuesta => res.send(respuesta));
 });
 
+rutasUsuario.post('/getByMailAndPassword', function(req, res) {
+	const usuario = req.body;
+	Usuario.getUsuarioByMailAndPassword(usuario).then(respuesta => res.send(respuesta));
+});
+
 rutasUsuario.post('/findOrCreateUsuario', function(req, res) {
 	const nuevoUsuario = req.body;
 	Usuario.findOrCreateUsuario(nuevoUsuario).then(respuesta => res.send(respuesta));

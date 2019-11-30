@@ -2,9 +2,9 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import FacebookLogin from 'react-facebook-login';
 
-import { loggearUsuario } from '../../actions/usuarioActions';
+import { loggearORegistrarUsuario } from '../../actions/usuarioActions';
 
-function LoginFacebook() {
+function LoginFacebook({ textoBoton }) {
 	const dispatch = useDispatch();
 
 	let responseFacebook = response => {
@@ -14,8 +14,8 @@ function LoginFacebook() {
 			nombre: response.name,
 			imagen: response.picture.data.url
 		};
-		console.log(usuario);
-		loggearUsuario(dispatch, usuario);
+
+		loggearORegistrarUsuario(dispatch, usuario);
 	};
 
 	return (
@@ -26,9 +26,9 @@ function LoginFacebook() {
 				autoLoad={false}
 				fields='name,email,picture'
 				callback={responseFacebook}
-				textButton='Loggear con Facebook'
+				textButton={textoBoton}
 				cssClass='btnFacebook'
-				icon={<i class='fab fa-facebook-f' style={{ marginRight: '5px' }}></i>}
+				icon={<i className='fab fa-facebook-f' style={{ marginRight: '10px', fontSize: '15px' }}></i>}
 			/>
 		</div>
 	);

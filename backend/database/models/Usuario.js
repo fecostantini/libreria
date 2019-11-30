@@ -12,6 +12,7 @@ const querys = {
 	GET_BY_NORMAL_ID: 'select * from usuario where id_usuario={};',
 	GET_BY_FACEBOOK_ID: `select * from usuario where id_facebook='{}';`,
 	GET_BY_GOOGLE_ID: `select * from usuario where id_google='{}';`,
+	GET_BY_MAIL: `select * from usuario where mail='{}';`,
 	GET_ALL: 'select * from usuario;',
 	INSERT: String.raw`INSERT INTO usuario("id_facebook", "mail","nombre", "apellido", "password") VALUES('{id_facebook}', '{mail}','{nombre}','{apellido}','{password}') RETURNING id_usuario;`,
 	INSERT_FACEBOOK: String.raw`INSERT INTO usuario("id_facebook", "nombre", "mail", "imagen") VALUES('{id_facebook}','{nombre}', '{mail}', '{imagen}') RETURNING id_usuario;`,
@@ -35,9 +36,9 @@ let getUsuarios = async () => {
 	} catch (error) {
 		switch (error.code) {
 			case estados.CONEXION_FALLIDA:
-				return { status: estados.CONEXION_FALLIDA, error };
+				return { status: estados.CONEXION_FALLIDA };
 			default:
-				return { status: estados.ERROR_DESCONOCIDO, error };
+				return { status: estados.ERROR_DESCONOCIDO };
 		}
 	}
 };
@@ -56,9 +57,9 @@ let getUsuarioByFacebookId = async id => {
 	} catch (error) {
 		switch (error.code) {
 			case estados.CONEXION_FALLIDA:
-				return { status: estados.CONEXION_FALLIDA, error };
+				return { status: estados.CONEXION_FALLIDA };
 			default:
-				return { status: estados.ERROR_DESCONOCIDO, error };
+				return { status: estados.ERROR_DESCONOCIDO };
 		}
 	}
 };
@@ -77,9 +78,9 @@ let getUsuarioByGoogleId = async id => {
 	} catch (error) {
 		switch (error.code) {
 			case estados.CONEXION_FALLIDA:
-				return { status: estados.CONEXION_FALLIDA, error };
+				return { status: estados.CONEXION_FALLIDA };
 			default:
-				return { status: estados.ERROR_DESCONOCIDO, error };
+				return { status: estados.ERROR_DESCONOCIDO };
 		}
 	}
 };
@@ -99,9 +100,30 @@ let getUsuarioById = async id => {
 	} catch (error) {
 		switch (error.code) {
 			case estados.CONEXION_FALLIDA:
-				return { status: estados.CONEXION_FALLIDA, error };
+				return { status: estados.CONEXION_FALLIDA };
 			default:
-				return { status: estados.ERROR_DESCONOCIDO, error };
+				return { status: estados.ERROR_DESCONOCIDO };
+		}
+	}
+};
+
+let getUsuarioByMailAndPassword = async usuarioBuscado => {
+	try {
+		let response = await pool.query(querys.GET_BY_MAIL.format(usuarioBuscado.mail));
+		let usuarioEncontrado = response.rows.length > 0;
+
+		if (usuarioEncontrado) {
+			const usuarioResponse = response.rows[0];
+			if (usuarioResponse.password === usuarioBuscado.password)
+				return { status: estados.EXITO, usuario: usuarioResponse };
+			else return { status: estados.CONTRASEÑA_INCORRECTA };
+		} else return { status: estados.FRACASO };
+	} catch (error) {
+		switch (error.code) {
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
+			default:
+				return { status: estados.ERROR_DESCONOCIDO };
 		}
 	}
 };
@@ -130,11 +152,11 @@ let createUsuario = async nuevoUsuario => {
 	} catch (error) {
 		switch (error.code) {
 			case estados.YA_EXISTE:
-				return { status: estados.YA_EXISTE, error };
+				return { status: estados.YA_EXISTE };
 			case estados.CONEXION_FALLIDA:
-				return { status: estados.CONEXION_FALLIDA, error };
+				return { status: estados.CONEXION_FALLIDA };
 			default:
-				return { status: estados.ERROR_DESCONOCIDO, error };
+				return { status: estados.ERROR_DESCONOCIDO };
 		}
 	}
 };
@@ -145,7 +167,6 @@ let findOrCreateUsuario = async nuevoUsuario => {
 
 		if (nuevoUsuario.id_facebook) response = await getUsuarioByFacebookId(nuevoUsuario.id_facebook);
 		else if (nuevoUsuario.id_google) response = await getUsuarioByGoogleId(nuevoUsuario.id_google);
-		else response = await getUsuarioById(nuevoUsuario.id_usuario);
 
 		if (response.usuario)
 			return {
@@ -156,13 +177,20 @@ let findOrCreateUsuario = async nuevoUsuario => {
 	} catch (error) {
 		switch (error.code) {
 			case estados.YA_EXISTE:
-				return { status: estados.YA_EXISTE, error };
+				return { status: estados.YA_EXISTE };
 			case estados.CONEXION_FALLIDA:
-				return { status: estados.CONEXION_FALLIDA, error };
+				return { status: estados.CONEXION_FALLIDA };
 			default:
-				return { status: estados.ERROR_DESCONOCIDO, error };
+				return { status: estados.ERROR_DESCONOCIDO };
 		}
 	}
 };
 
-module.exports = { getUsuarios, createUsuario, getUsuarioById, getUsuarioByFacebookId, findOrCreateUsuario };
+module.exports = {
+	getUsuarios,
+	createUsuario,
+	getUsuarioById,
+	getUsuarioByFacebookId,
+	findOrCreateUsuario,
+	getUsuarioByMailAndPassword
+};
