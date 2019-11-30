@@ -3,15 +3,14 @@ import LoginGoogle from './LoginGoogle';
 import React, { Fragment, useState, useEffect } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { loggearUsuario } from '../../actions/usuarioActions';
+import { loggearUsuario, registrarUsuario } from '../../actions/usuarioActions';
 
 import Swal from 'sweetalert2';
 import { Button, Modal, Col, Row, Form } from 'react-bootstrap';
 import Error from '../Common/Error';
 import estados from '../../estados';
 
-const imagenDefault =
-	'https://img2.freepng.es/20180722/gfc/kisspng-user-profile-2018-in-sight-user-conference-expo-5b554c0968c377.0307553315323166814291.jpg';
+const imagenDefault = 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png';
 const tiposModales = { LOGIN: 'LOGIN', REGISTER: 'REGISTER' };
 const usuarioDefault = { mail: '', nombre: '', password: '', imagen: imagenDefault };
 
@@ -48,15 +47,13 @@ function Login() {
 		// solo queremos mostrar estos errores, y solo queremos mostrar el error si mostrarAlerta es verdadero
 		if (!mostrarAlerta) return;
 
-		console.log(statusUltimaPeticion);
-		console.log(mostrarAlerta);
-
+		// solo queremos mostrar estos estados
 		if (
 			statusUltimaPeticion !== estados.CONTRASEÑA_INCORRECTA &&
 			statusUltimaPeticion !== estados.CONEXION_FALLIDA &&
-			statusUltimaPeticion !== estados.FRACASO
+			statusUltimaPeticion !== estados.FRACASO &&
+			statusUltimaPeticion !== estados.YA_EXISTE
 		) {
-			console.log('asd');
 			setMostrarAlerta(false);
 			return;
 		}
@@ -75,9 +72,10 @@ function Login() {
 			swalConfig.title = 'Falló la conexión a la Base de Datos';
 		else if (statusUltimaPeticion === estados.FRACASO)
 			swalConfig.title = 'No existe ningún usuario con el mail ingresado';
+		else if (statusUltimaPeticion === estados.YA_EXISTE)
+			swalConfig.title = 'El correo que quiso registrar ya pertenece a otra cuenta';
 
 		setMostrarAlerta(false);
-		console.log('disparando');
 		Swal.fire(swalConfig);
 	}, [mostrarAlerta]);
 
@@ -100,6 +98,10 @@ function Login() {
 			setError({ activo: false });
 			if (tipoModal === tiposModales.LOGIN)
 				loggearUsuario(dispatch, usuario).then(() => {
+					setMostrarAlerta(true);
+				});
+			else if (tipoModal === tiposModales.REGISTER)
+				registrarUsuario(dispatch, usuario).then(() => {
 					setMostrarAlerta(true);
 				});
 			setUsuario(usuarioDefault);

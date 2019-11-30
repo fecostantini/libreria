@@ -14,7 +14,7 @@ const querys = {
 	GET_BY_GOOGLE_ID: `select * from usuario where id_google='{}';`,
 	GET_BY_MAIL: `select * from usuario where mail='{}';`,
 	GET_ALL: 'select * from usuario;',
-	INSERT: String.raw`INSERT INTO usuario("id_facebook", "mail","nombre", "apellido", "password") VALUES('{id_facebook}', '{mail}','{nombre}','{apellido}','{password}') RETURNING id_usuario;`,
+	INSERT: String.raw`INSERT INTO usuario("id_facebook", "id_google",  "mail","nombre", "apellido", "password", "imagen") VALUES('{id_facebook}', '{id_google}', '{mail}','{nombre}','{apellido}','{password}', '{imagen}') RETURNING id_usuario;`,
 	INSERT_FACEBOOK: String.raw`INSERT INTO usuario("id_facebook", "nombre", "mail", "imagen") VALUES('{id_facebook}','{nombre}', '{mail}', '{imagen}') RETURNING id_usuario;`,
 	INSERT_GOOGLE: String.raw`INSERT INTO usuario("id_google", "nombre", "mail", "imagen") VALUES('{id_google}','{nombre}', '{mail}', '{imagen}') RETURNING id_usuario;`,
 	UPDATE: String.raw`UPDATE usuario SET mail = '{mail}', id_facebook='{id_facebook}' nombre='{nombre}', apellido='{apellido}', password='{password}', rol='{rol}' WHERE id_usuario='{id_usuario}';`
@@ -130,9 +130,10 @@ let getUsuarioByMailAndPassword = async usuarioBuscado => {
 
 let createUsuario = async nuevoUsuario => {
 	try {
+		console.log(nuevoUsuario);
 		let usuario = { id_facebook: '', id_google: '', mail: '', nombre: '', apellido: '', password: '' };
 		nuevoUsuario = { ...usuario, ...nuevoUsuario }; // si nuevoUsuario viene incompleto tendrá al menos los valores vacíos
-
+		console.log(nuevoUsuario);
 		let response = await pool.query(querys.INSERT.format(nuevoUsuario));
 		let filasModificadas = response.rowCount;
 		let usuarioCreado = filasModificadas > 0;

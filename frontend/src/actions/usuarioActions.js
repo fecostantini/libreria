@@ -69,3 +69,23 @@ export const desloggearUsuario = async dispatch => {
 		});
 	}
 };
+
+export const registrarUsuario = async (dispatch, usuario) => {
+	const resp = await axios.post(URL, usuario);
+	const usuarioRespuesta = resp.data ? resp.data.usuario : null;
+
+	if (usuarioRespuesta) {
+		localStorage.setItem('usuarioActual', JSON.stringify(usuarioRespuesta));
+		dispatch({
+			type: SET_USUARIO_ACTUAL,
+			payload: { usuarioActual: usuarioRespuesta }
+		});
+	}
+
+	dispatch({
+		type: UPDATE_LAST_REQUEST_STATUS,
+		payload: { status: resp.data.status }
+	});
+
+	return;
+};
