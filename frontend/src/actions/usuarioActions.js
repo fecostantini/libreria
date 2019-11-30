@@ -20,7 +20,7 @@ export const fetchUsuarioByFacebookId = async (dispatch, facebookId) => {
 	});
 };
 
-export const loggearUsuario = async (dispatch, usuario) => {
+export const loggearORegistrarUsuario = async (dispatch, usuario) => {
 	const resp = await axios.post(`${URL}/findOrCreateUsuario`, usuario);
 	const usuarioRespuesta = resp.data ? resp.data.usuario : null;
 
@@ -36,6 +36,26 @@ export const loggearUsuario = async (dispatch, usuario) => {
 		type: UPDATE_LAST_REQUEST_STATUS,
 		payload: { status: resp.data.status }
 	});
+};
+
+export const loggearUsuario = async (dispatch, usuario) => {
+	const resp = await axios.post(`${URL}/getByMailAndPassword`, usuario);
+	const usuarioRespuesta = resp.data ? resp.data.usuario : null;
+
+	if (usuarioRespuesta) {
+		localStorage.setItem('usuarioActual', JSON.stringify(usuarioRespuesta));
+		dispatch({
+			type: SET_USUARIO_ACTUAL,
+			payload: { usuarioActual: usuarioRespuesta }
+		});
+	}
+
+	dispatch({
+		type: UPDATE_LAST_REQUEST_STATUS,
+		payload: { status: resp.data.status }
+	});
+
+	return;
 };
 
 export const desloggearUsuario = async dispatch => {

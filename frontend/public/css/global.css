@@ -1,0 +1,45 @@
+.btnFacebook {
+	width: 210px;
+	height: 43px;
+	border-radius: 4px;
+	background: #3b5998;
+	color: white;
+	border: 0px transparent;
+	text-align: center;
+	margin: 5px;
+}
+button.btnFacebook {
+	font-size: 14px;
+	font-family: 'Roboto', sans-serif;
+}
+.btnGoogle {
+	margin: 5px;
+	height: 42px;
+	width: 210px;
+	border-radius: 4px;
+}
+button.btnGoogle {
+	color: rgb(0, 0, 0);
+}
+
+.btnLogin {
+	margin: 5px;
+	height: 42px;
+	width: 70px;
+	border-radius: 4px;
+}
+
+.btnRegister {
+	margin: 5px;
+	height: 42px;
+	width: 90px;
+	border-radius: 4px;
+}
+
+.btnFacebook:hover {
+	background: #3b5998;
+	opacity: 0.6;
+}
+.btnGoogle:hover {
+	opacity: 0.6;
+}

@@ -18,7 +18,6 @@ export const estadoInicialProducto = {
 export default function(state = estadoInicialProducto, action) {
 	switch (action.type) {
 		case UPDATE_PRODUCTO_FORMULARIO:
-			console.log(action.payload);
 			return {
 				...state,
 				...action.payload

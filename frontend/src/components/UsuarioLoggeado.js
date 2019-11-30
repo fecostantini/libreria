@@ -16,7 +16,7 @@ export default function UsuarioLoggeado() {
 		<div>
 			<Dropdown>
 				<Dropdown.Toggle>
-					<Image className='mr-2' src={usuarioActual.imagen} />
+					<Image className='mr-2' src={usuarioActual.imagen} style={{ height: '42px', width: 'auto' }} roundedCircle />
 					{usuarioActual.nombre}
 				</Dropdown.Toggle>
 				<Dropdown.Menu>

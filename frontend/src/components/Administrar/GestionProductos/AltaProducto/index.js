@@ -36,22 +36,10 @@ const AltaProducto = () => {
 
 	// redux
 	const producto = useSelector(state => state.producto);
-	const todasLasEditoriales = useSelector(state =>
-		state.editoriales.items
-			.concat({ nombre_editorial: '-SELECCIONE UNA EDITORIAL -', id_editorial: 0 })
-			.sort(ordenar('nombre_editorial'))
-	);
-	const todosLosAutores = useSelector(state =>
-		state.autores.items.concat({ autor: '-SELECCIONE LOS AUTORES-', id_autor: 0 }).sort(ordenar('autor'))
-	);
-	const todasLasCategorias = useSelector(state =>
-		state.categorias.items
-			.concat({ nombre_categoria: '-SELECCIONE LAS CATEGORIAS -', id_categoria: 0 })
-			.sort(ordenar('nombre_categoria'))
-	);
-	const todasLasSagas = useSelector(state =>
-		state.sagas.items.concat({ nombre_saga: '-NO PERTENECE A NINGUNA-', id_saga: 0 }).sort(ordenar('nombre_saga'))
-	);
+	const todasLasEditoriales = useSelector(state => state.editoriales.items);
+	const todosLosAutores = useSelector(state => state.autores.items);
+	const todasLasCategorias = useSelector(state => state.categorias.items);
+	const todasLasSagas = useSelector(state => state.sagas.items);
 
 	const statusUltimaPeticion = useSelector(state => state.ultimaRequest.status);
 
@@ -97,7 +85,7 @@ const AltaProducto = () => {
 
 		// statusUltimaPetición arranca en undefined, hay que hacer este chequeo
 		if (statusUltimaPeticion) Swal.fire(swalConfig);
-	}, [statusUltimaPeticion, todosLosAutores, todasLasCategorias]);
+	}, [statusUltimaPeticion, todasLasEditoriales, todosLosAutores, todasLasCategorias, todasLasSagas]);
 
 	const enviarFormulario = tipoProducto => {
 		if (tipoProducto === tiposProducto.LIBRO) {
@@ -248,11 +236,14 @@ const AltaProducto = () => {
 						<div className='col-lg-9 col-sm-12'>
 							<label>Editorial</label>{' '}
 							<select onChange={handleChange} name='editorial'>
-								{todasLasEditoriales.map(editorial => (
-									<option value={editorial.id_editorial} key={editorial.id_editorial}>
-										{editorial.nombre_editorial}
-									</option>
-								))}
+								{todasLasEditoriales
+									.concat({ nombre_editorial: '-SELECCIONE UNA EDITORIAL -', id_editorial: 0 })
+									.sort(ordenar('nombre_editorial'))
+									.map(editorial => (
+										<option value={editorial.id_editorial} key={editorial.id_editorial}>
+											{editorial.nombre_editorial}
+										</option>
+									))}
 							</select>
 						</div>{' '}
 						<div className='col-lg-3 col-sm-12'>
@@ -274,11 +265,14 @@ const AltaProducto = () => {
 						<div className='col-lg-9 col-sm-12'>
 							<label>Autores</label>{' '}
 							<select onChange={handleChange} name='autores'>
-								{todosLosAutores.map(autor => (
-									<option value={autor.id_autor} key={autor.id_autor}>
-										{autor.autor}
-									</option>
-								))}
+								{todosLosAutores
+									.concat({ autor: '-SELECCIONE LOS AUTORES-', id_autor: 0 })
+									.sort(ordenar('autor'))
+									.map(autor => (
+										<option value={autor.id_autor} key={autor.id_autor}>
+											{autor.autor}
+										</option>
+									))}
 							</select>
 						</div>{' '}
 						<div className='col-lg-3 col-sm-12'>
@@ -305,11 +299,14 @@ const AltaProducto = () => {
 						<div className='col-lg-9 col-sm-12'>
 							<label>Categorías</label>{' '}
 							<select onChange={handleChange} name='categorias'>
-								{todasLasCategorias.map(categoria => (
-									<option value={categoria.id_categoria} key={categoria.id_categoria}>
-										{categoria.nombre_categoria}
-									</option>
-								))}
+								{todasLasCategorias
+									.concat({ nombre_categoria: '-SELECCIONE LAS CATEGORIAS -', id_categoria: 0 })
+									.sort(ordenar('nombre_categoria'))
+									.map(categoria => (
+										<option value={categoria.id_categoria} key={categoria.id_categoria}>
+											{categoria.nombre_categoria}
+										</option>
+									))}
 							</select>
 						</div>{' '}
 						<div className='col-lg-3 col-sm-12'>
@@ -341,11 +338,14 @@ const AltaProducto = () => {
 						<div className='col-lg-9 col-sm-12'>
 							<label>Saga</label>{' '}
 							<select onChange={handleChange} name='saga'>
-								{todasLasSagas.map(saga => (
-									<option value={saga.id_saga} key={saga.id_saga}>
-										{saga.nombre_saga}
-									</option>
-								))}
+								{todasLasSagas
+									.concat({ nombre_saga: '-NO PERTENECE A NINGUNA-', id_saga: 0 })
+									.sort(ordenar('nombre_saga'))
+									.map(saga => (
+										<option value={saga.id_saga} key={saga.id_saga}>
+											{saga.nombre_saga}
+										</option>
+									))}
 							</select>{' '}
 						</div>
 						<div className='col-lg-3 col-sm-12'>
