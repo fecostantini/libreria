@@ -130,15 +130,10 @@ let getUsuarioByMailAndPassword = async usuarioBuscado => {
 
 let createUsuario = async nuevoUsuario => {
 	try {
-		let query;
 		let usuario = { id_facebook: '', id_google: '', mail: '', nombre: '', apellido: '', password: '' };
 		nuevoUsuario = { ...usuario, ...nuevoUsuario }; // si nuevoUsuario viene incompleto tendrá al menos los valores vacíos
 
-		if (nuevoUsuario.id_facebook) query = querys.INSERT_FACEBOOK.format(nuevoUsuario);
-		else if (nuevoUsuario.id_google) query = querys.INSERT_GOOGLE.format(nuevoUsuario);
-		else query = querys.INSERT.format(nuevoUsuario);
-
-		let response = await pool.query(query);
+		let response = await pool.query(querys.INSERT.format(nuevoUsuario));
 		let filasModificadas = response.rowCount;
 		let usuarioCreado = filasModificadas > 0;
 
