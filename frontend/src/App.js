@@ -5,6 +5,7 @@ import { Route, Switch } from 'react-router-dom';
 //componentes
 import Administrar from './components/Administrar';
 import EditarPerfil from './components/EditarPerfil';
+import Productos from './components/Productos';
 import Header from './components/Header';
 
 let App = () => {
@@ -17,10 +18,9 @@ let App = () => {
 			<Header />
 			<main className='container mt-5'>
 				<Switch>
-					<Route exact path='/' component={() => <h1>Home</h1>} />
+					<Route path='/' component={Productos} />
 					{usuarioActual && usuarioActual.rol === 'ADMIN' ? rutaAdministrar : null}
 					{usuarioActual ? editarPerfil : null}
-
 					<Route render={() => <h1>Error 404. Página no encontrada.</h1>} />
 				</Switch>
 			</main>
