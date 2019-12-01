@@ -7,5 +7,7 @@ router.use('/editorial', require('./rutasEditorial'));
 router.use('/categoria', require('./rutasCategoria'));
 router.use('/saga', require('./rutasSaga'));
 router.use('/usuario', require('./rutasUsuario'));
+router.use('/producto', require('./rutasProducto'));
+router.use('/promocion', require('./rutasPromocion'));
 
 module.exports = router;
