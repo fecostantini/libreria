@@ -43,3 +43,9 @@ button.btnGoogle {
 .btnGoogle:hover {
 	opacity: 0.6;
 }
+
+.clickableCard:hover {
+	background-color: rgba(243, 243, 243, 0.829);
+	opacity: 0.8;
+	cursor: pointer;
+}

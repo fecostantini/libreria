@@ -7,6 +7,8 @@ import categoriaReducer from './categoriaReducer';
 import sagaReducer from './sagaReducer';
 import editorialReducer from './editorialReducer';
 import promocionReducer from './promocionReducer';
+import libroReducer from './libroReducer';
+import fotocopiaReducer from './fotocopiaReducer';
 import usuarioReducer from './usuarioReducer';
 
 import productoReducer from './productoReducer';
@@ -20,6 +22,8 @@ const createRootReducer = history =>
 		sagas: sagaReducer,
 		editoriales: editorialReducer,
 		promociones: promocionReducer,
+		libros: libroReducer,
+		fotocopias: fotocopiaReducer,
 		usuario: usuarioReducer,
 		producto: productoReducer,
 		ultimaRequest: ultimaRequestReducer

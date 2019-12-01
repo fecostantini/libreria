@@ -6,6 +6,7 @@ import { Route, Switch } from 'react-router-dom';
 import Administrar from './components/Administrar';
 import EditarPerfil from './components/EditarPerfil';
 import Productos from './components/Productos';
+import Producto from './components/Productos/Producto';
 import Header from './components/Header';
 
 let App = () => {
@@ -18,6 +19,7 @@ let App = () => {
 			<Header />
 			<main className='container mt-5'>
 				<Switch>
+					<Route exact path='/producto/:id_producto' render={props => <Producto props={props} />} />
 					{usuarioActual && usuarioActual.rol === 'ADMIN' ? rutaAdministrar : null}
 					{usuarioActual ? editarPerfil : null}
 					<Route path='/' component={Productos} />

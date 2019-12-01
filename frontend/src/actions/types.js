@@ -19,6 +19,12 @@ export const CREATE_EDITORIAL = 'CREATE_EDITORIAL';
 // acciones de promocion
 export const FETCH_PROMOCIONES = 'FETCH_PROMOCIONES';
 
+// acciones de libro
+export const FETCH_LIBROS = 'FETCH_LIBROS';
+
+// acciones de fotocopia
+export const FETCH_FOTOCOPIAS = 'FETCH_FOTOCOPIAS';
+
 // acciones de usuario
 export const SET_USUARIO_ACTUAL = 'SET_USUARIO_ACTUAL';
 export const UPDATE_USUARIO = 'SET_USUARIO_ACTUAL';

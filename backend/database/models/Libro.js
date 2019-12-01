@@ -15,7 +15,29 @@ var formatearArray = array => {
 };
 
 const querys = {
+	GET_ALL: 'select * from libro;',
 	INSERT: String.raw`call new_libro({isbn}, '{idioma}', '{titulo}', {precio}, '{edicion}', '{descripcion}', {id_editorial}, array[{autores}], array[{categorias}]);`
+};
+
+let getLibros = async () => {
+	try {
+		let response = await pool.query(querys.GET_ALL);
+		let libros = response.rows;
+
+		if (libros.length)
+			return {
+				status: estados.EXITO,
+				libros
+			};
+		else return { status: estados.FRACASO };
+	} catch (error) {
+		switch (error.code) {
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
+			default:
+				return { status: estados.ERROR_DESCONOCIDO };
+		}
+	}
 };
 
 let createLibro = async nuevoLibro => {
@@ -48,4 +70,4 @@ let createLibro = async nuevoLibro => {
 	}
 };
 
-module.exports = { createLibro };
+module.exports = { getLibros, createLibro };
