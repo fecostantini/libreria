@@ -4,7 +4,7 @@ import { updateProducto } from '../../../../actions/productoActions';
 
 let InputFormulario = ({ titulo, name, type, containterClass }) => {
 	const dispatch = useDispatch();
-	const producto = useSelector(state => state.producto);
+	const producto = useSelector(state => state.producto.productoActual);
 
 	const handleChange = e => {
 		e.preventDefault();

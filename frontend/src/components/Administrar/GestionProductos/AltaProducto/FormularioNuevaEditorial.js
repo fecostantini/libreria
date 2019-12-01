@@ -3,7 +3,7 @@ import Error from '../../../Common/Error';
 import { createEditorial } from '../../../../actions/editorialActions';
 import { useDispatch } from 'react-redux';
 
-let FormularioNuevaEditorial = () => {
+let FormularioNuevaEditorial = ({ setMostrarAlerta }) => {
 	const dispatch = useDispatch();
 	const [nuevaEditorial, setNuevaEditorial] = useState({
 		nombre_editorial: ''
@@ -17,7 +17,9 @@ let FormularioNuevaEditorial = () => {
 	const crearNuevaEditorial = () => {
 		if (nuevaEditorial.nombre_editorial) {
 			const nombreEditorialUpper = nuevaEditorial.nombre_editorial.toUpperCase();
-			createEditorial(dispatch, { nombre_editorial: nombreEditorialUpper });
+			createEditorial(dispatch, { nombre_editorial: nombreEditorialUpper }).then(() => {
+				setMostrarAlerta(true);
+			});
 		} else
 			setError({
 				activo: true,

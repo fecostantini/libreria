@@ -3,7 +3,7 @@ import Error from '../../../Common/Error';
 import { createCategoria } from '../../../../actions/categoriaActions';
 import { useDispatch } from 'react-redux';
 
-let FormularioNuevaCategoria = () => {
+let FormularioNuevaCategoria = ({ setMostrarAlerta }) => {
 	const dispatch = useDispatch();
 	const [nuevaCategoria, setNuevaCategoria] = useState({
 		nombre_categoria: ''
@@ -16,7 +16,9 @@ let FormularioNuevaCategoria = () => {
 	const crearNuevaCategoria = () => {
 		if (nuevaCategoria.nombre_categoria) {
 			const nombreCategoriaUpper = nuevaCategoria.nombre_categoria.toUpperCase();
-			createCategoria(dispatch, { nombre_categoria: nombreCategoriaUpper });
+			createCategoria(dispatch, { nombre_categoria: nombreCategoriaUpper }).then(() => {
+				setMostrarAlerta(true);
+			});
 		} else
 			setError({
 				activo: true,

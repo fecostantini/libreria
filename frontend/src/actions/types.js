@@ -16,6 +16,9 @@ export const CREATE_SAGA = 'CREATE_SAGA';
 export const FETCH_EDITORIALES = 'FETCH_EDITORIALES';
 export const CREATE_EDITORIAL = 'CREATE_EDITORIAL';
 
+// acciones de promocion
+export const FETCH_PROMOCIONES = 'FETCH_PROMOCIONES';
+
 // acciones de usuario
 export const SET_USUARIO_ACTUAL = 'SET_USUARIO_ACTUAL';
 export const UPDATE_USUARIO = 'SET_USUARIO_ACTUAL';
@@ -25,3 +28,4 @@ export const UPDATE_LAST_REQUEST_STATUS = 'UPDATE_LAST_REQUEST_STATUS';
 
 // producto que se maneja en GestionProductos
 export const UPDATE_PRODUCTO_FORMULARIO = 'UPDATE_PRODUCTO_FORMULARIO';
+export const FETCH_PRODUCTOS = 'FETCH_PRODUCTOS';

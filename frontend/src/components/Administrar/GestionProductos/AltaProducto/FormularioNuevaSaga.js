@@ -3,7 +3,7 @@ import Error from '../../../Common/Error';
 import { createSaga } from '../../../../actions/sagaActions';
 import { useDispatch } from 'react-redux';
 
-let FormularioNuevaSaga = () => {
+let FormularioNuevaSaga = ({ setMostrarAlerta }) => {
 	const dispatch = useDispatch();
 	const [nuevaSaga, setNuevaSaga] = useState({
 		nombre_saga: '',
@@ -18,7 +18,9 @@ let FormularioNuevaSaga = () => {
 	const crearNuevaSaga = () => {
 		if (nuevaSaga.nombre_saga) {
 			const nombreSagaUpper = nuevaSaga.nombre_saga.toUpperCase();
-			createSaga(dispatch, { nombre_saga: nombreSagaUpper, stock_saga: nuevaSaga.stock_saga });
+			createSaga(dispatch, { nombre_saga: nombreSagaUpper, stock_saga: nuevaSaga.stock_saga }).then(() => {
+				setMostrarAlerta(true);
+			});
 		} else
 			setError({
 				activo: true,

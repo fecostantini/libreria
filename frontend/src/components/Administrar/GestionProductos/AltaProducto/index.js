@@ -14,6 +14,7 @@ import { fetchAutores } from '../../../../actions/autorActions';
 import { fetchCategorias } from '../../../../actions/categoriaActions';
 import { fetchSagas } from '../../../../actions/sagaActions';
 import { fetchEditoriales } from '../../../../actions/editorialActions';
+import { fetchPromociones } from '../../../../actions/promocionActions';
 import { updateProducto } from '../../../../actions/productoActions';
 import { estadoInicialProducto } from '../../../../reducers/productoReducer';
 import { useSelector, useDispatch } from 'react-redux';
@@ -35,14 +36,16 @@ const AltaProducto = () => {
 	const dispatch = useDispatch();
 
 	// redux
-	const producto = useSelector(state => state.producto);
+	const producto = useSelector(state => state.producto.productoActual);
 	const todasLasEditoriales = useSelector(state => state.editoriales.items);
 	const todosLosAutores = useSelector(state => state.autores.items);
 	const todasLasCategorias = useSelector(state => state.categorias.items);
 	const todasLasSagas = useSelector(state => state.sagas.items);
+	const todasLasPromociones = useSelector(state => state.promociones.items);
 
 	const statusUltimaPeticion = useSelector(state => state.ultimaRequest.status);
 
+	const [mostrarAlerta, setMostrarAlerta] = useState(false);
 	const [error, setError] = useState({ activo: false, mensaje: '' }); // error en el formulario de producto
 	const [tipoProducto, setTipoProducto] = useState(''); // FOTOCOPIA o LIBRO
 
@@ -54,17 +57,24 @@ const AltaProducto = () => {
 
 	// cargar los autores y las categorias cuando cargue la página
 	useEffect(() => {
-		fetchAutores(dispatch);
+		// mostramos la alerta una vez pq si algo falla va a mostrar múltiples alertas
+		fetchAutores(dispatch).then(() => {
+			setMostrarAlerta(true);
+		});
 		fetchCategorias(dispatch);
 		fetchSagas(dispatch);
 		fetchEditoriales(dispatch);
+		fetchPromociones(dispatch);
 	}, []);
 
-	// cada vez que se actualice el estado de la última petición se mostrará un mensaje
 	useEffect(() => {
-		console.log(statusUltimaPeticion);
-		// no queremos mostrar un mensaje cuando hace la petición para traer algo.
-		if (statusUltimaPeticion === estados.EXITO) return;
+		// solo queremos mostrar el error si mostrarAlerta es verdadero
+		if (!mostrarAlerta) return;
+		if (statusUltimaPeticion === estados.EXITO) {
+			// no queremos mostrar la alerta cuando trae a los autores, editoriales, etc..
+			setMostrarAlerta(false);
+			return;
+		}
 
 		const swalConfig = {
 			position: 'center',
@@ -73,19 +83,22 @@ const AltaProducto = () => {
 			icon: statusUltimaPeticion === estados.CREADO ? 'success' : 'error'
 		};
 
-		if (statusUltimaPeticion === estados.CREADO) {
-			swalConfig.title = 'La creación se realizó con éxito!';
+		const cerrarFormularios = () => {
 			setFormularioNuevoAutor(false);
 			setFormularioNuevaCategoria(false);
 			setFormularioNuevaSaga(false);
 			setFormularioNuevaEditorial(false);
+		};
+
+		if (statusUltimaPeticion === estados.CREADO) {
+			swalConfig.title = 'La creación se realizó con éxito!';
+			cerrarFormularios();
 		} else if (statusUltimaPeticion === estados.YA_EXISTE) swalConfig.title = 'El elemento que desea crear ya existe';
 		else if (statusUltimaPeticion === estados.CONEXION_FALLIDA)
 			swalConfig.title = 'Falló la conexión a la Base de Datos';
-
-		// statusUltimaPetición arranca en undefined, hay que hacer este chequeo
-		if (statusUltimaPeticion) Swal.fire(swalConfig);
-	}, [statusUltimaPeticion, todasLasEditoriales, todosLosAutores, todasLasCategorias, todasLasSagas]);
+		setMostrarAlerta(false);
+		Swal.fire(swalConfig);
+	}, [mostrarAlerta]);
 
 	const enviarFormulario = tipoProducto => {
 		if (tipoProducto === tiposProducto.LIBRO) {
@@ -203,7 +216,12 @@ const AltaProducto = () => {
 				...producto,
 				[name]: todasLasEditoriales.find(editorial => editorial.id_editorial === parseInt(value, 10))
 			});
-		else agregarElemento(value, name);
+		else if (name === 'promocion') {
+			updateProducto(dispatch, {
+				...producto,
+				[name]: todasLasPromociones.find(promocion => promocion.id_promocion === parseInt(value, 10))
+			});
+		} else agregarElemento(value, name);
 	};
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -259,7 +277,7 @@ const AltaProducto = () => {
 							</label>
 						</div>
 					</div>
-					{formularioNuevaEditorial ? <FormularioNuevaEditorial /> : null}
+					{formularioNuevaEditorial ? <FormularioNuevaEditorial setMostrarAlerta={setMostrarAlerta} /> : null}
 					<hr className='mt-4' />
 					<div className='form-row'>
 						<div className='col-lg-9 col-sm-12'>
@@ -293,7 +311,7 @@ const AltaProducto = () => {
 							<ItemEliminable titulo={autor.autor} id={autor.id_autor} name='autores' borrarElemento={borrarElemento} />
 						))}
 					</div>
-					{formularioNuevoAutor ? <FormularioNuevoAutor /> : null}
+					{formularioNuevoAutor ? <FormularioNuevoAutor setMostrarAlerta={setMostrarAlerta} /> : null}
 					<hr className='mt-4' />
 					<div className='form-row'>
 						<div className='col-lg-9 col-sm-12'>
@@ -332,7 +350,7 @@ const AltaProducto = () => {
 							/>
 						))}
 					</div>
-					{formularioNuevaCategoria ? <FormularioNuevaCategoria /> : null}
+					{formularioNuevaCategoria ? <FormularioNuevaCategoria setMostrarAlerta={setMostrarAlerta} /> : null}
 					<hr className='mt-4' />
 					<div className='form-row'>
 						<div className='col-lg-9 col-sm-12'>
@@ -361,7 +379,7 @@ const AltaProducto = () => {
 							</label>
 						</div>
 					</div>
-					{formularioNuevaSaga ? <FormularioNuevaSaga /> : null}
+					{formularioNuevaSaga ? <FormularioNuevaSaga setMostrarAlerta={setMostrarAlerta} /> : null}
 				</Fragment>
 			);
 		} else if (tipoProducto === tiposProducto.FOTOCOPIA) return <Fragment>{inputDescripcion()}</Fragment>;
@@ -404,13 +422,16 @@ const AltaProducto = () => {
 					))}
 				</div>
 				<div className='form-group mt-3'>
-					<label>Descuento promoción </label>{' '}
-					<select onChange={handleChange} defaultValue={''} name='descuento'>
-						{'0|5|10|15|20|25|30|35|40|45|50'.split('|').map(descuento => (
-							<option key={descuento} value={descuento}>
-								{descuento}%
-							</option>
-						))}
+					<label>Promoción </label>{' '}
+					<select onChange={handleChange} defaultValue={''} name='promocion'>
+						{todasLasPromociones
+							.concat({ nombre_promocion: 'SIN PROMOCIÓN', id_promocion: 0, descuento: 0 })
+							.sort(ordenar('nombre_promocion'))
+							.map(promocion => (
+								<option key={promocion.id_promocion} value={promocion.id_promocion}>
+									{`${promocion.nombre_promocion} [${promocion.descuento}% OFF]`}
+								</option>
+							))}
 					</select>
 				</div>
 				<legend className='text-center'>Tipo de producto</legend>

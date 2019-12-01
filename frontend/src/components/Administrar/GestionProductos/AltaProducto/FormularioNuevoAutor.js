@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 
 const estadoInicialNuevoAutor = { autor: '', nacionalidad: '' };
 
-let FormularioNuevoAutor = () => {
+let FormularioNuevoAutor = ({ setMostrarAlerta }) => {
 	const dispatch = useDispatch();
 	const [nuevoAutor, setNuevoAutor] = useState(estadoInicialNuevoAutor);
 	const [error, setError] = useState({
@@ -28,7 +28,9 @@ let FormularioNuevoAutor = () => {
 				autor: autorUpper,
 				nacionalidad: nacionalidadUpper
 			};
-			createAutor(dispatch, nuevoAutorUpper);
+			createAutor(dispatch, nuevoAutorUpper).then(() => {
+				setMostrarAlerta(true);
+			});
 		} else {
 			if (!nuevoAutor.autor && !nuevoAutor.nacionalidad)
 				setError({
@@ -50,19 +52,11 @@ let FormularioNuevoAutor = () => {
 
 	return (
 		<div className='form-row'>
-			<div className='col-12'>
-				{error.activo ? <Error mensaje={error.mensaje} /> : null}
-			</div>
+			<div className='col-12'>{error.activo ? <Error mensaje={error.mensaje} /> : null}</div>
 			<legend className='text-center'>Ingresar un nuevo autor</legend>
 			<div className='col-lg-4 col-sm-6'>
 				<label>Nombre:</label>
-				<input
-					type='text'
-					name='autor'
-					value={nuevoAutor.autor}
-					className='form-control'
-					onChange={handleChange}
-				/>
+				<input type='text' name='autor' value={nuevoAutor.autor} className='form-control' onChange={handleChange} />
 			</div>
 
 			<div className='col-lg-4 col-sm-6'>

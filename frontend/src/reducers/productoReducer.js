@@ -1,18 +1,21 @@
-import { UPDATE_PRODUCTO_FORMULARIO } from '../actions/types';
+import { UPDATE_PRODUCTO_FORMULARIO, FETCH_PRODUCTOS } from '../actions/types';
 
 export const estadoInicialProducto = {
-	titulo: '',
-	stock: 0,
-	precio: 0,
-	descuento: '',
-	descripcion: '',
-	isbn: 0,
-	idioma: '',
-	edicion: '',
-	editorial: null,
-	saga: null,
-	autores: [],
-	categorias: []
+	productoActual: {
+		titulo: '',
+		stock: 0,
+		precio: 0,
+		promocion: null,
+		descripcion: '',
+		isbn: 0,
+		idioma: '',
+		edicion: '',
+		editorial: null,
+		saga: null,
+		autores: [],
+		categorias: []
+	},
+	items: []
 };
 
 export default function(state = estadoInicialProducto, action) {
@@ -20,9 +23,19 @@ export default function(state = estadoInicialProducto, action) {
 		case UPDATE_PRODUCTO_FORMULARIO:
 			return {
 				...state,
-				...action.payload
+				productoActual: { ...action.payload }
 			};
 
+		case FETCH_PRODUCTOS:
+			const productos = action.payload.productos;
+
+			if (productos)
+				return {
+					...state,
+					items: productos
+				};
+
+			break;
 		default:
 			return state;
 	}
