@@ -18,9 +18,9 @@ let App = () => {
 			<Header />
 			<main className='container mt-5'>
 				<Switch>
-					<Route path='/' component={Productos} />
 					{usuarioActual && usuarioActual.rol === 'ADMIN' ? rutaAdministrar : null}
 					{usuarioActual ? editarPerfil : null}
+					<Route path='/' component={Productos} />
 					<Route render={() => <h1>Error 404. Página no encontrada.</h1>} />
 				</Switch>
 			</main>

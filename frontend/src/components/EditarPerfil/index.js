@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateUsuario } from '../../actions/usuarioActions';
 import Error from '../Common/Error';
 
-const AltaProducto = () => {
+const EditarPerfil = () => {
 	const dispatch = useDispatch();
 	const usuarioActualRedux = useSelector(state => state.usuario.usuarioActual);
 
@@ -65,11 +65,11 @@ const AltaProducto = () => {
 				/>
 			</Form.Group>
 
-			<Button variant='primary' type='submit' onClick={handleSubmit}>
-				Submit
+			<Button block variant='primary' type='submit' onClick={handleSubmit}>
+				Guardar cambios
 			</Button>
 		</Form>
 	);
 };
 
-export default AltaProducto;
+export default EditarPerfil;
