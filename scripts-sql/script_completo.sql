@@ -366,6 +366,7 @@ precio_compra real;
 fila_libro libroxcarrito%rowtype;
 fila_fotocopia fotocopiaxcarrito%rowtype;
 fila_saga sagaxcarrito%rowtype;
+usuario INTEGER;
 BEGIN
 precio_compra = 0;
 FOR fila_libro IN select lxc.isbn, lxc.id_carrito, lxc.cantidad from libroxcarrito lxc, carrito c where (id_carrito_compra = c.id_carrito and c.id_carrito = lxc.id_carrito)
@@ -387,6 +388,9 @@ LOOP
 END LOOP;
 
 INSERT INTO compra("precio_total", "id_carrito") VALUES (precio_compra,id_carrito_compra);
+UPDATE carrito set activo = false where (id_carrito = id_carrito_compra);
+usuario = (select u.id_usuario from usuario u, carrito c where (c.id_usuario = u.id_usuario and c.id_carrito = id_carrito_compra));
+INSERT INTO carrito("id_usuario") VALUES(usuario);
 END $$
 LANGUAGE plpgsql;
 
