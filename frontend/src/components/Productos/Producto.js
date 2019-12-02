@@ -68,7 +68,26 @@ function Producto({ props }) {
 				</Card>
 			);
 		} else {
-			return null;
+			return (
+				<Card>
+					<Card.Header as='h2'>
+						<Row>
+							<Col sm={9} md={9} lg={9}>
+								{producto.titulo}
+							</Col>
+							<Col className='text-right'>${producto.precio}</Col>
+						</Row>
+					</Card.Header>
+					<Card.Body>
+						<Card.Title>{producto.descripcion}</Card.Title>
+						<hr></hr>
+						<Card.Text></Card.Text>
+						<Button block variant='primary'>
+							Añadir al carrito
+						</Button>
+					</Card.Body>
+				</Card>
+			);
 		}
 	};
 	return (

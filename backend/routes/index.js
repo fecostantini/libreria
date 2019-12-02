@@ -10,5 +10,6 @@ router.use('/saga', require('./rutasSaga'));
 router.use('/usuario', require('./rutasUsuario'));
 router.use('/producto', require('./rutasProducto'));
 router.use('/promocion', require('./rutasPromocion'));
+router.use('/carrito', require('./rutasCarrito'));
 
 module.exports = router;
