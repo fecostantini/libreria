@@ -4,8 +4,22 @@ const estados = require('./estados');
 const format = require('string-format');
 format.extend(String.prototype, {});
 
+var formatearArray = array => {
+	let arrayStr = String.raw``;
+	if (array) {
+		array.forEach((elemento, i) => {
+			arrayStr += String.raw`${elemento}`;
+			if (i + 1 !== array.length) arrayStr += String.raw`,`;
+		});
+	}
+
+	return arrayStr;
+};
+
 const querys = {
-	GET_ALL: 'select * from producto;'
+	GET_ALL: 'select * from producto;',
+	INSERT: String.raw`call new_producto({isbn}, '{idioma}', '{titulo}', {stock}, {precio}, '{edicion}', '{descripcion}', {id_editorial}, {id_saga}, {id_promocion}, array[{ids_autores}]::int[], array[{ids_categorias}]::int[]);`,
+	DELETE: String.raw`` //TODO: Llamar funcion que borra al producto y todas sus relaciones intermedias (en caso de ser libro)
 };
 
 let getProductos = async () => {
@@ -29,6 +43,39 @@ let getProductos = async () => {
 	}
 };
 
+let createProducto = async nuevoProducto => {
+	try {
+		// Formatea los arrays de manera que se pueda formatear la consulta
+		const nuevoProductoFormateado = {
+			...nuevoProducto,
+			autores: formatearArray(nuevoProducto.autores),
+			categorias: formatearArray(nuevoProducto.categorias)
+		};
+
+		console.log(querys.INSERT.format(nuevoProductoFormateado));
+		let response = await pool.query(querys.INSERT.format(nuevoProductoFormateado));
+
+		if (response) {
+			return {
+				status: estados.EXITO,
+				libro: nuevoProducto
+			};
+		}
+	} catch (error) {
+		console.log(error);
+		console.log(error.code);
+		switch (error.code) {
+			case estados.YA_EXISTE:
+				return { status: estados.YA_EXISTE };
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
+			default:
+				return { status: estados.ERROR_DESCONOCIDO };
+		}
+	}
+};
+
 module.exports = {
-	getProductos
+	getProductos,
+	createProducto
 };

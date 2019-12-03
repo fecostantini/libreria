@@ -7,8 +7,8 @@ format.extend(String.prototype, {});
 var formatearArray = array => {
 	arrayStr = String.raw``;
 	array.forEach((elemento, i) => {
-		arrayStr += String.raw`'${elemento}'`;
-		if (i + 1 !== array.length) arrayStr += String.raw`, `;
+		arrayStr += String.raw`${elemento}`;
+		if (i + 1 !== array.length) arrayStr += String.raw`,`;
 	});
 
 	return arrayStr;
@@ -16,7 +16,7 @@ var formatearArray = array => {
 
 const querys = {
 	GET_ALL: 'select * from libro;',
-	INSERT: String.raw`call new_libro({isbn}, '{idioma}', '{titulo}', {precio}, '{edicion}', '{descripcion}', {id_editorial}, array[{autores}], array[{categorias}]);`
+	INSERT: String.raw`call new_libro({isbn}, '{idioma}', '{titulo}', {stock}, {precio}, '{edicion}', '{descripcion}', {id_editorial}, {id_saga}, array[{autores}], array[{categorias}]);`
 };
 
 let getLibros = async () => {
@@ -43,13 +43,13 @@ let getLibros = async () => {
 let createLibro = async nuevoLibro => {
 	try {
 		// Formatea los arrays de manera que se pueda formatear la consulta
-		nuevoLibro = {
+		const nuevoLibroFormateado = {
 			...nuevoLibro,
 			autores: formatearArray(nuevoLibro.autores),
 			categorias: formatearArray(nuevoLibro.categorias)
 		};
 
-		let response = await pool.query(querys.INSERT.format(nuevoLibro));
+		let response = await pool.query(querys.INSERT.format(nuevoLibroFormateado));
 		if (response) {
 			return {
 				status: estados.EXITO,

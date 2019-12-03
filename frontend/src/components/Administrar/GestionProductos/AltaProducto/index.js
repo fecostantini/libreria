@@ -3,6 +3,8 @@ import Swal from 'sweetalert2';
 
 import Error from '../../../Common/Error';
 import ItemEliminable from '../../../Common/ItemEliminable';
+import { ordenar } from '../../../Common/utils';
+
 import FormularioNuevoAutor from './FormularioNuevoAutor';
 import FormularioNuevaCategoria from './FormularioNuevaCategoria';
 import FormularioNuevaSaga from './FormularioNuevaSaga';
@@ -15,17 +17,9 @@ import { fetchCategorias } from '../../../../actions/categoriaActions';
 import { fetchSagas } from '../../../../actions/sagaActions';
 import { fetchEditoriales } from '../../../../actions/editorialActions';
 import { fetchPromociones } from '../../../../actions/promocionActions';
-import { updateProducto } from '../../../../actions/productoActions';
+import { updateProducto, createProducto, resetProducto } from '../../../../actions/productoActions';
 import { estadoInicialProducto } from '../../../../reducers/productoReducer';
 import { useSelector, useDispatch } from 'react-redux';
-
-const ordenar = campo => {
-	return (a, b) => {
-		if (a[campo] > b[campo]) return 1;
-		if (a[campo] < b[campo]) return -1;
-		return 0;
-	};
-};
 
 const tiposProducto = {
 	FOTOCOPIA: 'FOTOCOPIA',
@@ -58,9 +52,7 @@ const AltaProducto = () => {
 	// cargar los autores y las categorias cuando cargue la página
 	useEffect(() => {
 		// mostramos la alerta una vez pq si algo falla va a mostrar múltiples alertas
-		fetchAutores(dispatch).then(() => {
-			setMostrarAlerta(true);
-		});
+		fetchAutores(dispatch);
 		fetchCategorias(dispatch);
 		fetchSagas(dispatch);
 		fetchEditoriales(dispatch);
@@ -70,17 +62,12 @@ const AltaProducto = () => {
 	useEffect(() => {
 		// solo queremos mostrar el error si mostrarAlerta es verdadero
 		if (!mostrarAlerta) return;
-		if (statusUltimaPeticion === estados.EXITO) {
-			// no queremos mostrar la alerta cuando trae a los autores, editoriales, etc..
-			setMostrarAlerta(false);
-			return;
-		}
 
 		const swalConfig = {
 			position: 'center',
 			showConfirmButton: false,
 			timer: 3000,
-			icon: statusUltimaPeticion === estados.CREADO ? 'success' : 'error'
+			icon: statusUltimaPeticion === estados.CREADO || statusUltimaPeticion === estados.EXITO ? 'success' : 'error'
 		};
 
 		const cerrarFormularios = () => {
@@ -96,20 +83,30 @@ const AltaProducto = () => {
 		} else if (statusUltimaPeticion === estados.YA_EXISTE) swalConfig.title = 'El elemento que desea crear ya existe';
 		else if (statusUltimaPeticion === estados.CONEXION_FALLIDA)
 			swalConfig.title = 'Falló la conexión a la Base de Datos';
+		else if (statusUltimaPeticion === estados.EXITO) swalConfig.title = 'Se envió el formulario con éxito!';
+
 		setMostrarAlerta(false);
 		Swal.fire(swalConfig);
 	}, [mostrarAlerta]);
 
 	const enviarFormulario = tipoProducto => {
-		if (tipoProducto === tiposProducto.LIBRO) {
-			console.log('creando nuevo libro..');
-		} else if (tipoProducto === tiposProducto.FOTOCOPIA) {
+		let productoAEnviar;
+		if (tipoProducto === tiposProducto.FOTOCOPIA) {
 			console.log('creando nueva fotocopia..');
+			productoAEnviar = { ...producto, isbn: null };
+		} else if (tipoProducto === tiposProducto.LIBRO) {
+			console.log('creando nuevo libro..');
+			productoAEnviar = { ...producto };
 		}
 
-		setError({ activo: false });
-		setTipoProducto(''); // para que no quede desplegado el formulario de la fotocopia o el libro
-		updateProducto(dispatch, estadoInicialProducto);
+		createProducto(dispatch, productoAEnviar).then(() => {
+			setMostrarAlerta(true);
+			setError({ activo: false });
+			resetProducto(dispatch).then(() => {
+				document.getElementById('formulario-producto').reset();
+				setTipoProducto(''); // para que no quede desplegado el formulario de la fotocopia o el libro
+			});
+		});
 	};
 
 	// Agrega al producto algún elemento que después se visualzará como una nueva etiqueta azul en la vista
@@ -125,24 +122,32 @@ const AltaProducto = () => {
 			elementoYaAgregado = producto.categorias.includes(elemento);
 		}
 
-		if (!elementoYaAgregado)
+		if (!elementoYaAgregado && elemento)
 			updateProducto(dispatch, {
 				...producto,
-				[nombreElemento]: [...producto[nombreElemento], elemento]
+				[nombreElemento]: [...producto[nombreElemento], elemento],
+
+				[`ids_${nombreElemento}`]: [...producto[`ids_${nombreElemento}`], idElemento]
 			});
 	};
 
 	// Borra algun elemento del producto que después se visualzará como una etiqueta azul menos en la vista
 	const borrarElemento = (id, nombreElemento) => {
 		var elementosSinElEliminado;
+		var idsElementosSinElEliminado;
 
-		if (nombreElemento === 'autores') elementosSinElEliminado = producto.autores.filter(autor => autor.id_autor !== id);
-		else if (nombreElemento === 'categorias')
+		if (nombreElemento === 'autores') {
+			elementosSinElEliminado = producto.autores.filter(autor => autor.id_autor !== id);
+			idsElementosSinElEliminado = producto.ids_autores.filter(id_autor => id_autor !== id);
+		} else if (nombreElemento === 'categorias') {
 			elementosSinElEliminado = producto.categorias.filter(categoria => categoria.id_categoria !== id);
+			idsElementosSinElEliminado = producto.ids_categorias.filter(id_categoria => id_categoria !== id);
+		}
 
 		updateProducto(dispatch, {
 			...producto,
-			[nombreElemento]: [...elementosSinElEliminado]
+			[nombreElemento]: [...elementosSinElEliminado],
+			[`ids_${nombreElemento}`]: [...idsElementosSinElEliminado]
 		});
 	};
 
@@ -186,10 +191,9 @@ const AltaProducto = () => {
 				producto.isbn &&
 				producto.idioma &&
 				producto.edicion &&
-				producto.editorial &&
+				producto.id_editorial &&
 				producto.autores.length &&
-				producto.categorias.length &&
-				producto.editorial.id_editorial; // id_editorial !== 0  (la opción default tiene id_editorial === 0)
+				producto.categorias.length;
 
 			if (!informacionLibroSeteada) {
 				setError({
@@ -205,23 +209,15 @@ const AltaProducto = () => {
 	};
 
 	const handleChange = e => {
-		let { name, value } = e.target;
-		if (name === 'saga')
+		let name = e.target.name;
+		let value = parseInt(e.target.value, 10);
+
+		if (['id_saga', 'id_editorial', 'id_promocion'].includes(name))
 			updateProducto(dispatch, {
 				...producto,
-				[name]: todasLasSagas.find(saga => saga.id_saga === parseInt(value, 10))
+				[name]: value ? value : null
 			});
-		else if (name === 'editorial')
-			updateProducto(dispatch, {
-				...producto,
-				[name]: todasLasEditoriales.find(editorial => editorial.id_editorial === parseInt(value, 10))
-			});
-		else if (name === 'promocion') {
-			updateProducto(dispatch, {
-				...producto,
-				[name]: todasLasPromociones.find(promocion => promocion.id_promocion === parseInt(value, 10))
-			});
-		} else agregarElemento(value, name);
+		else agregarElemento(value, name);
 	};
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -253,7 +249,7 @@ const AltaProducto = () => {
 					<div className='form-row'>
 						<div className='col-lg-9 col-sm-12'>
 							<label>Editorial</label>{' '}
-							<select onChange={handleChange} name='editorial'>
+							<select onChange={handleChange} name='id_editorial'>
 								{todasLasEditoriales
 									.concat({ nombre_editorial: '-SELECCIONE UNA EDITORIAL -', id_editorial: 0 })
 									.sort(ordenar('nombre_editorial'))
@@ -355,7 +351,7 @@ const AltaProducto = () => {
 					<div className='form-row'>
 						<div className='col-lg-9 col-sm-12'>
 							<label>Saga</label>{' '}
-							<select onChange={handleChange} name='saga'>
+							<select onChange={handleChange} name='id_saga'>
 								{todasLasSagas
 									.concat({ nombre_saga: '-NO PERTENECE A NINGUNA-', id_saga: 0 })
 									.sort(ordenar('nombre_saga'))
@@ -423,7 +419,7 @@ const AltaProducto = () => {
 				</div>
 				<div className='form-group mt-3'>
 					<label>Promoción </label>{' '}
-					<select onChange={handleChange} defaultValue={''} name='promocion'>
+					<select onChange={handleChange} defaultValue={''} name='id_promocion'>
 						{todasLasPromociones
 							.concat({ nombre_promocion: 'SIN PROMOCIÓN', id_promocion: 0, descuento: 0 })
 							.sort(ordenar('nombre_promocion'))

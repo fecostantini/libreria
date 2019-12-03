@@ -1,19 +1,21 @@
-import { UPDATE_PRODUCTO_FORMULARIO, FETCH_PRODUCTOS } from '../actions/types';
+import { UPDATE_PRODUCTO_FORMULARIO, FETCH_PRODUCTOS, CREATE_PRODUCTO, RESET_PRODUCTO } from '../actions/types';
 
 export const estadoInicialProducto = {
 	productoActual: {
-		titulo: '',
-		stock: 0,
-		precio: 0,
-		promocion: null,
-		descripcion: '',
-		isbn: 0,
-		idioma: '',
-		edicion: '',
-		editorial: null,
-		saga: null,
+		titulo: null,
+		stock: null,
+		precio: null,
+		id_promocion: null,
+		descripcion: null,
+		isbn: null,
+		idioma: null,
+		edicion: null,
+		id_editorial: null,
+		id_saga: null,
 		autores: [],
-		categorias: []
+		ids_autores: [],
+		categorias: [],
+		ids_categorias: []
 	},
 	items: []
 };
@@ -36,6 +38,23 @@ export default function(state = estadoInicialProducto, action) {
 				};
 
 			break;
+
+		case CREATE_PRODUCTO:
+			const productoCreado = action.payload.productoCreado;
+
+			if (productoCreado)
+				return {
+					...state,
+					items: [...state.items, productoCreado]
+				};
+			break;
+
+		case RESET_PRODUCTO:
+			return {
+				...state,
+				productoActual: { ...estadoInicialProducto.productoActual }
+			};
+
 		default:
 			return state;
 	}

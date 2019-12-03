@@ -38,6 +38,7 @@ let InputFormulario = ({ titulo, name, type, containterClass }) => {
 						className='form-control'
 						onChange={handleChange}
 						min='0'
+						step={name === 'precio' ? '0.01' : '1'}
 					/>
 				);
 			else

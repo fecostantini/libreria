@@ -8,25 +8,34 @@
     ##        #######  ##    ##  ######  ####  #######  ##    ## ########  ######                 
 */  
 
-CREATE OR REPLACE PROCEDURE new_libro (isbn integer , idioma varchar,titulo varchar,stock integer, precio real, edicion varchar, descripcion varchar, id_editorial integer,autores varchar[], categorias varchar[])
+CREATE OR REPLACE PROCEDURE new_libro (isbn integer, idioma varchar, titulo varchar, stock integer, precio real, edicion varchar, descripcion varchar, id_editorial integer, id_saga integer, id_promocion integer, ids_autores integer[], ids_categorias integer[])
 AS $$
 DECLARE
 id_aut smallint;
 id_cat smallint;
-aut varchar;
-cat varchar;
 BEGIN
-insert into libro ("isbn","idioma","titulo","stock","precio","edicion","descripcion","id_editorial") values (isbn,idioma,titulo,stock,precio,edicion,descripcion,id_editorial);
-FOREACH aut IN ARRAY autores
+insert into libro ("isbn","idioma","titulo","stock","precio","edicion","descripcion","id_editorial", "id_saga", "id_promocion") values (isbn,idioma,titulo,stock,precio,edicion,descripcion,id_editorial,id_saga,id_promocion);
+FOREACH id_aut IN ARRAY ids_autores
 LOOP
-    id_aut = (select id_autor from autor where (autor = UPPER(aut)));
     insert into autorxlibro values (isbn, id_aut);
 END LOOP;
-FOREACH cat IN ARRAY categorias
+FOREACH id_cat IN ARRAY ids_categorias
 LOOP
-    id_cat = (select id_categoria from categoria where (nombre_categoria = UPPER(cat)));
     insert into categoriaxlibro values (isbn, id_cat);
 END LOOP;
+END $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE PROCEDURE new_producto (isbn integer, idioma varchar, titulo varchar, stock integer, precio real, edicion varchar, descripcion varchar, id_editorial integer, id_saga integer, id_promocion integer, ids_autores integer[], ids_categorias integer[], id_usuario integer)
+AS $$
+DECLARE
+BEGIN
+IF (isbn IS NULL) THEN
+  insert into fotocopia("titulo", "stock", "precio", "id_promocion", "descripcion", "id_usuario") values (titulo, stock, precio, id_promocion, descripcion, id_usuario);
+ELSE
+  call new_libro(isbn, idioma, titulo, stock, precio, edicion, descripcion, id_editorial, id_saga, id_promocion, ids_autores, ids_categorias);
+END IF;
+
 END $$
 LANGUAGE plpgsql;
 

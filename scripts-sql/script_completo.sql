@@ -328,25 +328,34 @@ CREATE TRIGGER uppercase_usuario_trigger BEFORE INSERT OR UPDATE ON usuario
     ##        #######  ##    ##  ######  ####  #######  ##    ## ########  ######                 
 */  
 
-CREATE OR REPLACE PROCEDURE new_libro (isbn integer , idioma varchar,titulo varchar,stock integer, precio real, edicion varchar, descripcion varchar, id_editorial integer,autores varchar[], categorias varchar[])
+CREATE OR REPLACE PROCEDURE new_libro (isbn integer, idioma varchar, titulo varchar, stock integer, precio real, edicion varchar, descripcion varchar, id_editorial integer, id_saga integer, id_promocion integer, ids_autores integer[], ids_categorias integer[])
 AS $$
 DECLARE
 id_aut smallint;
 id_cat smallint;
-aut varchar;
-cat varchar;
 BEGIN
-insert into libro ("isbn","idioma","titulo","stock","precio","edicion","descripcion","id_editorial") values (isbn,idioma,titulo,stock,precio,edicion,descripcion,id_editorial);
-FOREACH aut IN ARRAY autores
+insert into libro ("isbn","idioma","titulo","stock","precio","edicion","descripcion","id_editorial", "id_saga", "id_promocion") values (isbn,idioma,titulo,stock,precio,edicion,descripcion,id_editorial,id_saga,id_promocion);
+FOREACH id_aut IN ARRAY ids_autores
 LOOP
-    id_aut = (select id_autor from autor where (autor = UPPER(aut)));
     insert into autorxlibro values (isbn, id_aut);
 END LOOP;
-FOREACH cat IN ARRAY categorias
+FOREACH id_cat IN ARRAY ids_categorias
 LOOP
-    id_cat = (select id_categoria from categoria where (nombre_categoria = UPPER(cat)));
     insert into categoriaxlibro values (isbn, id_cat);
 END LOOP;
+END $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE PROCEDURE new_producto (isbn integer, idioma varchar, titulo varchar, stock integer, precio real, edicion varchar, descripcion varchar, id_editorial integer, id_saga integer, id_promocion integer, ids_autores integer[], ids_categorias integer[])
+AS $$
+DECLARE
+BEGIN
+IF (isbn IS NULL) THEN
+  insert into fotocopia("titulo", "stock", "precio", "id_promocion", "descripcion") values (titulo, stock, precio, id_promocion, descripcion);
+ELSE
+  call new_libro(isbn, idioma, titulo, stock, precio, edicion, descripcion, id_editorial, id_saga, id_promocion, ids_autores, ids_categorias);
+END IF;
+
 END $$
 LANGUAGE plpgsql;
 
@@ -486,16 +495,16 @@ INSERT INTO saga("nombre_saga","stock_saga") VALUES('The Maze Runner', 6);
 
 
 -- LIBROS
-call new_libro(1,'inglés','Juego de Tronos', 4, 100, 'primera','descripcion1', 1, array['george r. r. martin'], array['novela','fantasia']);
-call new_libro(2,'español','El hobbit', 5, 200, 'segunda','descripcion2',2, array['j. r. r. tolkien'], array['novela','terror']);
-call new_libro(3,'portugués','Harry Potter y la Piedra Filosofal', 6, 300, 'tercera','descripcion3',3, array['j. k. rowling'], array['novela','terror']);
-call new_libro(4,'italiano','El Aleph', 9, 400, 'cuarta','descripcion4',4, array['jorge luis borges'], array['novela','terror']);
-call new_libro(5,'aleman','Gran Hermano', 8, 500, 'quinta','descripcion5',5, array['george orwell','agatha christie'], array['novela','terror']);
-call new_libro(6,'francés','El código Da Vinci', 6, 600, 'sexta','descripcion6',6, array['dan brown','stephen king'], array['novela','thriller']);
-call new_libro(7,'guaraní','Yo robot', 5, 700, 'séptima','descripcion7',7, array['isaac asimov'], array['novela','fantasia', 'ciencia ficcion']);
-call new_libro(8,'chino','Cien años de soledad', 5, 800, 'octava','descripcion8',8, array['gabriel garcia marquez'], array['biografia']);
-call new_libro(9,'japonés','La carta robada', 7, 900, 'novena','descripcion9',9, array['edgar allan poe'], array['aventuras']);
-call new_libro(10,'sueco','Las venas abiertas de América Latina', 10, 1000, 'décima','descripcion10',10, array['eduardo galeano','gabriel garcia marquez'], array['novela','religioso', 'poesia']);
+call new_libro(1,'inglés','Juego de Tronos', 4, 100, 'primera','descripcion1', 1, 7, 1, array[1], array[3, 10]);
+call new_libro(2,'español','El hobbit', 5, 200, 'segunda','descripcion2',2, null, 2, array[2], array[3,1]);
+call new_libro(3,'portugués','Harry Potter y la Piedra Filosofal', 6, 300, 'tercera','descripcion3',3, 1, 3, array[3], array[3,1]);
+call new_libro(4,'italiano','El Aleph', 9, 400, 'cuarta','descripcion4',4,null, 4, array[4], array[3,1]);
+call new_libro(5,'aleman','Gran Hermano', 8, 500, 'quinta','descripcion5',5,null, 5, array[5,10], array[3,1]);
+call new_libro(6,'francés','El código Da Vinci', 6, 600, 'sexta','descripcion6',6,null, 6, array[8,6], array[3,2]);
+call new_libro(7,'guaraní','Yo robot', 5, 700, 'séptima','descripcion7',7,null, 7, array[7], array[3, 10, 4]);
+call new_libro(8,'chino','Cien años de soledad', 5, 800, 'octava','descripcion8',8,null, 8, array[11], array[8]);
+call new_libro(9,'japonés','La carta robada', 7, 900, 'novena','descripcion9',9,null, 9, array[9], array[5]);
+call new_libro(10,'sueco','Las venas abiertas de América Latina', 10, 1000, 'décima','descripcion10',10,null, 10, array[12,11], array[3, 7, 6]);
 
 
 -- VALORACION
