@@ -2,7 +2,7 @@ import React, { useState, useEffect, Fragment } from 'react';
 import Swal from 'sweetalert2';
 
 import Error from '../../../Common/Error';
-import ItemEliminable from '../../../Common/ItemEliminable';
+import Item from '../../../Common/Item';
 import { ordenar } from '../../../Common/utils';
 
 import FormularioNuevoAutor from './FormularioNuevoAutor';
@@ -49,14 +49,14 @@ const AltaProducto = () => {
 	const [formularioNuevaSaga, setFormularioNuevaSaga] = useState(false);
 	const [formularioNuevaEditorial, setFormularioNuevaEditorial] = useState(false);
 
-	// cargar los autores y las categorias cuando cargue la página
+	// cargar los autores, categorias, sagas, editoriales y promociones cuando cargue la página, también resetear el estado de producto.
 	useEffect(() => {
-		// mostramos la alerta una vez pq si algo falla va a mostrar múltiples alertas
 		fetchAutores(dispatch);
 		fetchCategorias(dispatch);
 		fetchSagas(dispatch);
 		fetchEditoriales(dispatch);
 		fetchPromociones(dispatch);
+		resetProducto(dispatch);
 	}, []);
 
 	useEffect(() => {
@@ -304,7 +304,7 @@ const AltaProducto = () => {
 					</div>
 					<div className='row'>
 						{producto.autores.map(autor => (
-							<ItemEliminable titulo={autor.autor} id={autor.id_autor} name='autores' borrarElemento={borrarElemento} />
+							<Item titulo={autor.autor} id={autor.id_autor} name='autores' borrarElemento={borrarElemento} />
 						))}
 					</div>
 					{formularioNuevoAutor ? <FormularioNuevoAutor setMostrarAlerta={setMostrarAlerta} /> : null}
@@ -338,7 +338,7 @@ const AltaProducto = () => {
 					</div>
 					<div className='row'>
 						{producto.categorias.map(categoria => (
-							<ItemEliminable
+							<Item
 								titulo={categoria.nombre_categoria}
 								id={categoria.id_categoria}
 								name='categorias'

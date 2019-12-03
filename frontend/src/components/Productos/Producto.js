@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Container, Spinner, Row, Col, Card, Button } from 'react-bootstrap';
-import { fetchFotocopias } from '../../actions/fotocopiaActions';
-import { fetchLibros } from '../../actions/libroActions';
+import { fetchProducto } from '../../actions/productoActions';
+import { zip } from '../Common/utils';
+import Item from '../Common/Item';
+import Swal from 'sweetalert2';
 
 const tiposProductos = {
 	FOTOCOPIA: 'FOTOCOPIA',
@@ -10,38 +12,60 @@ const tiposProductos = {
 };
 
 function Producto({ props }) {
-	const statusUltimaPeticion = useSelector(state => state.ultimaRequest.status);
-
-	const [tipoProducto, setTipoProducto] = useState('');
-	const [producto, setProducto] = useState(null);
-	const libros = useSelector(state => state.libros.items);
-	const fotocopias = useSelector(state => state.fotocopias.items);
+	const producto = useSelector(state => state.producto.productoActual);
+	const usuarioActual = useSelector(state => state.usuario.usuarioActual);
 	const dispatch = useDispatch();
 
-	// cargar los autores y las categorias cuando cargue la página
 	useEffect(() => {
-		const buscarProducto = async () => {
-			const id_producto = parseInt(props.match.params.id_producto, 10);
-
-			fetchFotocopias(dispatch).then(() => {
-				const libro = libros.find(libro => libro.id_producto === id_producto);
-				if (libro) setProducto(libro);
-				else {
-					fetchLibros(dispatch).then(() => {
-						const fotocopia = fotocopias.find(fotocopia => fotocopia.id_producto === id_producto);
-						if (fotocopia) {
-							setProducto(fotocopia);
-						}
-					});
-				}
-			});
-		};
-
-		buscarProducto();
-	}, [libros.length, fotocopias.length]);
+		const idProducto = parseInt(props.match.params.id_producto, 10);
+		fetchProducto(dispatch, idProducto);
+	}, []);
 
 	const ProductoCard = ({ producto }) => {
-		console.log(producto);
+		let itemSaga =
+			producto.id_saga && producto.id_saga !== -1 ? (
+				<Item
+					titulo={`${producto.nombre_saga} - PRECIO: $${producto.precio_saga} - STOCK: ${producto.stock_saga}`}
+					eliminable={false}
+				/>
+			) : (
+				'no pertenece a ninguna'
+			);
+
+		let autores = [];
+		let categorias = [];
+
+		for (let [autor, nacionalidad] of zip(producto.autores, producto.nacionalidades))
+			autores.push(<Item titulo={`${autor} - ${nacionalidad}`} eliminable={false} key={autor} />);
+		producto.categorias.forEach(categoria => {
+			categorias.push(<Item titulo={categoria} eliminable={false} key={categoria} />);
+		});
+
+		let agregarAlCarrito = () => {
+			if (usuarioActual) {
+				console.log('añadiendo al carrito...');
+			} else {
+				Swal.fire({
+					position: 'center',
+					showConfirmButton: false,
+					timer: 3000,
+					icon: 'warning',
+					title: 'Debe estar loggeado para hacer esto'
+				});
+			}
+		};
+		const botonAñadirAlCarrito = (
+			<Button className='mt-3' block variant='primary' onClick={agregarAlCarrito}>
+				Añadir al carrito
+			</Button>
+		);
+
+		const ConjuntoItems = ({ texto, items }) => (
+			<Container className='row p-0'>
+				<Card.Text className='col-auto'>{texto}: </Card.Text>
+				{items}
+			</Container>
+		);
 		// atributo que solo Libro lo tiene
 		if (producto.isbn) {
 			return (
@@ -55,15 +79,15 @@ function Producto({ props }) {
 						</Row>
 					</Card.Header>
 					<Card.Body>
-						<Card.Title>{producto.descripcion}</Card.Title>
+						<Card.Title className='col-12'>{producto.descripcion}</Card.Title>
 						<hr></hr>
-						<Card.Text>
-							<p>Idioma: {producto.idioma}</p>
-							<p>Edicion: {producto.edicion}</p>
-						</Card.Text>
-						<Button block variant='primary'>
-							Añadir al carrito
-						</Button>
+						<Card.Text>Idioma: {producto.idioma}</Card.Text>
+						<Card.Text>Edicion: {producto.edicion}</Card.Text>
+						<Card.Text>Editorial: {producto.nombre_editorial}</Card.Text>
+						<ConjuntoItems texto='Categorías' items={categorias} />
+						<ConjuntoItems texto='Autores' items={autores} />
+						<ConjuntoItems texto='Saga' items={itemSaga} />
+						{botonAñadirAlCarrito}
 					</Card.Body>
 				</Card>
 			);
@@ -80,11 +104,7 @@ function Producto({ props }) {
 					</Card.Header>
 					<Card.Body>
 						<Card.Title>{producto.descripcion}</Card.Title>
-						<hr></hr>
-						<Card.Text></Card.Text>
-						<Button block variant='primary'>
-							Añadir al carrito
-						</Button>
+						{botonAñadirAlCarrito}
 					</Card.Body>
 				</Card>
 			);

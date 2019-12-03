@@ -20,7 +20,7 @@ constraint PK_promocion primary key ("id_promocion")
 CREATE TABLE "producto" (
 "id_producto" serial not null,
 "titulo" varchar not null,
-"stock" smallint not null CHECK("stock" >= 0),
+"stock" integer not null CHECK("stock" >= 0),
 "precio" real not null,
 "id_promocion" integer default null,
 constraint PK_producto primary key ("id_producto"),
@@ -39,7 +39,7 @@ UNIQUE(nombre_editorial)
 CREATE TABLE "saga" (
 "id_saga" serial not null,
 "nombre_saga" varchar not null,
-"stock_saga" SMALLINT not null,
+"stock_saga" integer not null,
 "precio_saga" real DEFAULT 0,
 UNIQUE(nombre_saga),
 constraint PK_saga primary key ("id_saga")
@@ -79,19 +79,12 @@ constraint PK_categoria primary key ("id_categoria")
 
 CREATE TABLE "valoracion" (
 "id_valoracion" serial not null,
-"puntaje" smallint not null CHECK ("puntaje" BETWEEN 1 AND 10),
+"puntaje" integer not null CHECK ("puntaje" BETWEEN 1 AND 10),
 "comentario" varchar,
 "isbn" integer not null,
 constraint FK_valoracion_isbn foreign key ("isbn") references "libro"("isbn"),
 constraint PK_valoracion primary key ("id_valoracion")
 );
-
-
-CREATE TABLE "fotocopia" (
-"id_fotocopia" serial not null,
-"descripcion" varchar not null,
-constraint PK_fotocopia primary key ("id_fotocopia")
-) INHERITS (producto);
 
 
 CREATE TABLE "sugerencia" (
@@ -116,10 +109,19 @@ UNIQUE(mail),
 constraint PK_usuario primary key ("id_usuario")); 
 
 
+CREATE TABLE "fotocopia" (
+"id_fotocopia" serial not null,
+"descripcion" varchar not null,
+"id_usuario" integer not null,
+constraint PK_fotocopia primary key ("id_fotocopia"),
+constraint FK_id_usuario foreign key ("id_usuario") references "usuario"("id_usuario")
+) INHERITS (producto);
+
+
 CREATE TABLE "pedido" (
 "id_pedido" serial not null,
 "isbn" integer not null,
-"cantidad" smallint not null,
+"cantidad" integer not null,
 "fecha_pedido" date not null,
 "id_usuario" integer not null,
 "anticipo_pagado" boolean DEFAULT false,
@@ -153,7 +155,7 @@ constraint PK_compra primary key ("id_compra")
 
 CREATE TABLE "autorxlibro" (
 "isbn" integer,
-"id_autor" smallint,
+"id_autor" integer,
 constraint PK_AutorXLibro primary key ("isbn","id_autor"),
 constraint FK_autor_libro foreign key ("id_autor") references "autor"("id_autor"),
 Constraint FK_isbn_libro_autor foreign key ("isbn") references "libro"("isbn")
@@ -162,7 +164,7 @@ Constraint FK_isbn_libro_autor foreign key ("isbn") references "libro"("isbn")
 
 CREATE TABLE "categoriaxlibro" (
 "isbn" integer,
-"id_categoria" smallint,
+"id_categoria" integer,
 constraint PK_categoriaxlibro primary key ("isbn","id_categoria"),
 constraint FK_categoria_libro foreign key ("id_categoria") references "categoria"("id_categoria"),
 Constraint FK_isbn_libro_categoria foreign key ("isbn") references "libro"("isbn")
@@ -171,7 +173,7 @@ Constraint FK_isbn_libro_categoria foreign key ("isbn") references "libro"("isbn
 
 CREATE TABLE "libroxcarrito" (
 "isbn" integer,
-"id_carrito" smallint,
+"id_carrito" integer,
 "cantidad" integer,
 constraint PK_libroxcarrito primary key ("isbn","id_carrito"),
 Constraint FK_libro_carrito foreign key ("isbn") references "libro"("isbn"),
@@ -180,7 +182,7 @@ Constraint FK_carrito_producto foreign key ("id_carrito") references "carrito"("
 
 CREATE TABLE "fotocopiaxcarrito" (
 "id_fotocopia" integer,
-"id_carrito" smallint,
+"id_carrito" integer,
 "cantidad" integer,
 constraint PK_fotocopiaxcarrito primary key ("id_fotocopia","id_carrito"),
 Constraint FK_fotocopia_carrito foreign key ("id_fotocopia") references "fotocopia"("id_fotocopia"),
@@ -189,7 +191,7 @@ Constraint FK_carrito_fotocopia foreign key ("id_carrito") references "carrito"(
 
 CREATE TABLE "sagaxcarrito" (
 "id_saga" integer,
-"id_carrito" smallint,
+"id_carrito" integer,
 "cantidad" integer,
 constraint PK_sagaxcarrito primary key ("id_saga","id_carrito"),
 Constraint FK_saga_carrito foreign key ("id_saga") references "saga"("id_saga"),

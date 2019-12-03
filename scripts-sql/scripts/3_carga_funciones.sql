@@ -7,6 +7,24 @@
     ##       ##     ## ##   ### ##    ##  ##  ##     ## ##   ### ##       ##    ## 
     ##        #######  ##    ##  ######  ####  #######  ##    ## ########  ######                 
 */  
+CREATE VIEW datos_libros_completos as 
+select t1.id_producto, t1.titulo, t1.stock, t1.isbn, t1.precio, t1.descripcion, t1.nombre_editorial, t1.idioma, t1.edicion, t1.id_saga, t1.autores, t1.nacionalidades, t2.categorias from
+(SELECT l.id_producto, l.titulo, l.stock, l.isbn, l.precio, l.descripcion, l.idioma, e.nombre_editorial, l.edicion, l.id_saga, array_agg(a.autor) as autores, array_agg(a.nacionalidad) as nacionalidades 
+FROM autorxlibro axl
+INNER JOIN autor a  ON a.id_autor = axl.id_autor
+INNER JOIN libro l ON l.isbn = axl.isbn,
+editorial e
+where l.id_editorial = e.id_editorial
+GROUP BY l.isbn,
+         l.titulo,
+		 e.nombre_editorial) as t1,
+(SELECT l.id_producto, array_agg(c.nombre_categoria) as categorias 
+FROM categoriaxlibro cxl
+INNER JOIN categoria c  ON c.id_categoria = cxl.id_categoria
+INNER JOIN libro l ON l.isbn = cxl.isbn
+GROUP BY l.id_producto) as t2
+WHERE (t1.id_producto = t2.id_producto);
+
 
 CREATE OR REPLACE PROCEDURE new_libro (isbn integer, idioma varchar, titulo varchar, stock integer, precio real, edicion varchar, descripcion varchar, id_editorial integer, id_saga integer, id_promocion integer, ids_autores integer[], ids_categorias integer[])
 AS $$
@@ -97,4 +115,24 @@ END LOOP;
 
 update saga set precio_saga = precio_final where(saga.id_saga = id_saga_a_actualizar);
 END $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION datos_producto (id_producto_a_buscar integer)
+RETURNS table(id_producto integer, id_fotocopia integer, titulo varchar, stock integer, isbn integer, precio real, descripcion varchar,id_usuario integer, nombre_editorial text, idioma text, edicion text, id_saga integer, nombre_saga text, stock_saga integer, precio_saga real, autores varchar[], nacionalidades varchar[], categorias varchar[]) AS
+$datos_producto$
+DECLARE
+
+BEGIN
+IF (select f.id_fotocopia from fotocopia f where f.id_producto = id_producto_a_buscar) > 0 THEN
+	raise notice 'soy una fotocopia';
+    RETURN query select f.id_producto, f.id_fotocopia, f.titulo, f.stock, 0 as isbn , f.precio, f.descripcion, f.id_usuario, null as nombre_editorial, null as idioma, null as edicion, -1 as id_saga, null as nombre_saga, 0 as stock_saga, cast(-1 as real) as precio_saga, ARRAY['0']::varchar[] as autores, ARRAY['0']::varchar[] as nacionalidades, ARRAY['0']::varchar[] as categorias from fotocopia f where (f.id_producto = id_producto_a_buscar);
+ELSIF (select l.id_saga from libro l where l.id_producto = id_producto_a_buscar) > 0 THEN
+    raise notice 'soy unlibro con saga';
+	RETURN query select dlc.id_producto, 0 as id_fotocopia, dlc.titulo, dlc.stock, dlc.isbn , dlc.precio, dlc.descripcion, 0, cast(dlc.nombre_editorial as text), cast(dlc.idioma as text), cast(dlc.edicion as text), dlc.id_saga, cast(s.nombre_saga as text), s.stock_saga, s.precio_saga, dlc.autores, dlc.nacionalidades, dlc.categorias from datos_libros_completos dlc, saga s where (dlc.id_producto = id_producto_a_buscar and dlc.id_saga = s.id_saga);
+ELSE
+	raise notice 'soy unlibro sin saga';
+	RETURN query select dlc.id_producto, 0 as id_fotocopia, dlc.titulo, dlc.stock, dlc.isbn , dlc.precio, dlc.descripcion, 0, cast(dlc.nombre_editorial as text), cast(dlc.idioma as text), cast(dlc.edicion as text), dlc.id_saga, null as nombre_saga, 0 as stock_saga, cast(0 as real) as precio_saga, dlc.autores, dlc.nacionalidades, dlc.categorias from datos_libros_completos dlc where (dlc.id_producto = id_producto_a_buscar);
+END IF;
+
+END $datos_producto$
 LANGUAGE plpgsql;

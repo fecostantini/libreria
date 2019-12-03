@@ -38,8 +38,8 @@ function Productos() {
 		<Container>
 			<Row className=''>
 				{productos.map(producto => (
-					<Col sm={12} md={6} lg={4}>
-						<ProductoIndividual key={producto.id_producto} producto={producto} />
+					<Col sm={12} md={6} lg={4} key={producto.id_producto}>
+						<ProductoIndividual producto={producto} />
 					</Col>
 				))}
 			</Row>

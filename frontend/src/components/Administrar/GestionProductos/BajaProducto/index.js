@@ -1,6 +1,6 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Container, Table, Row, Col } from 'react-bootstrap';
+import { Table, Container } from 'react-bootstrap';
 import { fetchProductos } from '../../../../actions/productoActions';
 
 import { ordenar } from '../../../Common/utils';
@@ -8,7 +8,7 @@ import { ordenar } from '../../../Common/utils';
 const BajaProducto = () => {
 	const dispatch = useDispatch();
 	const productos = useSelector(state => state.producto.items);
-
+	const [campoAOrdenar, setCampoAOrdenar] = useState('titulo');
 	const FilaProducto = ({ producto }) => {
 		const eliminarProducto = () => {
 			console.log(`Borrando producto con id ${producto.id_producto}...`);
@@ -33,20 +33,32 @@ const BajaProducto = () => {
 	}, []);
 
 	return (
-		<Table responsive className='mt-3'>
-			<thead>
-				<tr>
-					<th>Titulo</th>
-					<th>Precio</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				{productos.sort(ordenar('titulo')).map(producto => (
-					<FilaProducto key={producto.id_producto} producto={producto} />
-				))}
-			</tbody>
-		</Table>
+		<Fragment>
+			<Container className='my-4'>
+				Ordenar por:{' '}
+				<select onChange={e => setCampoAOrdenar(e.target.value)}>
+					{['titulo', 'precio'].map(nombreCampo => (
+						<option value={nombreCampo} key={nombreCampo}>
+							{nombreCampo}
+						</option>
+					))}
+				</select>
+			</Container>
+			<Table responsive>
+				<thead>
+					<tr>
+						<th>Titulo</th>
+						<th>Precio</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					{productos.sort(ordenar(campoAOrdenar)).map(producto => (
+						<FilaProducto key={producto.id_producto} producto={producto} />
+					))}
+				</tbody>
+			</Table>
+		</Fragment>
 	);
 };
 

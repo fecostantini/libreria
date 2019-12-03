@@ -11,4 +11,9 @@ rutasProducto.post('/', function(req, res) {
 	Producto.createProducto(nuevoProducto).then(respuesta => res.send(respuesta));
 });
 
+rutasProducto.post('/getInfo', function(req, res) {
+	const idProducto = req.body.id_producto;
+	Producto.getDatosProducto(idProducto).then(respuesta => res.send(respuesta));
+});
+
 module.exports = rutasProducto;

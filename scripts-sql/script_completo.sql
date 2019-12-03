@@ -20,7 +20,7 @@ constraint PK_promocion primary key ("id_promocion")
 CREATE TABLE "producto" (
 "id_producto" serial not null,
 "titulo" varchar not null,
-"stock" smallint not null CHECK("stock" >= 0),
+"stock" integer not null CHECK("stock" >= 0),
 "precio" real not null,
 "id_promocion" integer default null,
 constraint PK_producto primary key ("id_producto"),
@@ -39,7 +39,7 @@ UNIQUE(nombre_editorial)
 CREATE TABLE "saga" (
 "id_saga" serial not null,
 "nombre_saga" varchar not null,
-"stock_saga" SMALLINT not null,
+"stock_saga" integer not null,
 "precio_saga" real DEFAULT 0,
 UNIQUE(nombre_saga),
 constraint PK_saga primary key ("id_saga")
@@ -79,19 +79,12 @@ constraint PK_categoria primary key ("id_categoria")
 
 CREATE TABLE "valoracion" (
 "id_valoracion" serial not null,
-"puntaje" smallint not null CHECK ("puntaje" BETWEEN 1 AND 10),
+"puntaje" integer not null CHECK ("puntaje" BETWEEN 1 AND 10),
 "comentario" varchar,
 "isbn" integer not null,
 constraint FK_valoracion_isbn foreign key ("isbn") references "libro"("isbn"),
 constraint PK_valoracion primary key ("id_valoracion")
 );
-
-
-CREATE TABLE "fotocopia" (
-"id_fotocopia" serial not null,
-"descripcion" varchar not null,
-constraint PK_fotocopia primary key ("id_fotocopia")
-) INHERITS (producto);
 
 
 CREATE TABLE "sugerencia" (
@@ -116,10 +109,19 @@ UNIQUE(mail),
 constraint PK_usuario primary key ("id_usuario")); 
 
 
+CREATE TABLE "fotocopia" (
+"id_fotocopia" serial not null,
+"descripcion" varchar not null,
+"id_usuario" integer not null,
+constraint PK_fotocopia primary key ("id_fotocopia"),
+constraint FK_id_usuario foreign key ("id_usuario") references "usuario"("id_usuario")
+) INHERITS (producto);
+
+
 CREATE TABLE "pedido" (
 "id_pedido" serial not null,
 "isbn" integer not null,
-"cantidad" smallint not null,
+"cantidad" integer not null,
 "fecha_pedido" date not null,
 "id_usuario" integer not null,
 "anticipo_pagado" boolean DEFAULT false,
@@ -153,7 +155,7 @@ constraint PK_compra primary key ("id_compra")
 
 CREATE TABLE "autorxlibro" (
 "isbn" integer,
-"id_autor" smallint,
+"id_autor" integer,
 constraint PK_AutorXLibro primary key ("isbn","id_autor"),
 constraint FK_autor_libro foreign key ("id_autor") references "autor"("id_autor"),
 Constraint FK_isbn_libro_autor foreign key ("isbn") references "libro"("isbn")
@@ -162,7 +164,7 @@ Constraint FK_isbn_libro_autor foreign key ("isbn") references "libro"("isbn")
 
 CREATE TABLE "categoriaxlibro" (
 "isbn" integer,
-"id_categoria" smallint,
+"id_categoria" integer,
 constraint PK_categoriaxlibro primary key ("isbn","id_categoria"),
 constraint FK_categoria_libro foreign key ("id_categoria") references "categoria"("id_categoria"),
 Constraint FK_isbn_libro_categoria foreign key ("isbn") references "libro"("isbn")
@@ -171,7 +173,7 @@ Constraint FK_isbn_libro_categoria foreign key ("isbn") references "libro"("isbn
 
 CREATE TABLE "libroxcarrito" (
 "isbn" integer,
-"id_carrito" smallint,
+"id_carrito" integer,
 "cantidad" integer,
 constraint PK_libroxcarrito primary key ("isbn","id_carrito"),
 Constraint FK_libro_carrito foreign key ("isbn") references "libro"("isbn"),
@@ -180,7 +182,7 @@ Constraint FK_carrito_producto foreign key ("id_carrito") references "carrito"("
 
 CREATE TABLE "fotocopiaxcarrito" (
 "id_fotocopia" integer,
-"id_carrito" smallint,
+"id_carrito" integer,
 "cantidad" integer,
 constraint PK_fotocopiaxcarrito primary key ("id_fotocopia","id_carrito"),
 Constraint FK_fotocopia_carrito foreign key ("id_fotocopia") references "fotocopia"("id_fotocopia"),
@@ -189,7 +191,7 @@ Constraint FK_carrito_fotocopia foreign key ("id_carrito") references "carrito"(
 
 CREATE TABLE "sagaxcarrito" (
 "id_saga" integer,
-"id_carrito" smallint,
+"id_carrito" integer,
 "cantidad" integer,
 constraint PK_sagaxcarrito primary key ("id_saga","id_carrito"),
 Constraint FK_saga_carrito foreign key ("id_saga") references "saga"("id_saga"),
@@ -327,6 +329,24 @@ CREATE TRIGGER uppercase_usuario_trigger BEFORE INSERT OR UPDATE ON usuario
     ##       ##     ## ##   ### ##    ##  ##  ##     ## ##   ### ##       ##    ## 
     ##        #######  ##    ##  ######  ####  #######  ##    ## ########  ######                 
 */  
+CREATE VIEW datos_libros_completos as 
+select t1.id_producto, t1.titulo, t1.stock, t1.isbn, t1.precio, t1.descripcion, t1.nombre_editorial, t1.idioma, t1.edicion, t1.id_saga, t1.autores, t1.nacionalidades, t2.categorias from
+(SELECT l.id_producto, l.titulo, l.stock, l.isbn, l.precio, l.descripcion, l.idioma, e.nombre_editorial, l.edicion, l.id_saga, array_agg(a.autor) as autores, array_agg(a.nacionalidad) as nacionalidades 
+FROM autorxlibro axl
+INNER JOIN autor a  ON a.id_autor = axl.id_autor
+INNER JOIN libro l ON l.isbn = axl.isbn,
+editorial e
+where l.id_editorial = e.id_editorial
+GROUP BY l.isbn,
+         l.titulo,
+		 e.nombre_editorial) as t1,
+(SELECT l.id_producto, array_agg(c.nombre_categoria) as categorias 
+FROM categoriaxlibro cxl
+INNER JOIN categoria c  ON c.id_categoria = cxl.id_categoria
+INNER JOIN libro l ON l.isbn = cxl.isbn
+GROUP BY l.id_producto) as t2
+WHERE (t1.id_producto = t2.id_producto);
+
 
 CREATE OR REPLACE PROCEDURE new_libro (isbn integer, idioma varchar, titulo varchar, stock integer, precio real, edicion varchar, descripcion varchar, id_editorial integer, id_saga integer, id_promocion integer, ids_autores integer[], ids_categorias integer[])
 AS $$
@@ -346,12 +366,12 @@ END LOOP;
 END $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE PROCEDURE new_producto (isbn integer, idioma varchar, titulo varchar, stock integer, precio real, edicion varchar, descripcion varchar, id_editorial integer, id_saga integer, id_promocion integer, ids_autores integer[], ids_categorias integer[])
+CREATE OR REPLACE PROCEDURE new_producto (isbn integer, idioma varchar, titulo varchar, stock integer, precio real, edicion varchar, descripcion varchar, id_editorial integer, id_saga integer, id_promocion integer, ids_autores integer[], ids_categorias integer[], id_usuario integer)
 AS $$
 DECLARE
 BEGIN
 IF (isbn IS NULL) THEN
-  insert into fotocopia("titulo", "stock", "precio", "id_promocion", "descripcion") values (titulo, stock, precio, id_promocion, descripcion);
+  insert into fotocopia("titulo", "stock", "precio", "id_promocion", "descripcion", "id_usuario") values (titulo, stock, precio, id_promocion, descripcion, id_usuario);
 ELSE
   call new_libro(isbn, idioma, titulo, stock, precio, edicion, descripcion, id_editorial, id_saga, id_promocion, ids_autores, ids_categorias);
 END IF;
@@ -417,6 +437,26 @@ END LOOP;
 
 update saga set precio_saga = precio_final where(saga.id_saga = id_saga_a_actualizar);
 END $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION datos_producto (id_producto_a_buscar integer)
+RETURNS table(id_producto integer, id_fotocopia integer, titulo varchar, stock integer, isbn integer, precio real, descripcion varchar,id_usuario integer, nombre_editorial text, idioma text, edicion text, id_saga integer, nombre_saga text, stock_saga integer, precio_saga real, autores varchar[], nacionalidades varchar[], categorias varchar[]) AS
+$datos_producto$
+DECLARE
+
+BEGIN
+IF (select f.id_fotocopia from fotocopia f where f.id_producto = id_producto_a_buscar) > 0 THEN
+	raise notice 'soy una fotocopia';
+    RETURN query select f.id_producto, f.id_fotocopia, f.titulo, f.stock, 0 as isbn , f.precio, f.descripcion, f.id_usuario, null as nombre_editorial, null as idioma, null as edicion, -1 as id_saga, null as nombre_saga, 0 as stock_saga, cast(-1 as real) as precio_saga, ARRAY['0']::varchar[] as autores, ARRAY['0']::varchar[] as nacionalidades, ARRAY['0']::varchar[] as categorias from fotocopia f where (f.id_producto = id_producto_a_buscar);
+ELSIF (select l.id_saga from libro l where l.id_producto = id_producto_a_buscar) > 0 THEN
+    raise notice 'soy unlibro con saga';
+	RETURN query select dlc.id_producto, 0 as id_fotocopia, dlc.titulo, dlc.stock, dlc.isbn , dlc.precio, dlc.descripcion, 0, cast(dlc.nombre_editorial as text), cast(dlc.idioma as text), cast(dlc.edicion as text), dlc.id_saga, cast(s.nombre_saga as text), s.stock_saga, s.precio_saga, dlc.autores, dlc.nacionalidades, dlc.categorias from datos_libros_completos dlc, saga s where (dlc.id_producto = id_producto_a_buscar and dlc.id_saga = s.id_saga);
+ELSE
+	raise notice 'soy unlibro sin saga';
+	RETURN query select dlc.id_producto, 0 as id_fotocopia, dlc.titulo, dlc.stock, dlc.isbn , dlc.precio, dlc.descripcion, 0, cast(dlc.nombre_editorial as text), cast(dlc.idioma as text), cast(dlc.edicion as text), dlc.id_saga, null as nombre_saga, 0 as stock_saga, cast(0 as real) as precio_saga, dlc.autores, dlc.nacionalidades, dlc.categorias from datos_libros_completos dlc where (dlc.id_producto = id_producto_a_buscar);
+END IF;
+
+END $datos_producto$
 LANGUAGE plpgsql;/*    
     ########     ###    ########  #######   ######  
     ##     ##   ## ##      ##    ##     ## ##    ## 
@@ -506,7 +546,6 @@ call new_libro(8,'chino','Cien años de soledad', 5, 800, 'octava','descripcion8
 call new_libro(9,'japonés','La carta robada', 7, 900, 'novena','descripcion9',9,null, 9, array[9], array[5]);
 call new_libro(10,'sueco','Las venas abiertas de América Latina', 10, 1000, 'décima','descripcion10',10,null, 10, array[12,11], array[3, 7, 6]);
 
-
 -- VALORACION
 INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Genial el libro', 1);
 INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Muy malo el libro', 2);
@@ -519,17 +558,6 @@ INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'He leído me
 INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Muy malo. No lo lean.', 9);
 INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Genial!!', 10);
 
--- FOTOCOPIAS
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Cálculo I', 5, 100, 'Apuntes de Cálculo I de primer año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Lógica y Álgebra', 6, 200, 'Apuntes de Lógica y Álgebra de primer año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Sistemas y Organizaciones', 4, 300, 'Apuntes de Sistemas y Organizaciones de primer año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Introducción a la Programación', 8, 400, 'Apuntes de Introducción a la Programación de primer año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Cálculo II', 9, 500, 'Apuntes de Cálculo II de segundo año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Ingeniería de Software I', 4, 600, 'Apuntes de Ingeniería de Software I de segundo año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Ingeniería de Software II', 5, 700, 'Apuntes de Ingeniería de Software II de primer año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Arquitectura de Computadoras', 6, 800, 'Apuntes de Arquitectura de Computadoras de segundo año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Inglés', 6, 900, 'Apuntes de Inglés de primer año de Sistemas.');
-INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion") VALUES ('Apuntes Probabilidad y Estadística', 9, 1000, 'Apuntes de Probabilidad y Estadística de primer año de Sistemas.');
 
 -- SUGERENCIAS
 INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar El universo en una cáscara de nuez, de Stephen Hawking');
@@ -555,6 +583,19 @@ INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ej
 INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo5@hotmail.com', 'Mariano', 'Muller', 'superpassword5', 'USUARIO_NORMAL');
 INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo6@hotmail.com', 'Silvia', 'Romero', 'superpassword6', 'USUARIO_NORMAL');
 INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo7@hotmail.com', 'Gabriel', 'Soria', 'superpassword7', 'USUARIO_NORMAL');
+
+-- FOTOCOPIAS
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion","id_usuario") VALUES ('Apuntes Cálculo I', 5, 100, 'Apuntes de Cálculo I de primer año de Sistemas.',5);
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion","id_usuario") VALUES ('Apuntes Lógica y Álgebra', 6, 200, 'Apuntes de Lógica y Álgebra de primer año de Sistemas.',5);
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion","id_usuario") VALUES ('Apuntes Sistemas y Organizaciones', 4, 300, 'Apuntes de Sistemas y Organizaciones de primer año de Sistemas.',6);
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion","id_usuario") VALUES ('Apuntes Introducción a la Programación', 8, 400, 'Apuntes de Introducción a la Programación de primer año de Sistemas.',4);
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion","id_usuario") VALUES ('Apuntes Cálculo II', 9, 500, 'Apuntes de Cálculo II de segundo año de Sistemas.',7);
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion","id_usuario") VALUES ('Apuntes Ingeniería de Software I', 4, 600, 'Apuntes de Ingeniería de Software I de segundo año de Sistemas.',9);
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion","id_usuario") VALUES ('Apuntes Ingeniería de Software II', 5, 700, 'Apuntes de Ingeniería de Software II de primer año de Sistemas.',8);
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion","id_usuario") VALUES ('Apuntes Arquitectura de Computadoras', 6, 800, 'Apuntes de Arquitectura de Computadoras de segundo año de Sistemas.',6);
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion","id_usuario") VALUES ('Apuntes Inglés', 6, 900, 'Apuntes de Inglés de primer año de Sistemas.',4);
+INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion","id_usuario") VALUES ('Apuntes Probabilidad y Estadística', 9, 1000, 'Apuntes de Probabilidad y Estadística de primer año de Sistemas.',8);
+
 
 -- PEDIDOS
 call new_pedido(2,1,5);
@@ -618,3 +659,4 @@ INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (8, 1, 1);
 INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (4, 7, 1);
 
 --TODOS: hacer función que devuelva el producto (si es libro un libro, si es fotocopia una fotocopia) cuando se busca en productoxcarrito. 
+

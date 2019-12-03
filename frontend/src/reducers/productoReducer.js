@@ -1,4 +1,10 @@
-import { UPDATE_PRODUCTO_FORMULARIO, FETCH_PRODUCTOS, CREATE_PRODUCTO, RESET_PRODUCTO } from '../actions/types';
+import {
+	UPDATE_PRODUCTO_FORMULARIO,
+	FETCH_PRODUCTOS,
+	FETCH_PRODUCTO,
+	CREATE_PRODUCTO,
+	RESET_PRODUCTO
+} from '../actions/types';
 
 export const estadoInicialProducto = {
 	productoActual: {
@@ -35,6 +41,17 @@ export default function(state = estadoInicialProducto, action) {
 				return {
 					...state,
 					items: productos
+				};
+
+			break;
+
+		case FETCH_PRODUCTO:
+			const producto = action.payload.producto;
+
+			if (producto)
+				return {
+					...state,
+					productoActual: producto
 				};
 
 			break;

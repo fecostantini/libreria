@@ -19,6 +19,7 @@ var formatearArray = array => {
 const querys = {
 	GET_ALL: 'select * from producto;',
 	INSERT: String.raw`call new_producto({isbn}, '{idioma}', '{titulo}', {stock}, {precio}, '{edicion}', '{descripcion}', {id_editorial}, {id_saga}, {id_promocion}, array[{ids_autores}]::int[], array[{ids_categorias}]::int[]);`,
+	GET_INFO: String.raw`select * from datos_producto({});`,
 	DELETE: String.raw`` //TODO: Llamar funcion que borra al producto y todas sus relaciones intermedias (en caso de ser libro)
 };
 
@@ -52,13 +53,34 @@ let createProducto = async nuevoProducto => {
 			categorias: formatearArray(nuevoProducto.categorias)
 		};
 
-		console.log(querys.INSERT.format(nuevoProductoFormateado));
 		let response = await pool.query(querys.INSERT.format(nuevoProductoFormateado));
 
 		if (response) {
 			return {
+				status: estados.EXITO
+			};
+		}
+	} catch (error) {
+		switch (error.code) {
+			case estados.YA_EXISTE:
+				return { status: estados.YA_EXISTE };
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
+			default:
+				return { status: estados.ERROR_DESCONOCIDO };
+		}
+	}
+};
+
+let getDatosProducto = async idProducto => {
+	try {
+		let response = await pool.query(querys.GET_INFO.format(idProducto));
+		console.log(response.rows[0]);
+
+		if (response.rows) {
+			return {
 				status: estados.EXITO,
-				libro: nuevoProducto
+				producto: response.rows[0]
 			};
 		}
 	} catch (error) {
@@ -77,5 +99,6 @@ let createProducto = async nuevoProducto => {
 
 module.exports = {
 	getProductos,
-	createProducto
+	createProducto,
+	getDatosProducto
 };

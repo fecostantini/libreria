@@ -1,6 +1,7 @@
 import {
 	UPDATE_PRODUCTO_FORMULARIO,
 	FETCH_PRODUCTOS,
+	FETCH_PRODUCTO,
 	CREATE_PRODUCTO,
 	UPDATE_LAST_REQUEST_STATUS,
 	RESET_PRODUCTO
@@ -24,6 +25,22 @@ export const fetchProductos = async dispatch => {
 		dispatch({
 			type: FETCH_PRODUCTOS,
 			payload: { productos }
+		});
+
+	dispatch({
+		type: UPDATE_LAST_REQUEST_STATUS,
+		payload: { status: resp.data.status }
+	});
+};
+
+export const fetchProducto = async (dispatch, id_producto) => {
+	const resp = await axios.post(`${URL}/getInfo`, { id_producto });
+	const producto = resp.data ? resp.data.producto : null;
+
+	if (producto)
+		dispatch({
+			type: FETCH_PRODUCTO,
+			payload: { producto }
 		});
 
 	dispatch({

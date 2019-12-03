@@ -23,10 +23,8 @@ export default function UsuarioLoggeado() {
 					{usuarioActual.nombre}
 				</Dropdown.Toggle>
 				<Dropdown.Menu>
-					<Dropdown.Item>
-						<Link to='/editar_perfil' style={{ textDecoration: 'none', color: '#000000' }}>
-							<i className='fas fa-edit'></i> Editar perfil
-						</Link>
+					<Dropdown.Item onClick={() => history.push('/editar_perfil')}>
+						<i className='fas fa-edit'></i> Editar perfil
 					</Dropdown.Item>
 
 					<Dropdown.Divider />
