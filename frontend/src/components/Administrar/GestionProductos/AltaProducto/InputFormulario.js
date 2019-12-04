@@ -22,7 +22,7 @@ let InputFormulario = ({ titulo, name, type, containterClass }) => {
 				<textarea
 					type={type}
 					name={name}
-					value={producto[name]}
+					value={producto[name] ? producto[name] : ''}
 					className='form-control'
 					rows='3'
 					onChange={handleChange}
@@ -34,7 +34,7 @@ let InputFormulario = ({ titulo, name, type, containterClass }) => {
 					<input
 						type={type}
 						name={name}
-						value={producto[name]}
+						value={producto[name] ? producto[name] : ''}
 						className='form-control'
 						onChange={handleChange}
 						min='0'
@@ -43,7 +43,13 @@ let InputFormulario = ({ titulo, name, type, containterClass }) => {
 				);
 			else
 				return (
-					<input type={type} name={name} value={producto[name]} className='form-control' onChange={handleChange} />
+					<input
+						type={type}
+						name={name}
+						value={producto[name] ? producto[name] : ''}
+						className='form-control'
+						onChange={handleChange}
+					/>
 				);
 		}
 	};

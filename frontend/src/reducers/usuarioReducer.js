@@ -1,4 +1,4 @@
-import { FETCH_USUARIO_FACEBOOK, SET_USUARIO_ACTUAL, UPDATE_USUARIO } from '../actions/types';
+import { SET_USUARIO_ACTUAL, UPDATE_USUARIO } from '../actions/types';
 
 const usuarioActualLocalStorage = JSON.parse(localStorage.getItem('usuarioActual'));
 

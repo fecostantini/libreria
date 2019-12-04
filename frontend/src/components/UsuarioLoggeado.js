@@ -1,6 +1,5 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Dropdown, Image } from 'react-bootstrap';
 import { desloggearUsuario } from '../actions/usuarioActions';

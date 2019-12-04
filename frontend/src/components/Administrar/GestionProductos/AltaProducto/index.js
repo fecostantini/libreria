@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 
 import Error from '../../../Common/Error';
 import Item from '../../../Common/Item';
-import { ordenar } from '../../../Common/utils';
+import { ordenar, swalConfig } from '../../../Common/utils';
 
 import FormularioNuevoAutor from './FormularioNuevoAutor';
 import FormularioNuevaCategoria from './FormularioNuevaCategoria';
@@ -18,7 +18,6 @@ import { fetchSagas } from '../../../../actions/sagaActions';
 import { fetchEditoriales } from '../../../../actions/editorialActions';
 import { fetchPromociones } from '../../../../actions/promocionActions';
 import { updateProducto, createProducto, resetProducto } from '../../../../actions/productoActions';
-import { estadoInicialProducto } from '../../../../reducers/productoReducer';
 import { useSelector, useDispatch } from 'react-redux';
 
 const tiposProducto = {
@@ -31,6 +30,8 @@ const AltaProducto = () => {
 
 	// redux
 	const producto = useSelector(state => state.producto.productoActual);
+	const usuarioActual = useSelector(state => state.usuario.usuarioActual);
+
 	const todasLasEditoriales = useSelector(state => state.editoriales.items);
 	const todosLosAutores = useSelector(state => state.autores.items);
 	const todasLasCategorias = useSelector(state => state.categorias.items);
@@ -63,10 +64,8 @@ const AltaProducto = () => {
 		// solo queremos mostrar el error si mostrarAlerta es verdadero
 		if (!mostrarAlerta) return;
 
-		const swalConfig = {
-			position: 'center',
-			showConfirmButton: false,
-			timer: 3000,
+		const swalConfigNueva = {
+			...swalConfig,
 			icon: statusUltimaPeticion === estados.CREADO || statusUltimaPeticion === estados.EXITO ? 'success' : 'error'
 		};
 
@@ -78,15 +77,16 @@ const AltaProducto = () => {
 		};
 
 		if (statusUltimaPeticion === estados.CREADO) {
-			swalConfig.title = 'La creación se realizó con éxito!';
+			swalConfigNueva.title = 'La creación se realizó con éxito!';
 			cerrarFormularios();
-		} else if (statusUltimaPeticion === estados.YA_EXISTE) swalConfig.title = 'El elemento que desea crear ya existe';
+		} else if (statusUltimaPeticion === estados.YA_EXISTE)
+			swalConfigNueva.title = 'El elemento que desea crear ya existe';
 		else if (statusUltimaPeticion === estados.CONEXION_FALLIDA)
-			swalConfig.title = 'Falló la conexión a la Base de Datos';
-		else if (statusUltimaPeticion === estados.EXITO) swalConfig.title = 'Se envió el formulario con éxito!';
+			swalConfigNueva.title = 'Falló la conexión a la Base de Datos';
+		else if (statusUltimaPeticion === estados.EXITO) swalConfigNueva.title = 'Se envió el formulario con éxito!';
 
 		setMostrarAlerta(false);
-		Swal.fire(swalConfig);
+		Swal.fire(swalConfigNueva);
 	}, [mostrarAlerta]);
 
 	const enviarFormulario = tipoProducto => {
@@ -99,7 +99,7 @@ const AltaProducto = () => {
 			productoAEnviar = { ...producto };
 		}
 
-		createProducto(dispatch, productoAEnviar).then(() => {
+		createProducto(dispatch, { ...productoAEnviar, id_usuario: usuarioActual.id_usuario }).then(() => {
 			setMostrarAlerta(true);
 			setError({ activo: false });
 			resetProducto(dispatch).then(() => {
@@ -304,7 +304,13 @@ const AltaProducto = () => {
 					</div>
 					<div className='row'>
 						{producto.autores.map(autor => (
-							<Item titulo={autor.autor} id={autor.id_autor} name='autores' borrarElemento={borrarElemento} />
+							<Item
+								titulo={autor.autor}
+								id={autor.id_autor}
+								name='autores'
+								borrarElemento={borrarElemento}
+								key={autor.id_autor}
+							/>
 						))}
 					</div>
 					{formularioNuevoAutor ? <FormularioNuevoAutor setMostrarAlerta={setMostrarAlerta} /> : null}
@@ -343,6 +349,7 @@ const AltaProducto = () => {
 								id={categoria.id_categoria}
 								name='categorias'
 								borrarElemento={borrarElemento}
+								key={categoria.id_categoria}
 							/>
 						))}
 					</div>

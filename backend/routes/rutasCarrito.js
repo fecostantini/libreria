@@ -2,6 +2,16 @@ var express = require('express');
 var rutasCarrito = express.Router();
 var Carrito = require('../database/models/Carrito');
 
+rutasCarrito.post('/getCarritoActivo', function(req, res) {
+	const idUsuario = req.body.id_usuario;
+	Carrito.getCarritoActivo(idUsuario).then(respuesta => res.send(respuesta));
+});
+
+rutasCarrito.post('/agregarProducto', function(req, res) {
+	const infoProducto = req.body;
+	Carrito.añadirAlCarrito(infoProducto).then(respuesta => res.send(respuesta));
+});
+
 rutasCarrito.post('/getCarritosByIdUsuario', function(req, res) {
 	const idUsuario = req.body.id_usuario;
 	Carrito.getCarritosByIdUsuario(idUsuario).then(respuesta => res.send(respuesta));

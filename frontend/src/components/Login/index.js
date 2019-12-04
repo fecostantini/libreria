@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { Button, Modal, Col, Row, Form } from 'react-bootstrap';
 import Error from '../Common/Error';
 import estados from '../../estados';
+import { swalConfig } from '../Common/utils';
 
 const imagenDefault = 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png';
 const tiposModales = { LOGIN: 'LOGIN', REGISTER: 'REGISTER' };
@@ -58,25 +59,22 @@ function Login() {
 			return;
 		}
 
-		const swalConfig = {
-			title: '',
-			position: 'center',
-			showConfirmButton: false,
-			timer: 3000,
+		const swalConfigNueva = {
+			...swalConfig,
 			icon: 'error'
 		};
 
 		if (statusUltimaPeticion === estados.CONTRASEÑA_INCORRECTA)
-			swalConfig.title = 'La contraseña que ingresó es incorrecta';
+			swalConfigNueva.title = 'La contraseña que ingresó es incorrecta';
 		else if (statusUltimaPeticion === estados.CONEXION_FALLIDA)
-			swalConfig.title = 'Falló la conexión a la Base de Datos';
+			swalConfigNueva.title = 'Falló la conexión a la Base de Datos';
 		else if (statusUltimaPeticion === estados.FRACASO)
-			swalConfig.title = 'No existe ningún usuario con el mail ingresado';
+			swalConfigNueva.title = 'No existe ningún usuario con el mail ingresado';
 		else if (statusUltimaPeticion === estados.YA_EXISTE)
-			swalConfig.title = 'El correo que quiso registrar ya pertenece a otra cuenta';
+			swalConfigNueva.title = 'El correo que quiso registrar ya pertenece a otra cuenta';
 
 		setMostrarAlerta(false);
-		Swal.fire(swalConfig);
+		Swal.fire(swalConfigNueva);
 	}, [mostrarAlerta]);
 
 	const levantarModal = tipoModal => {

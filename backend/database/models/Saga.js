@@ -41,7 +41,7 @@ let createSaga = async nuevaSaga => {
 			const idSagaCreada = response.rows[0].id_saga;
 			return {
 				status: estados.CREADO,
-				sagas: { ...nuevaSaga, id_saga: idSagaCreada }
+				saga: { ...nuevaSaga, id_saga: idSagaCreada }
 			};
 		} else return { status: estados.FRACASO };
 	} catch (error) {

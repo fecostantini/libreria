@@ -13,3 +13,9 @@ Ejemplo:
   for (let [a, b] of zip(lista1, lista2))
      console.log(a + b); 
 */
+
+export let swalConfig = {
+	position: 'center',
+	showConfirmButton: false,
+	timer: 3000
+};

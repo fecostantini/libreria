@@ -21,6 +21,7 @@ export const fetchSagas = async dispatch => {
 
 export const createSaga = async (dispatch, nuevaSaga) => {
 	const resp = await axios.post(URL, nuevaSaga);
+	console.log(resp);
 	const sagaCreada = resp.data ? resp.data.saga : null;
 
 	if (sagaCreada)

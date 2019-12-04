@@ -25,6 +25,9 @@ export const FETCH_LIBROS = 'FETCH_LIBROS';
 // acciones de fotocopia
 export const FETCH_FOTOCOPIAS = 'FETCH_FOTOCOPIAS';
 
+// acciones de carrito
+export const FETCH_CARRITO_ACTIVO = 'FETCH_CARRITO_ACTIVO';
+
 // acciones de usuario
 export const SET_USUARIO_ACTUAL = 'SET_USUARIO_ACTUAL';
 export const UPDATE_USUARIO = 'SET_USUARIO_ACTUAL';

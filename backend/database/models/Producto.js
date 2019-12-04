@@ -18,7 +18,7 @@ var formatearArray = array => {
 
 const querys = {
 	GET_ALL: 'select * from producto;',
-	INSERT: String.raw`call new_producto({isbn}, '{idioma}', '{titulo}', {stock}, {precio}, '{edicion}', '{descripcion}', {id_editorial}, {id_saga}, {id_promocion}, array[{ids_autores}]::int[], array[{ids_categorias}]::int[]);`,
+	INSERT: String.raw`call new_producto({isbn}, '{idioma}', '{titulo}', {stock}, {precio}, '{edicion}', '{descripcion}', {id_editorial}, {id_saga}, {id_promocion}, array[{ids_autores}]::int[], array[{ids_categorias}]::int[], {id_usuario});`,
 	GET_INFO: String.raw`select * from datos_producto({});`,
 	DELETE: String.raw`` //TODO: Llamar funcion que borra al producto y todas sus relaciones intermedias (en caso de ser libro)
 };
@@ -52,7 +52,7 @@ let createProducto = async nuevoProducto => {
 			autores: formatearArray(nuevoProducto.autores),
 			categorias: formatearArray(nuevoProducto.categorias)
 		};
-
+		console.log(querys.INSERT.format(nuevoProductoFormateado));
 		let response = await pool.query(querys.INSERT.format(nuevoProductoFormateado));
 
 		if (response) {
@@ -61,6 +61,7 @@ let createProducto = async nuevoProducto => {
 			};
 		}
 	} catch (error) {
+		console.log(error);
 		switch (error.code) {
 			case estados.YA_EXISTE:
 				return { status: estados.YA_EXISTE };
@@ -75,7 +76,6 @@ let createProducto = async nuevoProducto => {
 let getDatosProducto = async idProducto => {
 	try {
 		let response = await pool.query(querys.GET_INFO.format(idProducto));
-		console.log(response.rows[0]);
 
 		if (response.rows) {
 			return {
@@ -84,8 +84,6 @@ let getDatosProducto = async idProducto => {
 			};
 		}
 	} catch (error) {
-		console.log(error);
-		console.log(error.code);
 		switch (error.code) {
 			case estados.YA_EXISTE:
 				return { status: estados.YA_EXISTE };

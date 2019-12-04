@@ -6,11 +6,55 @@ const format = require('string-format');
 format.extend(String.prototype, {});
 
 const querys = {
-	GET_ALL_BY_USER_ID: String.raw`select * from carrito where id_usuario='{}';`,
-	INSERT: String.raw`INSERT INTO carrito("id_usuario") VALUES('{}') RETURNING id_carrito;`,
-	DESACTIVAR_CARRITO: String.raw`UPDATE carrito SET activo=False where id_carrito={}`
+	// GET_ALL_BY_USER_ID: String.raw`select * from carrito where id_usuario='{}';`,
+	GET_ID_CARRITO_ACTIVO: String.raw`select * from carrito where id_usuario='{}' and activo=True;`,
+	AÑADIR_PRODUCTO_AL_CARRITO: String.raw`select * from añadir_al_carrito({id_producto}, {cantidad}, {id_carrito});`
+	// INSERT: String.raw`INSERT INTO carrito("id_usuario") VALUES('{}') RETURNING id_carrito;`,
+	// DESACTIVAR_CARRITO: String.raw`UPDATE carrito SET activo=False where id_carrito={}`
 };
 
+let getCarritoActivo = async idUsuario => {
+	try {
+		let response = await pool.query(querys.GET_ID_CARRITO_ACTIVO.format(idUsuario));
+		let carritoEncontrado = response.rowCount > 0;
+
+		if (carritoEncontrado)
+			return {
+				status: estados.EXITO,
+				id_carrito: response.rows[0].id_carrito
+			};
+		else return { status: estados.FRACASO };
+	} catch (error) {
+		switch (error.code) {
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
+			default:
+				return { status: estados.CONEXION_FALLIDA };
+		}
+	}
+};
+
+let añadirAlCarrito = async infoProducto => {
+	try {
+		let response = await pool.query(querys.AÑADIR_PRODUCTO_AL_CARRITO.format(infoProducto));
+		let filasModificadas = response.rowCount;
+		let productoAgregado = filasModificadas > 0;
+		return {
+			status: productoAgregado ? estados.CREADO : estados.FRACASO
+		};
+	} catch (error) {
+		switch (error.code) {
+			case estados.YA_EXISTE:
+				return { status: estados.YA_EXISTE };
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
+			default:
+				return { status: estados.ERROR_DESCONOCIDO };
+		}
+	}
+};
+
+/*
 let getCarritosByIdUsuario = async idUsuario => {
 	try {
 		let response = await pool.query(querys.GET_ALL_BY_USER_ID.format(idUsuario));
@@ -74,9 +118,12 @@ let desactivarCarrito = async idCarrito => {
 		}
 	}
 };
+*/
 
 module.exports = {
-	getCarritosByIdUsuario,
-	createCarrito,
-	desactivarCarrito
+	//getCarritosByIdUsuario,
+	//createCarrito,
+	//desactivarCarrito,
+	getCarritoActivo,
+	añadirAlCarrito
 };
