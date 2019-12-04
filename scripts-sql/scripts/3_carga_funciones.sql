@@ -150,15 +150,16 @@ DECLARE
 isbn_libro integer;
 id_foto integer;
 BEGIN
-IF (select f.id_fotocopia from fotocopia f where f.id_producto = id_producto_a_borrar) > 0 THEN
+IF ((select f.id_fotocopia from fotocopia f where f.id_producto = id_producto_a_borrar) > 0) THEN
 	id_foto = (select id_fotocopia from fotocopia f where (f.id_producto = id_producto_a_borrar));
-	delete from fotocopiaxcarritoo where (id_fotocopia = id_foto);
+	delete from fotocopiaxcarrito where (id_fotocopia = id_foto);
 	delete from fotocopia where (id_producto = id_producto_a_borrar);
 ELSE
 	isbn_libro = (select isbn from libro l where (l.id_producto = id_producto_a_borrar));
 	delete from autorxlibro where (isbn = isbn_libro);
 	delete from categoriaxlibro where (isbn = isbn_libro);
 	delete from valoracion where (isbn = isbn_libro);
+	delete from pedido where (isbn = isbn_libro);
 	delete from libroxcarrito where (isbn = isbn_libro);
     delete from libro where (id_producto =id_producto_a_borrar);
 END IF;
