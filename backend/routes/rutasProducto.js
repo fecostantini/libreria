@@ -16,4 +16,9 @@ rutasProducto.post('/getInfo', function(req, res) {
 	Producto.getDatosProducto(idProducto).then(respuesta => res.send(respuesta));
 });
 
+rutasProducto.delete('/', function(req, res) {
+	const idProducto = req.body.id_producto;
+	Producto.deleteProducto(idProducto).then(respuesta => res.send(respuesta));
+});
+
 module.exports = rutasProducto;

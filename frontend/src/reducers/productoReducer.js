@@ -3,7 +3,8 @@ import {
 	FETCH_PRODUCTOS,
 	FETCH_PRODUCTO,
 	CREATE_PRODUCTO,
-	RESET_PRODUCTO
+	RESET_PRODUCTO,
+	DELETE_PRODUCTO
 } from '../actions/types';
 
 export const estadoInicialProducto = {
@@ -70,6 +71,17 @@ export default function(state = estadoInicialProducto, action) {
 			return {
 				...state,
 				productoActual: { ...estadoInicialProducto.productoActual }
+			};
+
+		case DELETE_PRODUCTO:
+			const idBorrado = action.payload.id_producto;
+			// eslint-disable-next-line
+			const productosSinElBorrado = state.items.filter(producto => {
+				if (producto.id_producto !== idBorrado) return producto;
+			});
+			return {
+				...state,
+				items: productosSinElBorrado
 			};
 
 		default:

@@ -1,18 +1,21 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Table, Container } from 'react-bootstrap';
-import { fetchProductos } from '../../../../actions/productoActions';
+import { fetchProductos, deleteProducto } from '../../../../actions/productoActions';
 
 import { ordenar } from '../../../Common/utils';
 
 const BajaProducto = () => {
 	const dispatch = useDispatch();
 	const productos = useSelector(state => state.producto.items);
+
 	const [campoAOrdenar, setCampoAOrdenar] = useState('titulo');
+	const [ordenCreciente, setOrdenCreciente] = useState(false);
+
 	const FilaProducto = ({ producto }) => {
 		const eliminarProducto = () => {
 			console.log(`Borrando producto con id ${producto.id_producto}...`);
-			// TODO: Llamar action que borre el producto.
+			deleteProducto(dispatch, producto.id_producto).then(() => console.log('borra3'));
 		};
 
 		return (
@@ -42,7 +45,17 @@ const BajaProducto = () => {
 							{nombreCampo}
 						</option>
 					))}
-				</select>
+				</select>{' '}
+				<label>
+					<input
+						type='checkbox'
+						checked={ordenCreciente}
+						onChange={e => {
+							setOrdenCreciente(e.target.checked);
+						}}
+					/>{' '}
+					Orden creciente
+				</label>
 			</Container>
 			<Table responsive>
 				<thead>
@@ -53,7 +66,7 @@ const BajaProducto = () => {
 					</tr>
 				</thead>
 				<tbody>
-					{productos.sort(ordenar(campoAOrdenar)).map(producto => (
+					{productos.sort(ordenar(campoAOrdenar, ordenCreciente)).map(producto => (
 						<FilaProducto key={producto.id_producto} producto={producto} />
 					))}
 				</tbody>

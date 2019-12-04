@@ -20,7 +20,7 @@ const querys = {
 	GET_ALL: 'select * from producto;',
 	INSERT: String.raw`call new_producto({isbn}, '{idioma}', '{titulo}', {stock}, {precio}, '{edicion}', '{descripcion}', {id_editorial}, {id_saga}, {id_promocion}, array[{ids_autores}]::int[], array[{ids_categorias}]::int[], {id_usuario});`,
 	GET_INFO: String.raw`select * from datos_producto({});`,
-	DELETE: String.raw`` //TODO: Llamar funcion que borra al producto y todas sus relaciones intermedias (en caso de ser libro)
+	DELETE: String.raw`call delete_producto({});` //TODO: Llamar funcion que borra al producto y todas sus relaciones intermedias (en caso de ser libro)
 };
 
 let getProductos = async () => {
@@ -95,8 +95,24 @@ let getDatosProducto = async idProducto => {
 	}
 };
 
+let deleteProducto = async idProducto => {
+	try {
+		let response = await pool.query(querys.DELETE.format(idProducto));
+		if (response) return { id_producto: idProducto, status: estados.BORRADO };
+		else return { status: estados.FRACASO };
+	} catch (error) {
+		switch (error.code) {
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
+			default:
+				return { status: estados.ERROR_DESCONOCIDO };
+		}
+	}
+};
+
 module.exports = {
 	getProductos,
 	createProducto,
-	getDatosProducto
+	getDatosProducto,
+	deleteProducto
 };

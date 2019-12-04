@@ -1,7 +1,7 @@
-export const ordenar = campo => {
+export const ordenar = (campo, creciente = false) => {
 	return (a, b) => {
-		if (a[campo] > b[campo]) return 1;
-		if (a[campo] < b[campo]) return -1;
+		if (a[campo] > b[campo]) return creciente ? -1 : 1;
+		if (a[campo] < b[campo]) return creciente ? 1 : -1;
 		return 0;
 	};
 };

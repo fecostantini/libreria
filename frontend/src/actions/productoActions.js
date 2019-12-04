@@ -4,7 +4,8 @@ import {
 	FETCH_PRODUCTO,
 	CREATE_PRODUCTO,
 	UPDATE_LAST_REQUEST_STATUS,
-	RESET_PRODUCTO
+	RESET_PRODUCTO,
+	DELETE_PRODUCTO
 } from './types';
 import axios from 'axios';
 const URL = 'http://localhost:3210/producto';
@@ -57,6 +58,23 @@ export const createProducto = async (dispatch, nuevoProducto) => {
 		dispatch({
 			type: CREATE_PRODUCTO,
 			payload: { productoCreado }
+		});
+	}
+
+	dispatch({
+		type: UPDATE_LAST_REQUEST_STATUS,
+		payload: { status: resp.data.status }
+	});
+};
+
+export const deleteProducto = async (dispatch, idProductoABorrar) => {
+	const resp = await axios.delete(URL, { data: { id_producto: idProductoABorrar } });
+	const productoBorrado = resp.data ? true : false;
+
+	if (productoBorrado) {
+		dispatch({
+			type: DELETE_PRODUCTO,
+			payload: { id_producto: idProductoABorrar }
 		});
 	}
 
