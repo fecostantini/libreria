@@ -63,16 +63,16 @@ INSERT INTO promocion("nombre_promocion","descuento","fecha_vencimiento") VALUES
 
 
 -- SAGAS
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Harry Potter', 4);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Percy Jackson y los dioses del Olimpo', 5);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Los juegos del hambre', 8);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('El señor de los anillos', 8);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Guerreros', 7);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('El diario de un chico en apuros', 4);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Canción del hielo y fuego', 9);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Los héroes del olimpo', 12);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Las crónicas de Narnia', 4);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('The Maze Runner', 6);
+INSERT INTO saga("nombre_saga") VALUES('Harry Potter');
+INSERT INTO saga("nombre_saga") VALUES('Percy Jackson y los dioses del Olimpo');
+INSERT INTO saga("nombre_saga") VALUES('Los juegos del hambre');
+INSERT INTO saga("nombre_saga") VALUES('El señor de los anillos');
+INSERT INTO saga("nombre_saga") VALUES('Guerreros');
+INSERT INTO saga("nombre_saga") VALUES('El diario de un chico en apuros');
+INSERT INTO saga("nombre_saga") VALUES('Canción del hielo y fuego');
+INSERT INTO saga("nombre_saga") VALUES('Los héroes del olimpo');
+INSERT INTO saga("nombre_saga") VALUES('Las crónicas de Narnia');
+INSERT INTO saga("nombre_saga") VALUES('The Maze Runner');
 
 
 -- LIBROS
@@ -150,18 +150,6 @@ call new_pedido(10,2,7);
 call new_pedido(9,1,4);
 call new_pedido(1,1,9);
 
-
--- CARRITOS
-INSERT INTO carrito("id_usuario") VALUES (1);
-INSERT INTO carrito("id_usuario") VALUES (2);
-INSERT INTO carrito("id_usuario") VALUES (3);
-INSERT INTO carrito("id_usuario") VALUES (4);
-INSERT INTO carrito("id_usuario") VALUES (5);
-INSERT INTO carrito("id_usuario") VALUES (6);
-INSERT INTO carrito("id_usuario") VALUES (7);
-INSERT INTO carrito("id_usuario") VALUES (8);
-INSERT INTO carrito("id_usuario") VALUES (9);
-INSERT INTO carrito("id_usuario") VALUES (10);
 
 -- LIBRO x CARRITO
 INSERT INTO libroxcarrito("isbn", "id_carrito", "cantidad") VALUES (1, 1, 1); 

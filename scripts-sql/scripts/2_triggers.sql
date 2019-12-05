@@ -68,20 +68,20 @@ CREATE OR REPLACE FUNCTION saga_libro() RETURNS trigger AS $saga_libro$
     BEGIN
       IF (TG_OP = 'INSERT') THEN
           IF NEW.id_saga > 0 THEN
-              call actualizar_precio_saga(NEW.id_saga);
+              call actualizar_saga(NEW.id_saga);
           END IF;
 		  RETURN NEW;
       ELSIF (TG_OP = 'UPDATE') THEN
           IF NEW.id_saga > 0 THEN
-              call actualizar_precio_saga(NEW.id_saga);
+              call actualizar_saga(NEW.id_saga);
           END IF;
           IF (OLD.id_Saga > 0) THEN
-              call actualizar_precio_saga(OLD.id_saga);
+              call actualizar_saga(OLD.id_saga);
           END IF;
 		  RETURN NEW;
       ELSIF (TG_OP = 'DELETE') THEN
         IF (OLD.id_Saga > 0) THEN
-          call actualizar_precio_saga(OLD.id_saga);
+          call actualizar_saga(OLD.id_saga);
         END IF;
         RETURN null;
       END IF;
@@ -125,4 +125,14 @@ $uppercase_usuario$ LANGUAGE plpgsql;
 
 CREATE TRIGGER uppercase_usuario_trigger BEFORE INSERT OR UPDATE ON usuario
     FOR EACH ROW EXECUTE PROCEDURE uppercase_usuario();
+
+CREATE OR REPLACE FUNCTION crear_carrito_usuario() RETURNS trigger AS $crear_carrito_usuario$
+    BEGIN        
+        INSERT INTO carrito("id_usuario") VALUES (NEW.id_usuario);
+        RETURN NEW;
+    END;
+$crear_carrito_usuario$ LANGUAGE plpgsql;
+
+CREATE TRIGGER crear_carrito_usuario_trigger AFTER INSERT ON usuario
+    FOR EACH ROW EXECUTE PROCEDURE crear_carrito_usuario();
 

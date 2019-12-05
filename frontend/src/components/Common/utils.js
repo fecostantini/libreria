@@ -19,3 +19,8 @@ export let swalConfig = {
 	showConfirmButton: false,
 	timer: 3000
 };
+
+export let dateToString = dateStr => {
+	const date = new Date(dateStr);
+	return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+};

@@ -5,10 +5,7 @@ import { useDispatch } from 'react-redux';
 
 let FormularioNuevaSaga = ({ setMostrarAlerta }) => {
 	const dispatch = useDispatch();
-	const [nuevaSaga, setNuevaSaga] = useState({
-		nombre_saga: '',
-		stock_saga: 0
-	});
+	const [nuevaSaga, setNuevaSaga] = useState({ nombre_saga: '' });
 	const [error, setError] = useState({
 		activo: false,
 		mensaje: ''
@@ -18,7 +15,7 @@ let FormularioNuevaSaga = ({ setMostrarAlerta }) => {
 	const crearNuevaSaga = () => {
 		if (nuevaSaga.nombre_saga) {
 			const nombreSagaUpper = nuevaSaga.nombre_saga.toUpperCase();
-			createSaga(dispatch, { nombre_saga: nombreSagaUpper, stock_saga: nuevaSaga.stock_saga }).then(() => {
+			createSaga(dispatch, { nombre_saga: nombreSagaUpper }).then(() => {
 				setMostrarAlerta(true);
 			});
 		} else

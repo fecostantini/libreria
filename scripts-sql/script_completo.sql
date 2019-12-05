@@ -39,7 +39,7 @@ UNIQUE(nombre_editorial)
 CREATE TABLE "saga" (
 "id_saga" serial not null,
 "nombre_saga" varchar not null,
-"stock_saga" integer not null,
+"stock_saga" integer not null DEFAULT 0,
 "precio_saga" real DEFAULT 0,
 UNIQUE(nombre_saga),
 constraint PK_saga primary key ("id_saga")
@@ -268,21 +268,22 @@ CREATE OR REPLACE FUNCTION saga_libro() RETURNS trigger AS $saga_libro$
     BEGIN
       IF (TG_OP = 'INSERT') THEN
           IF NEW.id_saga > 0 THEN
-              call actualizar_precio_saga(NEW.id_saga);
-              RETURN NEW;
+              call actualizar_saga(NEW.id_saga);
           END IF;
+		  RETURN NEW;
       ELSIF (TG_OP = 'UPDATE') THEN
           IF NEW.id_saga > 0 THEN
-              call actualizar_precio_saga(NEW.id_saga);
+              call actualizar_saga(NEW.id_saga);
           END IF;
           IF (OLD.id_Saga > 0) THEN
-              call actualizar_precio_saga(OLD.id_saga);
-              RETURN NEW;
+              call actualizar_saga(OLD.id_saga);
           END IF;
+		  RETURN NEW;
       ELSIF (TG_OP = 'DELETE') THEN
         IF (OLD.id_Saga > 0) THEN
-          call actualizar_precio_saga(OLD.id_saga);
+          call actualizar_saga(OLD.id_saga);
         END IF;
+        RETURN null;
       END IF;
     END;
 $saga_libro$ LANGUAGE plpgsql;
@@ -324,6 +325,16 @@ $uppercase_usuario$ LANGUAGE plpgsql;
 
 CREATE TRIGGER uppercase_usuario_trigger BEFORE INSERT OR UPDATE ON usuario
     FOR EACH ROW EXECUTE PROCEDURE uppercase_usuario();
+
+CREATE OR REPLACE FUNCTION crear_carrito_usuario() RETURNS trigger AS $crear_carrito_usuario$
+    BEGIN        
+        INSERT INTO carrito("id_usuario") VALUES (NEW.id_usuario);
+        RETURN NEW;
+    END;
+$crear_carrito_usuario$ LANGUAGE plpgsql;
+
+CREATE TRIGGER crear_carrito_usuario_trigger AFTER INSERT ON usuario
+    FOR EACH ROW EXECUTE PROCEDURE crear_carrito_usuario();
 
 /*    
     ######## ##     ## ##    ##  ######  ####  #######  ##    ## ########  ######  
@@ -486,6 +497,7 @@ ELSE
 	delete from autorxlibro where (isbn = isbn_libro);
 	delete from categoriaxlibro where (isbn = isbn_libro);
 	delete from valoracion where (isbn = isbn_libro);
+	delete from pedido where (isbn = isbn_libro);
 	delete from libroxcarrito where (isbn = isbn_libro);
     delete from libro where (id_producto =id_producto_a_borrar);
 END IF;
@@ -529,19 +541,20 @@ END $$
 LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE PROCEDURE actualizar_precio_saga (id_saga_a_actualizar integer)
+CREATE OR REPLACE PROCEDURE actualizar_saga (id_saga_a_actualizar integer)
 AS $$
 DECLARE
 precio_final real;
 precio real;
+stock_s integer;
 BEGIN
 precio_final = 0;
 FOR precio IN select l.precio from libro l, saga s where (s.id_saga = id_saga_a_actualizar and s.id_saga = l.id_saga)
 LOOP
 precio_final = precio_final + precio;
 END LOOP;
-
-update saga set precio_saga = precio_final where(saga.id_saga = id_saga_a_actualizar);
+stock_s = (select min(stock) from libro l  where (l.id_saga = id_saga_a_actualizar));
+update saga set precio_saga = precio_final*0.9, stock_saga = stock_s where(saga.id_saga = id_saga_a_actualizar);
 END $$
 LANGUAGE plpgsql;
 
@@ -630,16 +643,16 @@ INSERT INTO promocion("nombre_promocion","descuento","fecha_vencimiento") VALUES
 
 
 -- SAGAS
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Harry Potter', 4);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Percy Jackson y los dioses del Olimpo', 5);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Los juegos del hambre', 8);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('El señor de los anillos', 8);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Guerreros', 7);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('El diario de un chico en apuros', 4);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Canción del hielo y fuego', 9);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Los héroes del olimpo', 12);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('Las crónicas de Narnia', 4);
-INSERT INTO saga("nombre_saga","stock_saga") VALUES('The Maze Runner', 6);
+INSERT INTO saga("nombre_saga") VALUES('Harry Potter');
+INSERT INTO saga("nombre_saga") VALUES('Percy Jackson y los dioses del Olimpo');
+INSERT INTO saga("nombre_saga") VALUES('Los juegos del hambre');
+INSERT INTO saga("nombre_saga") VALUES('El señor de los anillos');
+INSERT INTO saga("nombre_saga") VALUES('Guerreros');
+INSERT INTO saga("nombre_saga") VALUES('El diario de un chico en apuros');
+INSERT INTO saga("nombre_saga") VALUES('Canción del hielo y fuego');
+INSERT INTO saga("nombre_saga") VALUES('Los héroes del olimpo');
+INSERT INTO saga("nombre_saga") VALUES('Las crónicas de Narnia');
+INSERT INTO saga("nombre_saga") VALUES('The Maze Runner');
 
 
 -- LIBROS
@@ -717,18 +730,6 @@ call new_pedido(10,2,7);
 call new_pedido(9,1,4);
 call new_pedido(1,1,9);
 
-
--- CARRITOS
-INSERT INTO carrito("id_usuario") VALUES (1);
-INSERT INTO carrito("id_usuario") VALUES (2);
-INSERT INTO carrito("id_usuario") VALUES (3);
-INSERT INTO carrito("id_usuario") VALUES (4);
-INSERT INTO carrito("id_usuario") VALUES (5);
-INSERT INTO carrito("id_usuario") VALUES (6);
-INSERT INTO carrito("id_usuario") VALUES (7);
-INSERT INTO carrito("id_usuario") VALUES (8);
-INSERT INTO carrito("id_usuario") VALUES (9);
-INSERT INTO carrito("id_usuario") VALUES (10);
 
 -- LIBRO x CARRITO
 INSERT INTO libroxcarrito("isbn", "id_carrito", "cantidad") VALUES (1, 1, 1); 

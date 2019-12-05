@@ -60,7 +60,7 @@ const BajaProducto = () => {
 			<Table responsive>
 				<thead>
 					<tr>
-						<th>Titulo</th>
+						<th>Título</th>
 						<th>Precio</th>
 						<th></th>
 					</tr>

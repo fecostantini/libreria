@@ -2,8 +2,9 @@ import React, { useEffect, useState, Fragment } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Container, Spinner, Row, Col, Card, Button } from 'react-bootstrap';
 import { fetchProducto } from '../../actions/productoActions';
+import { fetchPromociones } from '../../actions/promocionActions';
 import { fetchCarritoActivo, añadirAlCarrito } from '../../actions/carritoActions';
-import { zip, swalConfig } from '../Common/utils';
+import { zip, swalConfig, dateToString } from '../Common/utils';
 import estados from '../../estados';
 import Item from '../Common/Item';
 import Swal from 'sweetalert2';
@@ -13,6 +14,7 @@ function Producto({ props }) {
 	const usuarioActual = useSelector(state => state.usuario.usuarioActual);
 	const idCarritoActivo = useSelector(state => state.carrito.idCarritoActivo);
 	const statusUltimaPeticion = useSelector(state => state.ultimaRequest.status);
+	const promociones = useSelector(state => state.promociones.items);
 	const dispatch = useDispatch();
 
 	const [cantidad, setCantidad] = useState(1);
@@ -21,6 +23,7 @@ function Producto({ props }) {
 	useEffect(() => {
 		const idProducto = parseInt(props.match.params.id_producto, 10);
 		fetchProducto(dispatch, idProducto);
+		fetchPromociones(dispatch);
 
 		if (usuarioActual) fetchCarritoActivo(dispatch, usuarioActual.id_usuario);
 	}, []);
@@ -46,6 +49,10 @@ function Producto({ props }) {
 	}, [mostrarAlerta]);
 
 	const ProductoCard = ({ producto }) => {
+		let promocion = producto.id_promocion
+			? promociones.find(promo => promo.id_promocion === producto.id_promocion)
+			: null;
+
 		let itemSaga =
 			producto.id_saga && producto.id_saga !== -1 ? (
 				<Item
@@ -109,11 +116,23 @@ function Producto({ props }) {
 						<Col sm={9} md={9} lg={9}>
 							{producto.titulo}
 						</Col>
-						<Col className='text-right'>${producto.precio}</Col>
+						<Col className='text-right'>
+							<hr className='d-sm-none'></hr>
+							<span style={producto.id_promocion ? { textDecoration: 'line-through' } : {}}>${producto.precio}</span>
+							{promocion ? <span> ${producto.precio - (producto.precio * promocion.descuento) / 100}</span> : null}
+						</Col>
 					</Row>
 				</Card.Header>
 
 				<Card.Body>
+					{promocion ? (
+						<Fragment>
+							<p className='text-muted font-italic'>
+								Descuento vigente hasta el {dateToString(promocion.fecha_vencimiento)}
+							</p>
+							<hr />
+						</Fragment>
+					) : null}
 					<Card.Title>{producto.descripcion}</Card.Title>
 					<hr></hr>
 

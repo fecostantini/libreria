@@ -39,7 +39,7 @@ UNIQUE(nombre_editorial)
 CREATE TABLE "saga" (
 "id_saga" serial not null,
 "nombre_saga" varchar not null,
-"stock_saga" integer not null,
+"stock_saga" integer not null DEFAULT 0,
 "precio_saga" real DEFAULT 0,
 UNIQUE(nombre_saga),
 constraint PK_saga primary key ("id_saga")

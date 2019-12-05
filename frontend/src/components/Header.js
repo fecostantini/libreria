@@ -9,7 +9,7 @@ const Header = () => {
 
 	const linkAdministrar = (
 		<li className='nav-item'>
-			<NavLink to='/administrar' className='nav-link' activeClassName='active'>
+			<NavLink to='/administrar/gestion_productos/alta' className='nav-link' activeClassName='active'>
 				Administrar
 			</NavLink>
 		</li>
@@ -31,6 +31,11 @@ const Header = () => {
 						</NavLink>
 					</li>
 				</ul>
+				{usuarioActual ? (
+					<Link to='/carrito' className='btn btn-success btn-sm mr-3'>
+						<i className='fa fa-shopping-cart'></i> Carrito <span class='badge badge-light'>3</span>
+					</Link>
+				) : null}
 				<form className='form-inline my-2 my-lg-0'>{usuarioActual ? <UsuarioLoggeado /> : <Login />}</form>
 			</div>
 		</nav>

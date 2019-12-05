@@ -7,7 +7,7 @@ format.extend(String.prototype, {});
 
 const querys = {
 	GET_ALL: 'select * from saga;',
-	INSERT: String.raw`INSERT INTO saga(nombre_saga, stock_saga) VALUES('{nombre_saga}', '{stock_saga}') RETURNING id_saga;`,
+	INSERT: String.raw`INSERT INTO saga(nombre_saga) VALUES('{nombre_saga}') RETURNING id_saga;`,
 	UPDATE: String.raw`UPDATE saga SET nombre_saga = '{nombre_saga}', stock_saga = '{stock_saga}'  WHERE id_saga='{id_saga}';`,
 	DELETE: String.raw`DELETE FROM saga WHERE id_saga={};`
 };
@@ -41,10 +41,11 @@ let createSaga = async nuevaSaga => {
 			const idSagaCreada = response.rows[0].id_saga;
 			return {
 				status: estados.CREADO,
-				saga: { ...nuevaSaga, id_saga: idSagaCreada }
+				saga: { ...nuevaSaga, id_saga: idSagaCreada, stock_saga: 0 }
 			};
 		} else return { status: estados.FRACASO };
 	} catch (error) {
+		console.log(error);
 		switch (error.code) {
 			case estados.YA_EXISTE:
 				return { status: estados.YA_EXISTE };
