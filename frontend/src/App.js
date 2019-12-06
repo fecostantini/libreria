@@ -14,8 +14,8 @@ let App = () => {
 	const usuarioActual = useSelector(state => state.usuario.usuarioActual);
 
 	const rutaAdministrar = <Route path='/administrar' component={Administrar} />;
-	const rutaEditarPerfil = <Route path='/editar_perfil' component={EditarPerfil} />;
-	const rutaCarrito = <Route path='/carrito' component={Carrito} />;
+	const rutaEditarPerfil = <Route path='/editar_perfil' component={EditarPerfil} key='1' />;
+	const rutaCarrito = <Route path='/carrito' component={Carrito} key='2' />;
 	return (
 		<Fragment>
 			<Header />

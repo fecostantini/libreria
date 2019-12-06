@@ -35,7 +35,7 @@ const Header = () => {
 	);
 
 	const iconoCarrito = (
-		<Link to='/carrito' className='btn btn-success btn-sm mr-3'>
+		<Link to='/carrito' className='btn btn-success btn-sm mr-3' key='1'>
 			<IconoCarrito cantidadElementos={cantidadElementosCarrito()} />
 		</Link>
 	);
@@ -58,7 +58,7 @@ const Header = () => {
 				</ul>
 
 				<form className='form-inline my-2 my-lg-0'>
-					{usuarioActual ? [iconoCarrito, <UsuarioLoggeado />] : <Login />}
+					{usuarioActual ? [iconoCarrito, <UsuarioLoggeado key='2' />] : <Login />}
 				</form>
 			</div>
 		</nav>

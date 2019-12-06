@@ -36,7 +36,6 @@ export const añadirAlCarrito = async (dispatch, infoProducto) => {
 
 export const getElementos = async (dispatch, idCarrito) => {
 	const resp = await axios.post(`${URL}/getElementos`, { id_carrito: idCarrito });
-	console.log(resp.data.elementos);
 	if (resp.data.status === 'EXITO')
 		dispatch({
 			type: FETCH_ELEMENTOS_CARRITO,
