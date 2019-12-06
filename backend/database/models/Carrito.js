@@ -8,7 +8,9 @@ format.extend(String.prototype, {});
 const querys = {
 	// GET_ALL_BY_USER_ID: String.raw`select * from carrito where id_usuario='{}';`,
 	GET_ID_CARRITO_ACTIVO: String.raw`select * from carrito where id_usuario='{}' and activo=True;`,
-	AÑADIR_PRODUCTO_AL_CARRITO: String.raw`select * from añadir_al_carrito({id_producto}, {cantidad}, {id_carrito});`
+	AÑADIR_PRODUCTO_AL_CARRITO: String.raw`select * from añadir_al_carrito({id_producto}, {cantidad}, {id_carrito});`,
+	GET_CANTIDAD_ELEMENTOS_CARRITO: String.raw`select * from cantidad_productos_carrito({});`,
+	GET_ELEMENTOS_CARRITO: String.raw`select * from productos_carrito({});`
 	// INSERT: String.raw`INSERT INTO carrito("id_usuario") VALUES('{}') RETURNING id_carrito;`,
 	// DESACTIVAR_CARRITO: String.raw`UPDATE carrito SET activo=False where id_carrito={}`
 };
@@ -54,6 +56,48 @@ let añadirAlCarrito = async infoProducto => {
 	}
 };
 
+let getCantidadElementosCarrito = async idCarrito => {
+	try {
+		let response = await pool.query(querys.GET_CANTIDAD_ELEMENTOS_CARRITO.format(idCarrito));
+		let respuestaObtenida = response.rowCount > 0;
+
+		if (respuestaObtenida)
+			return {
+				status: estados.EXITO,
+				cantidad: response.rows[0].cantidad_productos_carrito
+			};
+		else return { status: estados.FRACASO };
+	} catch (error) {
+		console.log(error);
+		switch (error.code) {
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
+			default:
+				return { status: estados.CONEXION_FALLIDA };
+		}
+	}
+};
+
+let getProductosCarrito = async idCarrito => {
+	try {
+		let response = await pool.query(querys.GET_ELEMENTOS_CARRITO.format(idCarrito));
+		let respuestaObtenida = response.rowCount > 0;
+
+		if (respuestaObtenida)
+			return {
+				status: estados.EXITO,
+				elementos: response.rows
+			};
+		else return { status: estados.FRACASO };
+	} catch (error) {
+		switch (error.code) {
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
+			default:
+				return { status: estados.CONEXION_FALLIDA };
+		}
+	}
+};
 /*
 let getCarritosByIdUsuario = async idUsuario => {
 	try {
@@ -125,5 +169,7 @@ module.exports = {
 	//createCarrito,
 	//desactivarCarrito,
 	getCarritoActivo,
-	añadirAlCarrito
+	añadirAlCarrito,
+	getCantidadElementosCarrito,
+	getProductosCarrito
 };

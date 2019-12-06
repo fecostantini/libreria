@@ -12,6 +12,16 @@ rutasCarrito.post('/agregarProducto', function(req, res) {
 	Carrito.añadirAlCarrito(infoProducto).then(respuesta => res.send(respuesta));
 });
 
+rutasCarrito.post('/getCantidadElementos', function(req, res) {
+	const idCarrito = req.body.id_carrito;
+	Carrito.getCantidadElementosCarrito(idCarrito).then(respuesta => res.send(respuesta));
+});
+
+rutasCarrito.post('/getElementos', function(req, res) {
+	const idCarrito = req.body.id_carrito;
+	Carrito.getProductosCarrito(idCarrito).then(respuesta => res.send(respuesta));
+});
+
 rutasCarrito.post('/getCarritosByIdUsuario', function(req, res) {
 	const idUsuario = req.body.id_usuario;
 	Carrito.getCarritosByIdUsuario(idUsuario).then(respuesta => res.send(respuesta));

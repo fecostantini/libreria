@@ -770,16 +770,16 @@ INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar La en
 
 
 -- USUARIOS
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('fecostantini@hotmail.com', 'Francisco', 'Costantini', 'password1', 'ADMIN');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('maximiliano.pretto@gmail.com', 'Maximiliano', 'Pretto', 'password2', 'ADMIN');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('belwalerv@hotmail.com', 'Walter', 'Bel', 'password3', 'GESTOR_PEDIDOS');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo1@hotmail.com', 'Juan', 'Langoni', 'superpassword1', 'USUARIO_NORMAL');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo2@hotmail.com', 'Julian', 'Gómez', 'superpassword2', 'USUARIO_NORMAL');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo3@hotmail.com', 'Pedro', 'Martinez', 'superpassword3', 'USUARIO_NORMAL');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo4@hotmail.com', 'Liliana', 'Gonzales', 'superpassword4', 'USUARIO_NORMAL');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo5@hotmail.com', 'Mariano', 'Muller', 'superpassword5', 'USUARIO_NORMAL');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo6@hotmail.com', 'Silvia', 'Romero', 'superpassword6', 'USUARIO_NORMAL');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol") VALUES ('ejemplo7@hotmail.com', 'Gabriel', 'Soria', 'superpassword7', 'USUARIO_NORMAL');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('fecostantini@hotmail.com', 'Francisco', 'Costantini', 'password1', 'ADMIN', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('maximiliano.pretto@gmail.com', 'Maximiliano', 'Pretto', 'password2', 'ADMIN', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('belwalerv@hotmail.com', 'Walter', 'Bel', 'password3', 'GESTOR_PEDIDOS', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo1@hotmail.com', 'Juan', 'Langoni', 'superpassword1', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo2@hotmail.com', 'Julian', 'Gómez', 'superpassword2', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo3@hotmail.com', 'Pedro', 'Martinez', 'superpassword3', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo4@hotmail.com', 'Liliana', 'Gonzales', 'superpassword4', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo5@hotmail.com', 'Mariano', 'Muller', 'superpassword5', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo6@hotmail.com', 'Silvia', 'Romero', 'superpassword6', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo7@hotmail.com', 'Gabriel', 'Soria', 'superpassword7', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
 
 -- FOTOCOPIAS
 INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion","id_usuario") VALUES ('Apuntes Cálculo I', 5, 100, 'Apuntes de Cálculo I de primer año de Sistemas.',5);

@@ -26,7 +26,9 @@ export const FETCH_LIBROS = 'FETCH_LIBROS';
 export const FETCH_FOTOCOPIAS = 'FETCH_FOTOCOPIAS';
 
 // acciones de carrito
+export const AÑADIR_AL_CARRITO = 'AÑADIR_AL_CARRITO';
 export const FETCH_CARRITO_ACTIVO = 'FETCH_CARRITO_ACTIVO';
+export const FETCH_ELEMENTOS_CARRITO = 'FETCH_ELEMENTOS_CARRITO';
 
 // acciones de usuario
 export const SET_USUARIO_ACTUAL = 'SET_USUARIO_ACTUAL';
@@ -35,7 +37,6 @@ export const UPDATE_USUARIO = 'SET_USUARIO_ACTUAL';
 // status global de la ultima request que se realizó al backend
 export const UPDATE_LAST_REQUEST_STATUS = 'UPDATE_LAST_REQUEST_STATUS';
 
-// producto que se maneja en GestionProductos
 export const UPDATE_PRODUCTO_FORMULARIO = 'UPDATE_PRODUCTO_FORMULARIO';
 export const UPDATE_PRODUCTO_BBDD = 'UPDATE_PRODUCTO_BBDD';
 export const FETCH_PRODUCTOS = 'FETCH_PRODUCTOS';
