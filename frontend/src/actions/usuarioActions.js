@@ -8,6 +8,8 @@ export const loggearORegistrarUsuario = async (dispatch, usuario) => {
 	const usuarioRespuesta = resp.data ? resp.data.usuario : null;
 
 	if (usuarioRespuesta) {
+		// fuerza la actualización de la información del carrito
+		if (resp.data.status === 'EXITO') document.location.reload();
 		localStorage.setItem('usuarioActual', JSON.stringify(usuarioRespuesta));
 		dispatch({
 			type: SET_USUARIO_ACTUAL,
@@ -19,8 +21,6 @@ export const loggearORegistrarUsuario = async (dispatch, usuario) => {
 		type: UPDATE_LAST_REQUEST_STATUS,
 		payload: { status: resp.data.status }
 	});
-
-	document.location.reload(); // fuerza la actualización de la información del carrito
 };
 
 export const loggearUsuario = async (dispatch, usuario) => {
@@ -28,6 +28,9 @@ export const loggearUsuario = async (dispatch, usuario) => {
 	const usuarioRespuesta = resp.data ? resp.data.usuario : null;
 
 	if (usuarioRespuesta) {
+		// fuerza la actualización de la información del carrito
+		if (resp.data.status === 'EXITO') document.location.reload();
+
 		localStorage.setItem('usuarioActual', JSON.stringify(usuarioRespuesta));
 		dispatch({
 			type: SET_USUARIO_ACTUAL,
@@ -39,8 +42,6 @@ export const loggearUsuario = async (dispatch, usuario) => {
 		type: UPDATE_LAST_REQUEST_STATUS,
 		payload: { status: resp.data.status }
 	});
-
-	document.location.reload(); // fuerza la actualización de la información del carrito
 };
 
 export const desloggearUsuario = async dispatch => {
@@ -60,6 +61,8 @@ export const registrarUsuario = async (dispatch, usuario) => {
 	const usuarioRespuesta = resp.data ? resp.data.usuario : null;
 
 	if (usuarioRespuesta) {
+		// fuerza la actualización de la información del carrito
+		if (resp.data.status === 'EXITO') document.location.reload();
 		localStorage.setItem('usuarioActual', JSON.stringify(usuarioRespuesta));
 		dispatch({
 			type: SET_USUARIO_ACTUAL,
@@ -71,8 +74,6 @@ export const registrarUsuario = async (dispatch, usuario) => {
 		type: UPDATE_LAST_REQUEST_STATUS,
 		payload: { status: resp.data.status }
 	});
-
-	document.location.reload(); // fuerza la actualización de la información del carrito
 };
 
 export const updateUsuario = async (dispatch, usuarioCambiado) => {
@@ -80,6 +81,8 @@ export const updateUsuario = async (dispatch, usuarioCambiado) => {
 	const usuarioActualizado = resp.data.status === 'ACTUALIZADO';
 
 	if (usuarioActualizado) {
+		// fuerza la actualización de la información del carrito
+		if (resp.data.status === 'EXITO') document.location.reload();
 		usuarioCambiado.nombre = usuarioCambiado.nombre.toUpperCase(); // poner nombre en mayuscula
 
 		localStorage.setItem('usuarioActual', JSON.stringify(usuarioCambiado));
@@ -93,6 +96,4 @@ export const updateUsuario = async (dispatch, usuarioCambiado) => {
 		type: UPDATE_LAST_REQUEST_STATUS,
 		payload: { status: resp.data.status }
 	});
-
-	document.location.reload(); // fuerza la actualización de la información del carrito
 };

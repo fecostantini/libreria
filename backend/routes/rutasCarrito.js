@@ -22,6 +22,11 @@ rutasCarrito.post('/getElementos', function(req, res) {
 	Carrito.getProductosCarrito(idCarrito).then(respuesta => res.send(respuesta));
 });
 
+rutasCarrito.post('/realizarCheckout', function(req, res) {
+	const idCarrito = req.body.id_carrito;
+	Carrito.realizarCheckout(idCarrito).then(respuesta => res.send(respuesta));
+});
+
 rutasCarrito.post('/getCarritosByIdUsuario', function(req, res) {
 	const idUsuario = req.body.id_usuario;
 	Carrito.getCarritosByIdUsuario(idUsuario).then(respuesta => res.send(respuesta));
