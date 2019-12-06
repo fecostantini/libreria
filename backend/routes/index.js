@@ -12,4 +12,7 @@ router.use('/producto', require('./rutasProducto'));
 router.use('/promocion', require('./rutasPromocion'));
 router.use('/carrito', require('./rutasCarrito'));
 
+// mercadopago
+router.use('/mercadopago', require('./rutasMercadoPago'));
+
 module.exports = router;

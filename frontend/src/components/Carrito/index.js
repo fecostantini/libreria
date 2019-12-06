@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { getElementos, fetchCarritoActivo } from '../../actions/carritoActions';
 import { fetchProductos } from '../../actions/productoActions';
@@ -33,6 +34,28 @@ let Carrito = () => {
 
 	const calcularTotal = () => {
 		return calcularSubTotal() + calcularImpuestos();
+	};
+
+	const pagarConMercadoPago = () => {
+		const productos = productosCarritoConCantidad.map(producto => {
+			return {
+				id: producto.id_producto,
+				title: producto.titulo,
+				quantity: producto.cantidad,
+				currency_id: 'ARS',
+				unit_price: producto.precio
+			};
+		});
+
+		const comprador = {
+			name: usuarioActual.nombre,
+			email: usuarioActual.mail
+		};
+
+		axios.post('http://localhost:3210/mercadopago/pagar', { items: productos, payer: comprador }).then(resp => {
+			document.location = resp.data.body.sandbox_init_point;
+			//resp.databody.sandbox_init_point
+		});
 	};
 
 	useEffect(() => {
@@ -90,7 +113,7 @@ let Carrito = () => {
 								<h5 className='font-weight-bold'>${calcularTotal()}</h5>
 							</li>
 						</ul>
-						<a className='btn btn-dark rounded-pill py-2 btn-block'>
+						<a className='btn btn-dark rounded-pill py-2 btn-block' onClick={pagarConMercadoPago}>
 							<span className='text-white'>Proceder al checkout</span>
 						</a>
 					</div>

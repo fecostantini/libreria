@@ -19,6 +19,8 @@ export const loggearORegistrarUsuario = async (dispatch, usuario) => {
 		type: UPDATE_LAST_REQUEST_STATUS,
 		payload: { status: resp.data.status }
 	});
+
+	document.location.reload(); // fuerza la actualización de la información del carrito
 };
 
 export const loggearUsuario = async (dispatch, usuario) => {
@@ -38,7 +40,7 @@ export const loggearUsuario = async (dispatch, usuario) => {
 		payload: { status: resp.data.status }
 	});
 
-	return;
+	document.location.reload(); // fuerza la actualización de la información del carrito
 };
 
 export const desloggearUsuario = async dispatch => {
@@ -70,7 +72,7 @@ export const registrarUsuario = async (dispatch, usuario) => {
 		payload: { status: resp.data.status }
 	});
 
-	return;
+	document.location.reload(); // fuerza la actualización de la información del carrito
 };
 
 export const updateUsuario = async (dispatch, usuarioCambiado) => {
@@ -91,4 +93,6 @@ export const updateUsuario = async (dispatch, usuarioCambiado) => {
 		type: UPDATE_LAST_REQUEST_STATUS,
 		payload: { status: resp.data.status }
 	});
+
+	document.location.reload(); // fuerza la actualización de la información del carrito
 };
