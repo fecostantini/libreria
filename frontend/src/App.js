@@ -8,12 +8,14 @@ import EditarPerfil from './components/EditarPerfil';
 import Productos from './components/Productos';
 import Producto from './components/Productos/Producto';
 import Header from './components/Header';
+import Carrito from './components/Carrito';
 
 let App = () => {
 	const usuarioActual = useSelector(state => state.usuario.usuarioActual);
 
 	const rutaAdministrar = <Route path='/administrar' component={Administrar} />;
-	const editarPerfil = <Route path='/editar_perfil' component={EditarPerfil} />;
+	const rutaEditarPerfil = <Route path='/editar_perfil' component={EditarPerfil} />;
+	const rutaCarrito = <Route path='/carrito' component={Carrito} />;
 	return (
 		<Fragment>
 			<Header />
@@ -21,8 +23,8 @@ let App = () => {
 				<Switch>
 					<Route exact path='/producto/:id_producto' render={props => <Producto props={props} />} />
 					{usuarioActual && usuarioActual.rol === 'ADMIN' ? rutaAdministrar : null}
-					{usuarioActual ? editarPerfil : null}
-					<Route path='/' component={Productos} />
+					{usuarioActual ? [rutaEditarPerfil, rutaCarrito] : null}
+					<Route exact path='/' component={Productos} />
 					<Route render={() => <h1>Error 404. Página no encontrada.</h1>} />
 				</Switch>
 			</main>

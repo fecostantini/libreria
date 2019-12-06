@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import Login from './Login';
+import Login from '../Login';
 import UsuarioLoggeado from './UsuarioLoggeado';
-import { getElementos, fetchCarritoActivo } from '../actions/carritoActions';
+import IconoCarrito from './IconoCarrito';
+import { getElementos, fetchCarritoActivo } from '../../actions/carritoActions';
 
 const Header = () => {
 	const dispatch = useDispatch();
@@ -33,6 +34,12 @@ const Header = () => {
 		</li>
 	);
 
+	const iconoCarrito = (
+		<Link to='/carrito' className='btn btn-success btn-sm mr-3'>
+			<IconoCarrito cantidadElementos={cantidadElementosCarrito()} />
+		</Link>
+	);
+
 	return (
 		<nav className='navbar navbar-expand-lg navbar-dark bg-dark'>
 			<div className='container'>
@@ -49,13 +56,10 @@ const Header = () => {
 						</NavLink>
 					</li>
 				</ul>
-				{usuarioActual ? (
-					<Link to='/carrito' className='btn btn-success btn-sm mr-3'>
-						<i className='fa fa-shopping-cart'></i> Carrito{' '}
-						<span className='badge badge-light'>{cantidadElementosCarrito()}</span>
-					</Link>
-				) : null}
-				<form className='form-inline my-2 my-lg-0'>{usuarioActual ? <UsuarioLoggeado /> : <Login />}</form>
+
+				<form className='form-inline my-2 my-lg-0'>
+					{usuarioActual ? [iconoCarrito, <UsuarioLoggeado />] : <Login />}
+				</form>
 			</div>
 		</nav>
 	);
