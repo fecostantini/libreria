@@ -136,3 +136,14 @@ $crear_carrito_usuario$ LANGUAGE plpgsql;
 CREATE TRIGGER crear_carrito_usuario_trigger AFTER INSERT ON usuario
     FOR EACH ROW EXECUTE PROCEDURE crear_carrito_usuario();
 
+CREATE OR REPLACE FUNCTION valoracion_general() RETURNS trigger AS $valoracion_general$
+    BEGIN        
+        call actualizar_valoracion_general(NEW.isbn);
+        RETURN NEW;
+    END;
+$valoracion_general$ LANGUAGE plpgsql;
+
+CREATE TRIGGER valoracion_general_trigger AFTER INSERT OR UPDATE ON valoracion
+    FOR EACH ROW EXECUTE PROCEDURE valoracion_general();
+
+

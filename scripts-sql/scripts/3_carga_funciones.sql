@@ -144,6 +144,20 @@ END $$
 LANGUAGE plpgsql;
 
 
+CREATE OR REPLACE PROCEDURE update_producto (id_fotocopia_updated integer, isbn_updated integer, idioma_updated varchar, titulo_updated varchar, stock_updated integer, precio_updated real, edicion_updated varchar, descripcion_updated varchar, id_editorial_updated integer, id_saga_updated integer, id_promocion_updated integer, ids_autores_updated integer[], ids_categorias_updated integer[], id_usuario_updated integer)
+AS $$
+DECLARE
+BEGIN
+IF (isbn_updated IS NULL) THEN
+  update fotocopia set titulo = titulo_updated, stock = stock_updated, precio = precio_updated, id_promocion = id_promocion_updated, descripcion = descripcion_updated, id_usuario = id_usuario_updated where (id_fotocopia = id_fotocopia_updated);
+ELSE
+  call update_libro(isbn_updated, idioma_updated, titulo_updated, stock_updated, precio_updated, edicion_updated, descripcion_updated, id_editorial_updated, id_saga_updated, id_promocion_updated, ids_autores_updated, ids_categorias_updated);
+END IF;
+
+END $$
+LANGUAGE plpgsql;
+
+
 CREATE OR REPLACE PROCEDURE delete_producto (id_producto_a_borrar integer) AS
 $delete_producto$
 DECLARE
@@ -216,6 +230,9 @@ LOOP
 precio_final = precio_final + precio;
 END LOOP;
 stock_s = (select min(stock) from libro l  where (l.id_saga = id_saga_a_actualizar));
+if (stock_s is null) THEN
+  stock_s = 0;
+END IF;
 update saga set precio_saga = precio_final*0.9, stock_saga = stock_s where(saga.id_saga = id_saga_a_actualizar);
 END $$
 LANGUAGE plpgsql;
@@ -228,14 +245,62 @@ DECLARE
 BEGIN
 IF (select f.id_fotocopia from fotocopia f where f.id_producto = id_producto_a_buscar) > 0 THEN
 	raise notice 'soy una fotocopia';
-    RETURN query select f.id_producto, f.id_fotocopia, f.titulo, f.stock, 0 as isbn , f.precio, cast(f.id_promocion as integer), f.descripcion, f.id_usuario, null as nombre_editorial, null as idioma, null as edicion, -1 as id_saga, null as nombre_saga, 0 as stock_saga, cast(-1 as real) as precio_saga, ARRAY['0']::varchar[] as autores, ARRAY['0']::varchar[] as nacionalidades, ARRAY['0']::varchar[] as categorias from fotocopia f where (f.id_producto = id_producto_a_buscar);
+    RETURN query select f.id_producto, f.id_fotocopia, f.titulo, f.stock, cast(null as integer) as isbn , f.precio, cast(f.id_promocion as integer), f.descripcion, f.id_usuario, null as nombre_editorial, null as idioma, null as edicion, cast(null as integer) as id_saga, null as nombre_saga, cast(null as integer) as stock_saga, cast(null as real) as precio_saga, ARRAY['0']::varchar[] as autores, ARRAY['0']::varchar[] as nacionalidades, ARRAY['0']::varchar[] as categorias from fotocopia f where (f.id_producto = id_producto_a_buscar);
 ELSIF (select l.id_saga from libro l where l.id_producto = id_producto_a_buscar) > 0 THEN
     raise notice 'soy unlibro con saga';
-	RETURN query select dlc.id_producto, 0 as id_fotocopia, dlc.titulo, dlc.stock, dlc.isbn , dlc.precio, cast(dlc.id_promocion as integer), dlc.descripcion, 0, cast(dlc.nombre_editorial as text), cast(dlc.idioma as text), cast(dlc.edicion as text), dlc.id_saga, cast(s.nombre_saga as text), s.stock_saga, s.precio_saga, dlc.autores, dlc.nacionalidades, dlc.categorias from datos_libros_completos dlc, saga s where (dlc.id_producto = id_producto_a_buscar and dlc.id_saga = s.id_saga);
+	RETURN query select dlc.id_producto, cast(null as integer) as id_fotocopia, dlc.titulo, dlc.stock, dlc.isbn , dlc.precio, cast(dlc.id_promocion as integer), dlc.descripcion, cast(null as integer), cast(dlc.nombre_editorial as text), cast(dlc.idioma as text), cast(dlc.edicion as text), dlc.id_saga, cast(s.nombre_saga as text), s.stock_saga, s.precio_saga, dlc.autores, dlc.nacionalidades, dlc.categorias from datos_libros_completos dlc, saga s where (dlc.id_producto = id_producto_a_buscar and dlc.id_saga = s.id_saga);
 ELSE
 	raise notice 'soy unlibro sin saga';
-	RETURN query select dlc.id_producto, 0 as id_fotocopia, dlc.titulo, dlc.stock, dlc.isbn , dlc.precio, cast(dlc.id_promocion as integer), dlc.descripcion, 0, cast(dlc.nombre_editorial as text), cast(dlc.idioma as text), cast(dlc.edicion as text), dlc.id_saga, null as nombre_saga, 0 as stock_saga, cast(0 as real) as precio_saga, dlc.autores, dlc.nacionalidades, dlc.categorias from datos_libros_completos dlc where (dlc.id_producto = id_producto_a_buscar);
+	RETURN query select dlc.id_producto, cast(null as integer) as id_fotocopia, dlc.titulo, dlc.stock, dlc.isbn , dlc.precio, cast(dlc.id_promocion as integer), dlc.descripcion, cast(null as integer), cast(dlc.nombre_editorial as text), cast(dlc.idioma as text), cast(dlc.edicion as text), dlc.id_saga, null as nombre_saga, 0 as stock_saga, cast(0 as real) as precio_saga, dlc.autores, dlc.nacionalidades, dlc.categorias from datos_libros_completos dlc where (dlc.id_producto = id_producto_a_buscar);
 END IF;
 END $datos_producto$
+LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION productos_carrito (id_carrito_a_buscar integer)
+RETURNS table(id_producto integer, id_fotocopia integer, isbn integer, cantidad integer) AS
+$productos_carrito$
+DECLARE
+BEGIN
+RETURN query select l.id_producto, cast(null as integer) as id_fotocopia, l.isbn , lxc.cantidad as cantidad  from libro l, libroxcarrito lxc where (l.isbn = lxc.isbn and lxc.id_carrito = id_carrito_a_buscar) 
+UNION 
+select f.id_producto, f.id_fotocopia, cast(null as integer) as isbn, fxc.cantidad as cantidad from fotocopia f, fotocopiaxcarrito fxc where (f.id_fotocopia = fxc.id_fotocopia and fxc.id_carrito = id_carrito_a_buscar);
+END $productos_carrito$
+LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION cantidad_productos_carrito (id_carrito_a_buscar integer)
+RETURNS integer AS
+$cantidad_productos_carrito$
+DECLARE
+cantidad integer;
+BEGIN
+cantidad =(select t1.suma + t2.suma 
+from(select count(l.id_producto) as suma from libro l, libroxcarrito lxc where (l.isbn = lxc.isbn and lxc.id_carrito = id_carrito_a_buscar)) as t1, 
+	 (select count(f.id_producto) as suma from fotocopia f, fotocopiaxcarrito fxc where (f.id_fotocopia = fxc.id_fotocopia and fxc.id_carrito = id_carrito_a_buscar)) as t2);
+RETURN cantidad;
+END $cantidad_productos_carrito$
+LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE PROCEDURE actualizar_valoracion_general (isbn_a_actualizar integer)
+AS $$
+DECLARE
+suma_valoraciones integer;
+valoracion_promedio float;
+puntaje_valoracion integer;
+contador integer;
+BEGIN
+suma_valoraciones = 0;
+contador = 0;
+FOR puntaje_valoracion IN select v.puntaje from valoracion v, libro l where (l.isbn = isbn_a_actualizar and v.isbn = l.isbn)
+LOOP
+    raise notice 'loop valoraciones';
+    suma_valoraciones = suma_valoraciones + puntaje_valoracion;
+    contador = contador + 1;
+END LOOP;
+valoracion_promedio = suma_valoraciones::float / contador::float;
+update libro set valoracion_general = valoracion_promedio where(isbn = isbn_a_actualizar);
+END $$
 LANGUAGE plpgsql;
 

@@ -33,7 +33,7 @@ const Header = () => {
 				</ul>
 				{usuarioActual ? (
 					<Link to='/carrito' className='btn btn-success btn-sm mr-3'>
-						<i className='fa fa-shopping-cart'></i> Carrito <span class='badge badge-light'>3</span>
+						<i className='fa fa-shopping-cart'></i> Carrito <span className='badge badge-light'>3</span>
 					</Link>
 				) : null}
 				<form className='form-inline my-2 my-lg-0'>{usuarioActual ? <UsuarioLoggeado /> : <Login />}</form>

@@ -88,16 +88,16 @@ call new_libro(9,'japonés','La carta robada', 7, 900, 'novena','descripcion9',9
 call new_libro(10,'sueco','Las venas abiertas de América Latina', 10, 1000, 'décima','descripcion10',10,null, 10, array[12,11], array[3, 7, 6]);
 
 -- VALORACION
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Genial el libro', 1);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Muy malo el libro', 2);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Mas o menos el libro', 3);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Bastante bueno el libro', 4);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'No de los mejores que he leído', 5);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'El mejor libro de la historia', 6);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Se los recomiendo a todos', 7);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'He leído mejores libros del autor', 8);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Muy malo. No lo lean.', 9);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'Genial!!', 10);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (5, 'Genial el libro', 1);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (4, 'Muy malo el libro', 2);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (2, 'Mas o menos el libro', 3);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (4, 'Bastante bueno el libro', 4);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (2, 'No de los mejores que he leído', 5);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (4, 'El mejor libro de la historia', 4);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (3, 'Se los recomiendo a todos', 3);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'He leído mejores libros del autor', 5);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (2, 'Muy malo. No lo lean.', 2);
+INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (5, 'Genial!!', 4);
 
 
 -- SUGERENCIAS

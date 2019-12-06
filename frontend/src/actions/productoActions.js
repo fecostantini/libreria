@@ -67,6 +67,15 @@ export const createProducto = async (dispatch, nuevoProducto) => {
 	});
 };
 
+export const updateProductoBBDD = async (dispatch, productoActualizado) => {
+	const resp = await axios.put(URL, productoActualizado);
+
+	dispatch({
+		type: UPDATE_LAST_REQUEST_STATUS,
+		payload: { status: resp.data.status }
+	});
+};
+
 export const deleteProducto = async (dispatch, idProductoABorrar) => {
 	const resp = await axios.delete(URL, { data: { id_producto: idProductoABorrar } });
 	const productoBorrado = resp.data ? true : false;

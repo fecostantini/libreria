@@ -53,6 +53,7 @@ CREATE TABLE "libro" (
 "descripcion" varchar,
 "id_editorial" integer,
 "id_saga" integer default null,
+"valoracion_general" float default 0,
 constraint PK_libro primary key ("isbn"),
 constraint FK_editorial_libro foreign key ("id_editorial") references "editorial"("id_editorial"),
 constraint FK_saga_libro foreign key ("id_saga") references "saga"("id_saga")

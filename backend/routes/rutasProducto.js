@@ -21,4 +21,9 @@ rutasProducto.delete('/', function(req, res) {
 	Producto.deleteProducto(idProducto).then(respuesta => res.send(respuesta));
 });
 
+rutasProducto.put('/', function(req, res) {
+	const productoActualizado = req.body;
+	Producto.updateProducto(productoActualizado).then(respuesta => res.send(respuesta));
+});
+
 module.exports = rutasProducto;
