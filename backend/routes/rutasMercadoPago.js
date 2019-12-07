@@ -9,7 +9,7 @@ mercadopago.configure({
 // Crea un objeto de preferencia
 let preference = {
 	back_urls: {
-		success: 'http://localhost:3000/',
+		success: 'http://localhost:3000/checkout',
 		pending: 'http://localhost:3000/',
 		failure: 'http://localhost:3000/'
 	},

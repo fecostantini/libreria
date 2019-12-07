@@ -4,7 +4,7 @@ import InputFormulario from '../AltaProducto/InputFormulario';
 import Error from '../../../Common/Error';
 import Item from '../../../Common/Item';
 
-import { ordenar } from '../../../Common/utils';
+import { ordenar, swalConfig } from '../../../Common/utils';
 
 import { Container } from 'react-bootstrap';
 
@@ -15,6 +15,9 @@ import { fetchCategorias } from '../../../../actions/categoriaActions';
 import { fetchSagas } from '../../../../actions/sagaActions';
 import { fetchEditoriales } from '../../../../actions/editorialActions';
 import { fetchPromociones } from '../../../../actions/promocionActions';
+
+import Swal from 'sweetalert2';
+import estados from '../../../../estados';
 
 const ModificarProducto = () => {
 	const dispatch = useDispatch();
@@ -32,6 +35,9 @@ const ModificarProducto = () => {
 	const [categorias, setCategorias] = useState([]);
 	const [error, setError] = useState({ activo: false, mensaje: '' }); // error en el formulario de producto
 
+	const [mostrarAlerta, setMostrarAlerta] = useState(false);
+	const statusUltimaPeticion = useSelector(state => state.ultimaRequest.status);
+
 	useEffect(() => {
 		fetchProductos(dispatch);
 		fetchAutores(dispatch);
@@ -40,6 +46,23 @@ const ModificarProducto = () => {
 		fetchEditoriales(dispatch);
 		fetchPromociones(dispatch);
 	}, []);
+
+	useEffect(() => {
+		// solo queremos mostrar el error si mostrarAlerta es verdadero
+		if (!mostrarAlerta) return;
+
+		const swalConfigNueva = {
+			...swalConfig,
+			icon: statusUltimaPeticion === estados.ACTUALIZADO ? 'success' : 'error'
+		};
+
+		if (statusUltimaPeticion === estados.ACTUALIZADO) swalConfigNueva.title = 'Se actualizó el producto con éxito';
+		else if (statusUltimaPeticion === estados.CONEXION_FALLIDA)
+			swalConfigNueva.title = 'Falló la conexión a la Base de Datos';
+
+		setMostrarAlerta(false);
+		Swal.fire(swalConfigNueva);
+	}, [mostrarAlerta]);
 
 	useEffect(() => {
 		fetchProducto(dispatch, idProductoAModificar);
@@ -51,18 +74,21 @@ const ModificarProducto = () => {
 		let categoriasBuffer = [];
 
 		producto.autores.forEach(nombreAutor => {
+			console.log(nombreAutor);
 			const autor = todosLosAutores.find(autor => autor.autor === nombreAutor);
 			if (autor) autoresBuffer.push(autor);
 		});
+
 		producto.categorias.forEach(nombreCategoria => {
 			const categoria = todasLasCategorias.find(categoria => categoria.nombre_categoria === nombreCategoria);
+			console.log(categoria);
 			if (categoria) categoriasBuffer.push(categoria);
 		});
 
 		setAutores(autoresBuffer);
 		setCategorias(categoriasBuffer);
 		// que se actualicen los arrays cuando cambia el producto a modificar
-	}, [idProductoAModificar]);
+	}, [idProductoAModificar, producto.autores, producto.categorias]);
 
 	const modificarProducto = () => {
 		// no chequeamos el descuento porque puede no tener
@@ -108,9 +134,12 @@ const ModificarProducto = () => {
 				ids_autores,
 				ids_categorias
 			};
-			updateProductoBBDD(dispatch, productoFormateado);
+			updateProductoBBDD(dispatch, productoFormateado).then(() => {
+				setMostrarAlerta(true);
+			});
 			document.getElementById('select-producto').value = '0';
 			setIdProductoAModificar(0);
+			setError({ activo: false });
 		};
 		actualizarProducto();
 	};

@@ -151,7 +151,7 @@ function Producto({ props }) {
 							/>
 						</div>
 						<div className='col'>
-							<Button block variant='primary' onClick={agregarAlCarrito}>
+							<Button block variant='primary' onClick={agregarAlCarrito} disabled={producto.stock === 0}>
 								Añadir al carrito
 							</Button>
 						</div>

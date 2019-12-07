@@ -1,8 +1,15 @@
-import { FETCH_CARRITO_ACTIVO, FETCH_ELEMENTOS_CARRITO, AÑADIR_AL_CARRITO } from '../actions/types';
+import {
+	FETCH_CARRITO_ACTIVO,
+	FETCH_ELEMENTOS_CARRITO,
+	AÑADIR_AL_CARRITO,
+	REALIZAR_CHECKOUT,
+	SET_CHECKOUT_ID
+} from '../actions/types';
 
 const initialState = {
 	idCarritoActivo: 0,
-	items: []
+	items: [],
+	checkoutID: null
 };
 
 export default function(state = initialState, action) {
@@ -36,6 +43,20 @@ export default function(state = initialState, action) {
 					items: [...state.items, elemento]
 				};
 			break;
+
+		case REALIZAR_CHECKOUT:
+			return {
+				...state,
+				items: []
+			};
+
+		case SET_CHECKOUT_ID:
+			const checkoutID = action.payload.checkoutID;
+
+			return {
+				...state,
+				checkoutID
+			};
 
 		default:
 			return state;

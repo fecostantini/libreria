@@ -35,7 +35,7 @@ let getProductos = async () => {
 
 let createProducto = async nuevoProducto => {
 	try {
-		// Formatea los arrays de manera que se pueda formatear la consulta
+		console.log(querys.INSERT.format(nuevoProducto));
 		let response = await pool.query(querys.INSERT.format(nuevoProducto));
 
 		if (response) {
@@ -44,6 +44,7 @@ let createProducto = async nuevoProducto => {
 			};
 		}
 	} catch (error) {
+		console.log(error);
 		switch (error.code) {
 			case estados.YA_EXISTE:
 				return { status: estados.YA_EXISTE };

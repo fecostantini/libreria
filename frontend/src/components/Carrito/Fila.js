@@ -1,6 +1,13 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
 function Fila({ producto }) {
+	const mostrarDescuento = producto.precio !== producto.precio_descuento;
+	const conDescuento = (
+		<Fragment>
+			<span style={{ textDecoration: 'line-through' }}>${producto.precio}</span>
+			<span> ${producto.precio_descuento}</span>
+		</Fragment>
+	);
 	return (
 		<tr>
 			<th scope='row' className='border-0'>
@@ -11,7 +18,7 @@ function Fila({ producto }) {
 				</div>
 			</th>
 			<td className='border-0 text-center'>
-				<strong>${producto.precio}</strong>
+				<strong>{mostrarDescuento ? conDescuento : `$${producto.precio}`}</strong>
 			</td>
 			<td className='border-0 text-center'>
 				<strong>{producto.cantidad}</strong>

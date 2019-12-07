@@ -429,7 +429,7 @@ const AltaProducto = () => {
 					<select onChange={handleChange} defaultValue={''} name='id_promocion'>
 						{todasLasPromociones
 							.concat({ nombre_promocion: 'SIN PROMOCIÓN', id_promocion: 0, descuento: 0 })
-							.sort(ordenar('nombre_promocion'))
+							.sort(ordenar('descuento'))
 							.map(promocion => (
 								<option key={promocion.id_promocion} value={promocion.id_promocion}>
 									{`${promocion.nombre_promocion} [${promocion.descuento}% OFF]`}

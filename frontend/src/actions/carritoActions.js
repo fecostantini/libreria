@@ -1,4 +1,11 @@
-import { FETCH_CARRITO_ACTIVO, UPDATE_LAST_REQUEST_STATUS, FETCH_ELEMENTOS_CARRITO, AÑADIR_AL_CARRITO } from './types';
+import {
+	FETCH_CARRITO_ACTIVO,
+	UPDATE_LAST_REQUEST_STATUS,
+	FETCH_ELEMENTOS_CARRITO,
+	AÑADIR_AL_CARRITO,
+	REALIZAR_CHECKOUT,
+	SET_CHECKOUT_ID
+} from './types';
 import axios from 'axios';
 
 const URL = 'http://localhost:3210/carrito';
@@ -45,5 +52,25 @@ export const getElementos = async (dispatch, idCarrito) => {
 	dispatch({
 		type: UPDATE_LAST_REQUEST_STATUS,
 		payload: { status: resp.data.status }
+	});
+};
+
+export const realizarCheckout = async (dispatch, idCarrito, idUsuario) => {
+	const resp = await axios.post(`${URL}/realizarCheckout`, { id_carrito: idCarrito });
+	if (resp.data.status === 'EXITO') {
+		dispatch({ type: REALIZAR_CHECKOUT });
+		dispatch({
+			type: UPDATE_LAST_REQUEST_STATUS,
+			payload: { status: resp.data.status }
+		});
+
+		await fetchCarritoActivo(dispatch, idUsuario);
+	}
+};
+
+export const setCheckoutID = (dispatch, checkoutID) => {
+	dispatch({
+		type: SET_CHECKOUT_ID,
+		payload: { checkoutID }
 	});
 };

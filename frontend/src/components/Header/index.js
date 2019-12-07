@@ -36,7 +36,7 @@ const Header = () => {
 
 	const iconoCarrito = (
 		<Link to='/carrito' className='btn btn-success btn-sm mr-3' key='1'>
-			<IconoCarrito cantidadElementos={cantidadElementosCarrito()} />
+			<IconoCarrito cantidadElementos={cantidadElementosCarrito} />
 		</Link>
 	);
 

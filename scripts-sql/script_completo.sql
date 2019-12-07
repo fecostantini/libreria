@@ -645,7 +645,6 @@ suma_valoraciones = 0;
 contador = 0;
 FOR puntaje_valoracion IN select v.puntaje from valoracion v, libro l where (l.isbn = isbn_a_actualizar and v.isbn = l.isbn)
 LOOP
-    raise notice 'loop valoraciones';
     suma_valoraciones = suma_valoraciones + puntaje_valoracion;
     contador = contador + 1;
 END LOOP;
