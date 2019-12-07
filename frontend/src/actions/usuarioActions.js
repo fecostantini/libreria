@@ -9,7 +9,7 @@ export const loggearORegistrarUsuario = async (dispatch, usuario) => {
 
 	if (usuarioRespuesta) {
 		// fuerza la actualización de la información del carrito
-		if (resp.data.status === 'EXITO') document.location.reload();
+		// if (resp.data.status === 'EXITO') document.location.reload();
 		localStorage.setItem('usuarioActual', JSON.stringify(usuarioRespuesta));
 		dispatch({
 			type: SET_USUARIO_ACTUAL,
@@ -29,7 +29,7 @@ export const loggearUsuario = async (dispatch, usuario) => {
 
 	if (usuarioRespuesta) {
 		// fuerza la actualización de la información del carrito
-		if (resp.data.status === 'EXITO') document.location.reload();
+		// if (resp.data.status === 'EXITO') document.location.reload();
 
 		localStorage.setItem('usuarioActual', JSON.stringify(usuarioRespuesta));
 		dispatch({
@@ -62,7 +62,7 @@ export const registrarUsuario = async (dispatch, usuario) => {
 
 	if (usuarioRespuesta) {
 		// fuerza la actualización de la información del carrito
-		if (resp.data.status === 'EXITO') document.location.reload();
+		// if (resp.data.status === 'EXITO') document.location.reload();
 		localStorage.setItem('usuarioActual', JSON.stringify(usuarioRespuesta));
 		dispatch({
 			type: SET_USUARIO_ACTUAL,
@@ -82,7 +82,7 @@ export const updateUsuario = async (dispatch, usuarioCambiado) => {
 
 	if (usuarioActualizado) {
 		// fuerza la actualización de la información del carrito
-		if (resp.data.status === 'EXITO') document.location.reload();
+		// if (resp.data.status === 'EXITO') document.location.reload();
 		usuarioCambiado.nombre = usuarioCambiado.nombre.toUpperCase(); // poner nombre en mayuscula
 
 		localStorage.setItem('usuarioActual', JSON.stringify(usuarioCambiado));

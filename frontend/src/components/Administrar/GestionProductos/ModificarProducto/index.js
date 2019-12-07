@@ -43,6 +43,7 @@ const ModificarProducto = () => {
 
 	useEffect(() => {
 		fetchProducto(dispatch, idProductoAModificar);
+		// cuando cambia el producto a modificar se busca la información del mismo
 	}, [idProductoAModificar]);
 
 	useEffect(() => {
@@ -60,7 +61,8 @@ const ModificarProducto = () => {
 
 		setAutores(autoresBuffer);
 		setCategorias(categoriasBuffer);
-	}, [producto]);
+		// que se actualicen los arrays cuando cambia el producto a modificar
+	}, [idProductoAModificar]);
 
 	const modificarProducto = () => {
 		// no chequeamos el descuento porque puede no tener
