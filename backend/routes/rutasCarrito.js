@@ -12,6 +12,11 @@ rutasCarrito.post('/agregarProducto', function(req, res) {
 	Carrito.añadirAlCarrito(infoProducto).then(respuesta => res.send(respuesta));
 });
 
+rutasCarrito.post('/eliminarProducto', function(req, res) {
+	const infoProducto = req.body;
+	Carrito.eliminarDelCarrito(infoProducto).then(respuesta => res.send(respuesta));
+});
+
 rutasCarrito.post('/getCantidadElementos', function(req, res) {
 	const idCarrito = req.body.id_carrito;
 	Carrito.getCantidadElementosCarrito(idCarrito).then(respuesta => res.send(respuesta));

@@ -3,13 +3,12 @@ import {
 	FETCH_ELEMENTOS_CARRITO,
 	AÑADIR_AL_CARRITO,
 	REALIZAR_CHECKOUT,
-	SET_CHECKOUT_ID
+	ELIMINAR_DEL_CARRITO
 } from '../actions/types';
 
 const initialState = {
 	idCarritoActivo: 0,
-	items: [],
-	checkoutID: null
+	items: []
 };
 
 export default function(state = initialState, action) {
@@ -44,18 +43,20 @@ export default function(state = initialState, action) {
 				};
 			break;
 
+		case ELIMINAR_DEL_CARRITO:
+			const idProductoEliminado = action.payload.id_producto;
+			const itemsSinElEliminado = state.items.filter(producto => producto.id_producto !== idProductoEliminado);
+			if (idProductoEliminado)
+				return {
+					...state,
+					items: itemsSinElEliminado
+				};
+			break;
+
 		case REALIZAR_CHECKOUT:
 			return {
 				...state,
 				items: []
-			};
-
-		case SET_CHECKOUT_ID:
-			const checkoutID = action.payload.checkoutID;
-
-			return {
-				...state,
-				checkoutID
 			};
 
 		default:

@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
-
-function Fila({ producto }) {
+function Fila({ producto, eliminarProductoDelCarrito }) {
 	const mostrarDescuento = producto.precio !== producto.precio_descuento;
 	const conDescuento = (
 		<Fragment>
@@ -8,6 +7,7 @@ function Fila({ producto }) {
 			<span> ${producto.precio_descuento}</span>
 		</Fragment>
 	);
+
 	return (
 		<tr>
 			<th scope='row' className='border-0'>
@@ -24,7 +24,7 @@ function Fila({ producto }) {
 				<strong>{producto.cantidad}</strong>
 			</td>
 			<td className='border-0 text-center'>
-				<a className='text-dark'>
+				<a className='text-dark btn' onClick={() => eliminarProductoDelCarrito(producto.id_producto)}>
 					<i className='fa fa-trash'></i>
 				</a>
 			</td>

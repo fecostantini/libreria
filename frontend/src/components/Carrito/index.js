@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { getElementos, fetchCarritoActivo } from '../../actions/carritoActions';
+import { getElementos, fetchCarritoActivo, eliminarDelCarrito } from '../../actions/carritoActions';
 import { fetchProductos } from '../../actions/productoActions';
 import { fetchPromociones } from '../../actions/promocionActions';
 import Fila from './Fila';
@@ -32,7 +32,7 @@ let Carrito = () => {
 
 		if (idPromoProducto) {
 			const promocion = promociones.find(promo => promo.id_promocion === idPromoProducto);
-			const descuento = (precio * promocion.descuento) / 100;
+			const descuento = promocion ? (precio * promocion.descuento) / 100 : 0;
 			precioConDescuento = precio - descuento;
 		}
 		// guardamos el producto que ahora posee la cantidad en la que figura en el carrito y su precio con el descuento aplicado (si posee)
@@ -91,6 +91,14 @@ let Carrito = () => {
 		});
 	};
 
+	const eliminarProductoDelCarrito = idProducto => {
+		const infoProductoAEliminar = {
+			id_producto: idProducto,
+			id_carrito: idCarritoActivo
+		};
+		eliminarDelCarrito(dispatch, infoProductoAEliminar);
+	};
+
 	useEffect(() => {
 		fetchCarritoActivo(dispatch, usuarioActual.id_usuario).then(() => {
 			getElementos(dispatch, idCarritoActivo);
@@ -123,7 +131,11 @@ let Carrito = () => {
 							</thead>
 							<tbody>
 								{productosCarrito.map(producto => (
-									<Fila producto={producto} key={producto.id_producto} />
+									<Fila
+										producto={producto}
+										eliminarProductoDelCarrito={eliminarProductoDelCarrito}
+										key={producto.id_producto}
+									/>
 								))}
 							</tbody>
 						</table>

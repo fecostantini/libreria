@@ -1,30 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Login from '../Login';
 import UsuarioLoggeado from './UsuarioLoggeado';
 import IconoCarrito from './IconoCarrito';
-import { getElementos, fetchCarritoActivo } from '../../actions/carritoActions';
 
 const Header = () => {
-	const dispatch = useDispatch();
 	const usuarioActual = useSelector(state => state.usuario.usuarioActual);
-	const elementosCarrito = useSelector(state => state.carrito.items);
-	const idCarritoActivo = useSelector(state => state.carrito.idCarritoActivo);
-
-	const cantidadElementosCarrito = () => {
-		let cantidadElementos = 0;
-		elementosCarrito.forEach(elemento => (cantidadElementos += elemento.cantidad));
-		return cantidadElementos;
-	};
-
-	useEffect(() => {
-		if (usuarioActual) {
-			fetchCarritoActivo(dispatch, usuarioActual.id_usuario).then(() => {
-				getElementos(dispatch, idCarritoActivo);
-			});
-		}
-	}, [idCarritoActivo, usuarioActual]);
 
 	const linkAdministrar = (
 		<li className='nav-item'>
@@ -35,8 +17,8 @@ const Header = () => {
 	);
 
 	const iconoCarrito = (
-		<Link to='/carrito' className='btn btn-success btn-sm mr-3' key='1'>
-			<IconoCarrito cantidadElementos={cantidadElementosCarrito} />
+		<Link to='/carrito' className='btn btn-success btn-sm mr-3' key='1' style={{ fontSize: '18px' }}>
+			<IconoCarrito />
 		</Link>
 	);
 

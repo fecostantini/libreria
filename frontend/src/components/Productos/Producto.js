@@ -145,7 +145,7 @@ function Producto({ props }) {
 							<input
 								type='number'
 								value={cantidad}
-								onChange={e => setCantidad(e.target.value ? e.target.value : 1)}
+								onChange={e => setCantidad(e.target.value ? parseInt(e.target.value, 10) : 1)}
 								min='1'
 								max={producto.stock}
 							/>
