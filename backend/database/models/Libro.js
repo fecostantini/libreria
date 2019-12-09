@@ -16,7 +16,10 @@ var formatearArray = array => {
 
 const querys = {
 	GET_ALL: 'select * from libro;',
-	INSERT: String.raw`call new_libro({isbn}, '{idioma}', '{titulo}', {stock}, {precio}, '{edicion}', '{descripcion}', {id_editorial}, {id_saga}, array[{autores}], array[{categorias}]);`
+	INSERT: String.raw`call new_libro({isbn}, '{idioma}', '{titulo}', {stock}, {precio}, '{edicion}', '{descripcion}', {id_editorial}, {id_saga}, array[{autores}], array[{categorias}]);`,
+	PUNTUAR: String.raw`INSERT INTO valoracion("puntaje", "id_usuario", "isbn") VALUES ({puntaje}, {id_usuario}, {isbn}) RETURNING id_valoracion;`,
+	GET_PUNTUACION_USUARIO: String.raw`select * from valoracion where (id_usuario={id_usuario} and isbn={isbn});`,
+	GET_PUNTAJE_PROMEDIO: String.raw`select avg(puntaje) as puntaje_promedio from valoracion where (isbn={});`
 };
 
 let getLibros = async () => {
@@ -57,8 +60,6 @@ let createLibro = async nuevoLibro => {
 			};
 		}
 	} catch (error) {
-		console.log(error);
-		console.log(error.code);
 		switch (error.code) {
 			case estados.YA_EXISTE:
 				return { status: estados.YA_EXISTE };
@@ -70,4 +71,72 @@ let createLibro = async nuevoLibro => {
 	}
 };
 
-module.exports = { getLibros, createLibro };
+let puntuarLibro = async infoPuntaje => {
+	try {
+		let response = await pool.query(querys.PUNTUAR.format(infoPuntaje));
+		let filasModificadas = response.rowCount;
+		let libroPuntuado = filasModificadas > 0;
+		if (libroPuntuado)
+			return {
+				puntuacion: { ...infoPuntaje, id_valoracion: response.rows[0].id_valoracion },
+				status: estados.CREADO
+			};
+		else return { status: estados.FRACASO };
+	} catch (error) {
+		switch (error.code) {
+			case estados.YA_EXISTE:
+				return { status: estados.YA_EXISTE };
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
+			default:
+				return { status: estados.ERROR_DESCONOCIDO };
+		}
+	}
+};
+
+let getPuntuacionUsuarioLibro = async infoPuntaje => {
+	try {
+		let response = await pool.query(querys.GET_PUNTUACION_USUARIO.format(infoPuntaje));
+		let filasModificadas = response.rowCount;
+		let tienePuntuacion = filasModificadas > 0;
+		if (tienePuntuacion)
+			return {
+				puntuacion: response.rows[0],
+				status: estados.EXITO
+			};
+		else return { status: estados.FRACASO };
+	} catch (error) {
+		switch (error.code) {
+			case estados.YA_EXISTE:
+				return { status: estados.YA_EXISTE };
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
+			default:
+				return { status: estados.ERROR_DESCONOCIDO };
+		}
+	}
+};
+
+let getPuntajePromedioLibro = async isbn => {
+	try {
+		let response = await pool.query(querys.GET_PUNTAJE_PROMEDIO.format(isbn));
+		let filasModificadas = response.rowCount;
+		let tienePuntuaciones = filasModificadas > 0;
+		if (tienePuntuaciones)
+			return {
+				puntaje_promedio: response.rows[0].puntaje_promedio,
+				status: estados.EXITO
+			};
+		else return { status: estados.FRACASO };
+	} catch (error) {
+		switch (error.code) {
+			case estados.YA_EXISTE:
+				return { status: estados.YA_EXISTE };
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
+			default:
+				return { status: estados.ERROR_DESCONOCIDO };
+		}
+	}
+};
+module.exports = { getLibros, createLibro, puntuarLibro, getPuntuacionUsuarioLibro, getPuntajePromedioLibro };

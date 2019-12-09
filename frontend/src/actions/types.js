@@ -21,6 +21,9 @@ export const FETCH_PROMOCIONES = 'FETCH_PROMOCIONES';
 
 // acciones de libro
 export const FETCH_LIBROS = 'FETCH_LIBROS';
+export const GET_VALORACION_LIBRO = 'GET_VALORACION_LIBRO';
+export const VALORAR_LIBRO = 'VALORAR_LIBRO';
+export const GET_VALORACION_PROMEDIO_LIBRO = 'GET_VALORACION_PROMEDIO_LIBRO';
 
 // acciones de fotocopia
 export const FETCH_FOTOCOPIAS = 'FETCH_FOTOCOPIAS';

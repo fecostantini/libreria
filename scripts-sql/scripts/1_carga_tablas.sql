@@ -77,17 +77,6 @@ constraint PK_categoria primary key ("id_categoria")
 );
 
 
-
-CREATE TABLE "valoracion" (
-"id_valoracion" serial not null,
-"puntaje" integer not null CHECK ("puntaje" BETWEEN 1 AND 10),
-"comentario" varchar,
-"isbn" integer not null,
-constraint FK_valoracion_isbn foreign key ("isbn") references "libro"("isbn"),
-constraint PK_valoracion primary key ("id_valoracion")
-);
-
-
 CREATE TABLE "sugerencia" (
 "id_sugerencia" serial not null,
 "mensaje" varchar not null,
@@ -108,6 +97,17 @@ CREATE TABLE "usuario" (
 "rol" varchar default 'USUARIO_NORMAL' CHECK (UPPER("rol") in ('ADMIN', 'GESTOR_PEDIDOS', 'USUARIO_NORMAL')),
 UNIQUE(mail),
 constraint PK_usuario primary key ("id_usuario")); 
+
+
+CREATE TABLE "valoracion" (
+"id_valoracion" serial not null,
+"id_usuario" integer not null,
+"puntaje" float not null CHECK ("puntaje" BETWEEN 1 AND 5),
+"isbn" integer not null,
+constraint FK_valoracion_isbn foreign key ("isbn") references "libro"("isbn"),
+constraint FK_id_usuario foreign key ("id_usuario") references "usuario"("id_usuario"),
+constraint PK_valoracion primary key ("id_valoracion")
+);
 
 
 CREATE TABLE "fotocopia" (

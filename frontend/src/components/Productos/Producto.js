@@ -4,10 +4,12 @@ import { Container, Spinner, Row, Col, Card, Button } from 'react-bootstrap';
 import { fetchProducto } from '../../actions/productoActions';
 import { fetchPromociones } from '../../actions/promocionActions';
 import { fetchCarritoActivo, añadirAlCarrito } from '../../actions/carritoActions';
+import { getValoracionPromedio, getValoracion, valorarLibro } from '../../actions/libroActions';
 import { zip, swalConfig, dateToString } from '../Common/utils';
 import estados from '../../estados';
 import Item from '../Common/Item';
 import Swal from 'sweetalert2';
+import StarRatings from 'react-star-ratings';
 
 function Producto({ props }) {
 	const producto = useSelector(state => state.producto.productoActual);
@@ -15,18 +17,35 @@ function Producto({ props }) {
 	const idCarritoActivo = useSelector(state => state.carrito.idCarritoActivo);
 	const statusUltimaPeticion = useSelector(state => state.ultimaRequest.status);
 	const promociones = useSelector(state => state.promociones.items);
+	const valoracionPromedio = useSelector(state => state.libros.valoracionPromedioLibroActual);
+	const valoracionUsuarioActual = useSelector(state => state.libros.valoracionLibroActual);
 	const dispatch = useDispatch();
 
+	const [rating, setRating] = useState(0);
 	const [cantidad, setCantidad] = useState(1);
 	const [mostrarAlerta, setMostrarAlerta] = useState(false);
+
+	const valorarLibroActual = valoracion => {
+		setRating(valoracion);
+		const infoValoracion = { id_usuario: usuarioActual.id_usuario, isbn: producto.isbn, puntaje: valoracion };
+		valorarLibro(dispatch, infoValoracion).then(() => {
+			getValoracionPromedio(dispatch, producto.isbn);
+		});
+	};
 
 	useEffect(() => {
 		const idProducto = parseInt(props.match.params.id_producto, 10);
 		fetchProducto(dispatch, idProducto);
 		fetchPromociones(dispatch);
-
 		if (usuarioActual) fetchCarritoActivo(dispatch, usuarioActual.id_usuario);
 	}, []);
+
+	useEffect(() => {
+		if (producto.isbn) {
+			getValoracionPromedio(dispatch, producto.isbn);
+			getValoracion(dispatch, { id_usuario: usuarioActual.id_usuario, isbn: producto.isbn });
+		}
+	}, [producto]);
 
 	useEffect(() => {
 		// solo queremos mostrar el error si mostrarAlerta es verdadero
@@ -109,55 +128,103 @@ function Producto({ props }) {
 			</Fragment>
 		);
 
-		return (
-			<Card>
-				<Card.Header as='h2'>
-					<Row>
-						<Col sm={9} md={9} lg={9}>
-							{producto.titulo}
-						</Col>
-						<Col className='text-right'>
-							<hr className='d-sm-none'></hr>
-							<span style={producto.id_promocion ? { textDecoration: 'line-through' } : {}}>${producto.precio}</span>
-							{promocion ? <span> ${producto.precio - (producto.precio * promocion.descuento) / 100}</span> : null}
-						</Col>
-					</Row>
-				</Card.Header>
+		const ratingLibro = producto.isbn ? (
+			<div className='text-center mb-3'>
+				<span className='text-muted font-italic font-weight-light align-bottom' style={{ fontSize: '30px' }}>
+					Valoración:{' '}
+				</span>
+				<StarRatings rating={valoracionPromedio} starDimension='40px' name='ratingUsuario' />
+			</div>
+		) : null;
 
-				<Card.Body>
-					{promocion ? (
-						<Fragment>
-							<p className='text-muted font-italic'>
-								Descuento vigente hasta el {dateToString(promocion.fecha_vencimiento)}
-							</p>
-							<hr />
-						</Fragment>
-					) : null}
-					<Card.Title>{producto.descripcion}</Card.Title>
-					<hr></hr>
-
-					{producto.isbn ? libroCardContent : null}
-
-					<Card.Title>Stock: {producto.stock}</Card.Title>
-					<div className='row mt-3'>
-						<div className='col-auto'>
-							Cantidad:{' '}
-							<input
-								type='number'
-								value={cantidad}
-								onChange={e => setCantidad(e.target.value ? parseInt(e.target.value, 10) : 1)}
-								min='1'
-								max={producto.stock}
-							/>
-						</div>
-						<div className='col'>
-							<Button block variant='primary' onClick={agregarAlCarrito} disabled={producto.stock === 0}>
-								Añadir al carrito
-							</Button>
-						</div>
+		const rateLibro =
+			producto.isbn && !valoracionUsuarioActual ? (
+				<Fragment>
+					<div className='col-12 col-sm-8 text-right d-none d-sm-block'>
+						<span className='text-muted font-italic align-bottom' style={{ fontSize: '20px' }}>
+							Valorar:{' '}
+						</span>
+						<StarRatings
+							rating={rating}
+							starDimension='30px'
+							starSpacing='2px'
+							changeRating={valoracion => valorarLibroActual(valoracion)}
+							name='ratingUsuario'
+						/>
 					</div>
-				</Card.Body>
-			</Card>
+					<div className='col-12 col-sm-8 text-left d-sm-none d-xs-block'>
+						<span className='text-muted font-italic align-bottom' style={{ fontSize: '20px' }}>
+							Valorar:{' '}
+						</span>
+						<StarRatings
+							rating={rating}
+							starDimension='30px'
+							starSpacing='2px'
+							changeRating={valoracion => valorarLibroActual(valoracion)}
+							name='ratingUsuario'
+						/>
+					</div>
+				</Fragment>
+			) : null;
+
+		return (
+			<Fragment>
+				{ratingLibro}
+				<Card>
+					<Card.Header as='h2'>
+						<Row>
+							<Col sm={9} md={9} lg={9}>
+								{producto.titulo}
+							</Col>
+							<Col className='text-right'>
+								<hr className='d-sm-none'></hr>
+								<span style={producto.id_promocion ? { textDecoration: 'line-through' } : {}}>${producto.precio}</span>
+								{promocion ? <span> ${producto.precio - (producto.precio * promocion.descuento) / 100}</span> : null}
+							</Col>
+						</Row>
+					</Card.Header>
+
+					<Card.Body>
+						{promocion ? (
+							<Fragment>
+								<p className='text-muted font-italic'>
+									Descuento vigente hasta el {dateToString(promocion.fecha_vencimiento)}
+								</p>
+								<hr />
+							</Fragment>
+						) : null}
+						<Card.Title>{producto.descripcion}</Card.Title>
+						<hr></hr>
+
+						{producto.isbn ? libroCardContent : null}
+
+						<div className='row'>
+							<div className='col-12 col-sm-4'>
+								<Card.Title>Stock: {producto.stock}</Card.Title>
+							</div>
+							{rateLibro}
+						</div>
+
+						<div className='row mt-3'>
+							<div className='col-auto'>
+								Cantidad:{' '}
+								<input
+									type='number'
+									value={cantidad}
+									onChange={e => setCantidad(e.target.value ? parseInt(e.target.value, 10) : 1)}
+									min='1'
+									max={producto.stock}
+								/>
+							</div>
+							<div className='col'>
+								<Button block variant='primary' onClick={agregarAlCarrito} disabled={producto.stock === 0}>
+									Añadir al carrito
+								</Button>
+							</div>
+						</div>
+					</Card.Body>
+				</Card>
+			</Fragment>
 		);
 	};
 

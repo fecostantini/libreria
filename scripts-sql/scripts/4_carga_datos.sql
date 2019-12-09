@@ -87,17 +87,31 @@ call new_libro(8,'chino','Cien años de soledad', 5, 800, 'octava','descripcion8
 call new_libro(9,'japonés','La carta robada', 7, 900, 'novena','descripcion9',9,null, 9, array[9], array[5]);
 call new_libro(10,'sueco','Las venas abiertas de América Latina', 10, 1000, 'décima','descripcion10',10,null, 10, array[12,11], array[3, 7, 6]);
 
+
+-- USUARIOS
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('fecostantini@hotmail.com', 'Francisco', 'Costantini', 'password1', 'ADMIN', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('maximiliano.pretto@gmail.com', 'Maximiliano', 'Pretto', 'password2', 'ADMIN', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('belwalerv@hotmail.com', 'Walter', 'Bel', 'password3', 'GESTOR_PEDIDOS', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo1@hotmail.com', 'Juan', 'Langoni', 'superpassword1', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo2@hotmail.com', 'Julian', 'Gómez', 'superpassword2', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo3@hotmail.com', 'Pedro', 'Martinez', 'superpassword3', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo4@hotmail.com', 'Liliana', 'Gonzales', 'superpassword4', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo5@hotmail.com', 'Mariano', 'Muller', 'superpassword5', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo6@hotmail.com', 'Silvia', 'Romero', 'superpassword6', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo7@hotmail.com', 'Gabriel', 'Soria', 'superpassword7', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
+
+
 -- VALORACION
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (5, 'Genial el libro', 1);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (4, 'Muy malo el libro', 2);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (2, 'Mas o menos el libro', 3);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (4, 'Bastante bueno el libro', 4);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (2, 'No de los mejores que he leído', 5);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (4, 'El mejor libro de la historia', 4);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (3, 'Se los recomiendo a todos', 3);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (1, 'He leído mejores libros del autor', 5);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (2, 'Muy malo. No lo lean.', 2);
-INSERT INTO valoracion("puntaje", "comentario", "isbn") VALUES (5, 'Genial!!', 4);
+INSERT INTO valoracion("puntaje", "id_usuario", "isbn") VALUES (5, 1, 1);
+INSERT INTO valoracion("puntaje", "id_usuario", "isbn") VALUES (4, 2, 2);
+INSERT INTO valoracion("puntaje", "id_usuario", "isbn") VALUES (2, 3, 3);
+INSERT INTO valoracion("puntaje", "id_usuario", "isbn") VALUES (4, 4, 4);
+INSERT INTO valoracion("puntaje", "id_usuario", "isbn") VALUES (2, 5, 5);
+INSERT INTO valoracion("puntaje", "id_usuario", "isbn") VALUES (4, 6, 4);
+INSERT INTO valoracion("puntaje", "id_usuario", "isbn") VALUES (3, 7, 3);
+INSERT INTO valoracion("puntaje", "id_usuario", "isbn") VALUES (1, 8, 5);
+INSERT INTO valoracion("puntaje", "id_usuario", "isbn") VALUES (2, 9, 2);
+INSERT INTO valoracion("puntaje", "id_usuario", "isbn") VALUES (5, 10, 4);
 
 
 -- SUGERENCIAS
@@ -112,18 +126,6 @@ INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar El fu
 INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Mundos Paralelos, de Michio Kaku');
 INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar La energía nuclear, de Michio Kaku');
 
-
--- USUARIOS
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('fecostantini@hotmail.com', 'Francisco', 'Costantini', 'password1', 'ADMIN', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('maximiliano.pretto@gmail.com', 'Maximiliano', 'Pretto', 'password2', 'ADMIN', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('belwalerv@hotmail.com', 'Walter', 'Bel', 'password3', 'GESTOR_PEDIDOS', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo1@hotmail.com', 'Juan', 'Langoni', 'superpassword1', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo2@hotmail.com', 'Julian', 'Gómez', 'superpassword2', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo3@hotmail.com', 'Pedro', 'Martinez', 'superpassword3', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo4@hotmail.com', 'Liliana', 'Gonzales', 'superpassword4', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo5@hotmail.com', 'Mariano', 'Muller', 'superpassword5', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo6@hotmail.com', 'Silvia', 'Romero', 'superpassword6', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
-INSERT INTO usuario("mail", "nombre", "apellido", "password", "rol", "imagen") VALUES ('ejemplo7@hotmail.com', 'Gabriel', 'Soria', 'superpassword7', 'USUARIO_NORMAL', 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png');
 
 -- FOTOCOPIAS
 INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion","id_usuario") VALUES ('Apuntes Cálculo I', 5, 100, 'Apuntes de Cálculo I de primer año de Sistemas.',5);
