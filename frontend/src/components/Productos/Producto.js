@@ -43,7 +43,8 @@ function Producto({ props }) {
 	useEffect(() => {
 		if (producto.isbn) {
 			getValoracionPromedio(dispatch, producto.isbn);
-			getValoracion(dispatch, { id_usuario: usuarioActual.id_usuario, isbn: producto.isbn });
+			if (usuarioActual)
+				getValoracion(dispatch, { id_usuario: usuarioActual.id_usuario, isbn: producto.isbn });
 		}
 	}, [producto]);
 
@@ -133,12 +134,12 @@ function Producto({ props }) {
 				<span className='text-muted font-italic font-weight-light align-bottom' style={{ fontSize: '30px' }}>
 					Valoración:{' '}
 				</span>
-				<StarRatings rating={valoracionPromedio} starDimension='40px' name='ratingUsuario' />
+				<StarRatings rating={parseFloat(valoracionPromedio, 10)} starDimension='40px' name='ratingUsuario' />
 			</div>
 		) : null;
 
 		const rateLibro =
-			producto.isbn && !valoracionUsuarioActual ? (
+			producto.isbn && !valoracionUsuarioActual && usuarioActual ? (
 				<Fragment>
 					<div className='col-12 col-sm-8 text-right d-none d-sm-block'>
 						<span className='text-muted font-italic align-bottom' style={{ fontSize: '20px' }}>

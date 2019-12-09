@@ -295,11 +295,15 @@ fila_libro libroxcarrito%rowtype;
 fila_fotocopia fotocopiaxcarrito%rowtype;
 fila_saga sagaxcarrito%rowtype;
 usuario INTEGER;
+descuento real;
 BEGIN
 precio_compra = 0;
 FOR fila_libro IN select lxc.isbn, lxc.id_carrito, lxc.cantidad from libroxcarrito lxc, carrito c where (id_carrito_compra = c.id_carrito and c.id_carrito = lxc.id_carrito)
 LOOP
-    precio_compra = precio_compra + ((select l.precio from libro l where (fila_libro.isbn = l.isbn))*fila_libro.cantidad);
+    IF (select l.id_promocion from libro l where (fila_libro.isbn = l.isbn)) > 0 THEN
+        descuento = 100 - (select p.descuento from libro l, promocion p where (fila_libro.isbn = l.isbn and l.id_promocion = p.id_promocion));
+    END IF;
+    precio_compra = precio_compra + ((select l.precio from libro l where (fila_libro.isbn = l.isbn))*fila_libro.cantidad*(descuento/100));
     update libro set stock = stock - fila_libro.cantidad where (isbn = fila_libro.isbn);
 END LOOP;
 
