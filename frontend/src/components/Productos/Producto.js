@@ -1,6 +1,6 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Container, Spinner, Row, Col, Card, Button } from 'react-bootstrap';
+import { Container, Spinner, Row, Col, Card, Button, Image } from 'react-bootstrap';
 import { fetchProducto } from '../../actions/productoActions';
 import { fetchPromociones } from '../../actions/promocionActions';
 import { fetchCarritoActivo, añadirAlCarrito } from '../../actions/carritoActions';
@@ -74,10 +74,7 @@ function Producto({ props }) {
 
 		let itemSaga =
 			producto.id_saga && producto.id_saga !== -1 ? (
-				<Item
-					titulo={`${producto.nombre_saga} - PRECIO: $${producto.precio_saga} - STOCK: ${producto.stock_saga}`}
-					eliminable={false}
-				/>
+				<Item titulo={`${producto.nombre_saga} `} eliminable={false} />
 			) : (
 				'no pertenece a ninguna'
 			);
@@ -170,6 +167,10 @@ function Producto({ props }) {
 		return (
 			<Fragment>
 				{ratingLibro}
+				<div className='text-center my-3'>
+					<Image src={producto.imagen} style={{ width: '100%', maxWidth: '300px', height: 'auto' }} />
+				</div>
+
 				<Card>
 					<Card.Header as='h2'>
 						<Row>
@@ -206,20 +207,28 @@ function Producto({ props }) {
 						</div>
 
 						<div className='row mt-3'>
-							<div className='col-auto'>
-								Cantidad:{' '}
-								<input
-									type='number'
-									value={cantidad}
-									onChange={e => setCantidad(e.target.value ? parseInt(e.target.value, 10) : 1)}
-									min='1'
-									max={producto.stock}
-								/>
-							</div>
+							{producto.stock !== 0 ? (
+								<div className='col-auto'>
+									Cantidad:{' '}
+									<input
+										type='number'
+										value={cantidad}
+										onChange={e => setCantidad(e.target.value ? parseInt(e.target.value, 10) : 1)}
+										min='1'
+										max={producto.stock}
+									/>
+								</div>
+							) : null}
 							<div className='col'>
-								<Button block variant='primary' onClick={agregarAlCarrito} disabled={producto.stock === 0}>
-									Añadir al carrito
-								</Button>
+								{producto.stock !== 0 ? (
+									<Button block variant='primary' onClick={agregarAlCarrito}>
+										Añadir al carrito
+									</Button>
+								) : (
+									<Button block variant='primary' onClick={() => {}}>
+										Realizar pedido
+									</Button>
+								)}
 							</div>
 						</div>
 					</Card.Body>

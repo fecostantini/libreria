@@ -17,6 +17,11 @@ rutasCarrito.post('/eliminarProducto', function(req, res) {
 	Carrito.eliminarDelCarrito(infoProducto).then(respuesta => res.send(respuesta));
 });
 
+rutasCarrito.post('/getComprasUsuario', function(req, res) {
+	const idUsuario = req.body.id_usuario;
+	Carrito.getComprasUsuario(idUsuario).then(respuesta => res.send(respuesta));
+});
+
 rutasCarrito.post('/getCantidadElementos', function(req, res) {
 	const idCarrito = req.body.id_carrito;
 	Carrito.getCantidadElementosCarrito(idCarrito).then(respuesta => res.send(respuesta));

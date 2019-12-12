@@ -12,7 +12,8 @@ const querys = {
 	ELIMINAR_PRODUCTO_DEL_CARRITO: String.raw`select * from eliminar_del_carrito({id_producto}, {id_carrito});`,
 	GET_CANTIDAD_ELEMENTOS_CARRITO: String.raw`select * from cantidad_productos_carrito({});`,
 	GET_ELEMENTOS_CARRITO: String.raw`select * from productos_carrito({});`,
-	REALIZAR_CHECKOUT: String.raw`call confirmar_compra({});`
+	REALIZAR_CHECKOUT: String.raw`call confirmar_compra({});`,
+	GET_COMPRAS_USUARIO: String.raw`select * from compras_usuario({});`
 	// INSERT: String.raw`INSERT INTO carrito("id_usuario") VALUES('{}') RETURNING id_carrito;`,
 	// DESACTIVAR_CARRITO: String.raw`UPDATE carrito SET activo=False where id_carrito={}`
 };
@@ -139,6 +140,30 @@ let eliminarDelCarrito = async infoProducto => {
 	}
 };
 
+let getComprasUsuario = async idUsuario => {
+	try {
+		let response = await pool.query(querys.GET_COMPRAS_USUARIO.format(idUsuario));
+
+		let filasModificadas = response.rowCount;
+		let tieneCompras = filasModificadas > 0;
+		if (tieneCompras)
+			return {
+				status: estados.EXITO,
+				compras: response.rows
+			};
+		else return { status: estados.FRACASO };
+	} catch (error) {
+		switch (error.code) {
+			case estados.YA_EXISTE:
+				return { status: estados.YA_EXISTE };
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
+			default:
+				return { status: estados.ERROR_DESCONOCIDO };
+		}
+	}
+};
+
 /*
 let getCarritosByIdUsuario = async idUsuario => {
 	try {
@@ -214,5 +239,6 @@ module.exports = {
 	getCantidadElementosCarrito,
 	getProductosCarrito,
 	realizarCheckout,
-	eliminarDelCarrito
+	eliminarDelCarrito,
+	getComprasUsuario
 };

@@ -23,6 +23,7 @@ CREATE TABLE "producto" (
 "stock" integer not null CHECK("stock" >= 0),
 "precio" real not null,
 "id_promocion" integer default null,
+"imagen" varchar default '',
 constraint PK_producto primary key ("id_producto"),
 constraint FK_producto_promocion foreign key ("id_promocion") references "promocion"("id_promocion")
 );
@@ -80,7 +81,7 @@ constraint PK_categoria primary key ("id_categoria")
 CREATE TABLE "sugerencia" (
 "id_sugerencia" serial not null,
 "mensaje" varchar not null,
-"fecha" date default to_date(to_char(NOW(), 'YYYY-MM-DD'), 'YYYY-MM-DD'), -- FECHA ACTUAL POR DEFECTO (EJEMPLO: 2019-11-20)
+"fecha" date default NOW(),
 constraint PK_sugerencia primary key ("id_sugerencia")
 );
 
@@ -123,7 +124,7 @@ CREATE TABLE "pedido" (
 "id_pedido" serial not null,
 "isbn" integer not null,
 "cantidad" integer not null,
-"fecha_pedido" date not null,
+"fecha_pedido" date default NOW(),
 "id_usuario" integer not null,
 "anticipo_pagado" boolean DEFAULT false,
 "pedido_aceptado" boolean DEFAULT null,
@@ -146,7 +147,7 @@ constraint FK_carrito_usuario foreign key ("id_usuario") references "usuario"("i
 
 CREATE TABLE "compra" (
 "id_compra" serial not null,
-"fecha_compra" date default to_date(to_char(NOW(), 'YYYY-MM-DD'), 'YYYY-MM-DD'), -- FECHA ACTUAL POR DEFECTO (EJEMPLO: 2019-11-20)
+"fecha_compra" date default NOW(),
 "precio_total" real not null,
 "id_carrito" integer not null,
 constraint FK_compra_carrito foreign key ("id_carrito") references "carrito"("id_carrito"),

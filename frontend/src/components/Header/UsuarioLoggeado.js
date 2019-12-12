@@ -25,6 +25,9 @@ export default function UsuarioLoggeado() {
 					<Dropdown.Item onClick={() => history.push('/editar_perfil')}>
 						<i className='fas fa-edit'></i> Editar perfil
 					</Dropdown.Item>
+					<Dropdown.Item onClick={() => history.push('/compras')}>
+						<i className='fas fa-shopping-bag'></i> Compras
+					</Dropdown.Item>
 
 					<Dropdown.Divider />
 					<Dropdown.Item onClick={desloggear}>

@@ -3,12 +3,14 @@ import {
 	FETCH_ELEMENTOS_CARRITO,
 	AÑADIR_AL_CARRITO,
 	REALIZAR_CHECKOUT,
-	ELIMINAR_DEL_CARRITO
+	ELIMINAR_DEL_CARRITO,
+	FETCH_COMPRAS_USUARIO
 } from '../actions/types';
 
 const initialState = {
 	idCarritoActivo: 0,
-	items: []
+	items: [],
+	compras: []
 };
 
 export default function(state = initialState, action) {
@@ -57,6 +59,14 @@ export default function(state = initialState, action) {
 			return {
 				...state,
 				items: []
+			};
+
+		case FETCH_COMPRAS_USUARIO:
+			const comprasUsuario = action.payload.compras;
+
+			return {
+				...state,
+				compras: comprasUsuario
 			};
 
 		default:

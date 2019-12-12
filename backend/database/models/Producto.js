@@ -6,8 +6,8 @@ format.extend(String.prototype, {});
 
 const querys = {
 	GET_ALL: 'select * from producto;',
-	INSERT: String.raw`call new_producto({isbn}, '{idioma}', '{titulo}', {stock}, {precio}, '{edicion}', '{descripcion}', {id_editorial}, {id_saga}, {id_promocion}, array[{ids_autores}]::int[], array[{ids_categorias}]::int[], {id_usuario});`,
-	UPDATE: String.raw`call update_producto({id_fotocopia}, {isbn}, '{idioma}', '{titulo}', {stock}, {precio}, '{edicion}', '{descripcion}', {id_editorial}, {id_saga}, {id_promocion}, array[{ids_autores}]::int[], array[{ids_categorias}]::int[], {id_usuario});`,
+	INSERT: String.raw`call new_producto({isbn}, '{idioma}', '{titulo}', {stock}, {precio}, '{edicion}', '{descripcion}', {id_editorial}, {id_saga}, {id_promocion}, array[{ids_autores}]::int[], array[{ids_categorias}]::int[], {id_usuario}, '{imagen}');`,
+	UPDATE: String.raw`call update_producto({id_fotocopia}, {isbn}, '{idioma}', '{titulo}', {stock}, {precio}, '{edicion}', '{descripcion}', {id_editorial}, {id_saga}, {id_promocion}, array[{ids_autores}]::int[], array[{ids_categorias}]::int[], {id_usuario}, '{imagen}');`,
 	GET_INFO: String.raw`select * from datos_producto({});`,
 	DELETE: String.raw`call delete_producto({});` //TODO: Llamar funcion que borra al producto y todas sus relaciones intermedias (en caso de ser libro)
 };
@@ -35,6 +35,9 @@ let getProductos = async () => {
 
 let createProducto = async nuevoProducto => {
 	try {
+		//FIXME
+		nuevoProducto = { ...nuevoProducto, imagen: null };
+
 		console.log(querys.INSERT.format(nuevoProducto));
 		let response = await pool.query(querys.INSERT.format(nuevoProducto));
 
@@ -95,6 +98,9 @@ let deleteProducto = async idProducto => {
 
 let updateProducto = async productoActualizado => {
 	try {
+		//FIXME
+		productoActualizado = { ...productoActualizado, imagen: null };
+
 		console.log(querys.UPDATE.format(productoActualizado));
 		let response = await pool.query(querys.UPDATE.format(productoActualizado));
 

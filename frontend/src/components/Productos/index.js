@@ -16,11 +16,14 @@ let ProductoIndividual = ({ producto }) => {
 				// Redirecciona a la vista del producto individual
 				history.push(`/producto/${producto.id_producto}`);
 			}}
-			style={{ height: '180px' }}
+			style={{ height: '240px' }}
 		>
-			<Card.Body>
+			<Card.Body className='text-center pb-0 pt-4'>
 				<Card.Title>{producto.titulo}</Card.Title>
 			</Card.Body>
+			<div className='text-center my-3'>
+				<Card.Img variant='top' src={producto.imagen} style={{ width: '120px' }} />
+			</div>
 			<Card.Footer>
 				<div className='row'>
 					<div className='col-6'>Precio: ${producto.precio}</div>

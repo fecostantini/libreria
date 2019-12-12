@@ -4,7 +4,8 @@ import {
 	FETCH_ELEMENTOS_CARRITO,
 	AÑADIR_AL_CARRITO,
 	REALIZAR_CHECKOUT,
-	ELIMINAR_DEL_CARRITO
+	ELIMINAR_DEL_CARRITO,
+	FETCH_COMPRAS_USUARIO
 } from './types';
 
 import estados from '../estados';
@@ -64,6 +65,20 @@ export const getElementos = async (dispatch, idCarrito) => {
 		dispatch({
 			type: FETCH_ELEMENTOS_CARRITO,
 			payload: { elementos: resp.data.elementos }
+		});
+
+	dispatch({
+		type: UPDATE_LAST_REQUEST_STATUS,
+		payload: { status: resp.data.status }
+	});
+};
+
+export const getComprasUsuario = async (dispatch, idUsuario) => {
+	const resp = await axios.post(`${URL}/getComprasUsuario`, { id_usuario: idUsuario });
+	if (resp.data.status === estados.EXITO)
+		dispatch({
+			type: FETCH_COMPRAS_USUARIO,
+			payload: { compras: resp.data.compras }
 		});
 
 	dispatch({

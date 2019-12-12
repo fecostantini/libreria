@@ -23,6 +23,7 @@ CREATE TABLE "producto" (
 "stock" integer not null CHECK("stock" >= 0),
 "precio" real not null,
 "id_promocion" integer default null,
+"imagen" varchar default '',
 constraint PK_producto primary key ("id_producto"),
 constraint FK_producto_promocion foreign key ("id_promocion") references "promocion"("id_promocion")
 );
@@ -80,7 +81,7 @@ constraint PK_categoria primary key ("id_categoria")
 CREATE TABLE "sugerencia" (
 "id_sugerencia" serial not null,
 "mensaje" varchar not null,
-"fecha" date default to_date(to_char(NOW(), 'YYYY-MM-DD'), 'YYYY-MM-DD'), -- FECHA ACTUAL POR DEFECTO (EJEMPLO: 2019-11-20)
+"fecha" date default NOW(),
 constraint PK_sugerencia primary key ("id_sugerencia")
 );
 
@@ -123,7 +124,7 @@ CREATE TABLE "pedido" (
 "id_pedido" serial not null,
 "isbn" integer not null,
 "cantidad" integer not null,
-"fecha_pedido" date not null,
+"fecha_pedido" date default NOW(),
 "id_usuario" integer not null,
 "anticipo_pagado" boolean DEFAULT false,
 "pedido_aceptado" boolean DEFAULT null,
@@ -146,7 +147,7 @@ constraint FK_carrito_usuario foreign key ("id_usuario") references "usuario"("i
 
 CREATE TABLE "compra" (
 "id_compra" serial not null,
-"fecha_compra" date default to_date(to_char(NOW(), 'YYYY-MM-DD'), 'YYYY-MM-DD'), -- FECHA ACTUAL POR DEFECTO (EJEMPLO: 2019-11-20)
+"fecha_compra" date default NOW(),
 "precio_total" real not null,
 "id_carrito" integer not null,
 constraint FK_compra_carrito foreign key ("id_carrito") references "carrito"("id_carrito"),
@@ -209,6 +210,7 @@ Constraint FK_carrito_saga foreign key ("id_carrito") references "carrito"("id_c
       ##    ##     ## ####  ######    ######   ######## ##     ##  ######              
 */    
 
+--Este trigger realiza el uppercase en la tabla promocion del nombre de la promocion
 CREATE OR REPLACE FUNCTION uppercase_promocion() RETURNS trigger AS $uppercase_promocion$
     BEGIN        
         NEW.nombre_promocion = UPPER(NEW.nombre_promocion);
@@ -220,6 +222,7 @@ CREATE TRIGGER uppercase_promocion_trigger BEFORE INSERT OR UPDATE ON promocion
     FOR EACH ROW EXECUTE PROCEDURE uppercase_promocion();
 
 
+--Este trigger realiza el uppercase en la tabla producto del titulo del producto
 CREATE OR REPLACE FUNCTION uppercase_producto() RETURNS trigger AS $uppercase_producto$
     BEGIN        
         NEW.titulo = UPPER(NEW.titulo);
@@ -231,6 +234,7 @@ CREATE TRIGGER uppercase_producto_trigger BEFORE INSERT OR UPDATE ON producto
     FOR EACH ROW EXECUTE PROCEDURE uppercase_producto();
 
 
+--Este trigger realiza el uppercase en la tabla editorial del nombre de la editorial
 CREATE OR REPLACE FUNCTION uppercase_editorial() RETURNS trigger AS $uppercase_editorial$
     BEGIN        
         NEW.nombre_editorial = UPPER(NEW.nombre_editorial);
@@ -242,6 +246,7 @@ CREATE TRIGGER uppercase_editorial_trigger BEFORE INSERT OR UPDATE ON editorial
     FOR EACH ROW EXECUTE PROCEDURE uppercase_editorial();
 
 
+--Este trigger realiza el uppercase en la tabla saga del nombre de la saga
 CREATE OR REPLACE FUNCTION uppercase_saga() RETURNS trigger AS $uppercase_saga$
     BEGIN        
         NEW.nombre_saga = UPPER(NEW.nombre_saga);
@@ -253,6 +258,7 @@ CREATE TRIGGER uppercase_saga_trigger BEFORE INSERT OR UPDATE ON saga
     FOR EACH ROW EXECUTE PROCEDURE uppercase_saga();
 
 
+--Este trigger realiza el uppercase en la tabla libro del idioma,titulo y edicion del libro
 CREATE OR REPLACE FUNCTION uppercase_libro() RETURNS trigger AS $uppercase_libro$
     BEGIN        
         NEW.idioma = UPPER(NEW.idioma);
@@ -265,6 +271,8 @@ $uppercase_libro$ LANGUAGE plpgsql;
 CREATE TRIGGER uppercase_libro_trigger BEFORE INSERT OR UPDATE ON libro
     FOR EACH ROW EXECUTE PROCEDURE uppercase_libro();
 
+
+--Este trigger cuando se realiza un insert delete o update en la tabla libro actualiza los valores del precio y stock de la saga en la que este pertenece
 CREATE OR REPLACE FUNCTION saga_libro() RETURNS trigger AS $saga_libro$
     BEGIN
       IF (TG_OP = 'INSERT') THEN
@@ -292,6 +300,8 @@ $saga_libro$ LANGUAGE plpgsql;
 CREATE TRIGGER saga_libro_trigger AFTER INSERT OR UPDATE OR DELETE ON libro
     FOR EACH ROW EXECUTE PROCEDURE saga_libro();
 
+
+--Este trigger realiza el uppercase en la tabla autor del autor y su nacionalidad
 CREATE OR REPLACE FUNCTION uppercase_autor() RETURNS trigger AS $uppercase_autor$
     BEGIN        
         NEW.autor = UPPER(NEW.autor);
@@ -304,6 +314,7 @@ CREATE TRIGGER uppercase_autor_trigger BEFORE INSERT OR UPDATE ON autor
     FOR EACH ROW EXECUTE PROCEDURE uppercase_autor();
 
 
+--Este trigger realiza el uppercase en la tabla categoria del nombre de la categoria
 CREATE OR REPLACE FUNCTION uppercase_categoria() RETURNS trigger AS $uppercase_categoria$
     BEGIN        
         NEW.nombre_categoria = UPPER(NEW.nombre_categoria);
@@ -315,6 +326,7 @@ CREATE TRIGGER uppercase_categoria_trigger BEFORE INSERT OR UPDATE ON categoria
     FOR EACH ROW EXECUTE PROCEDURE uppercase_categoria();
 
 
+--Este trigger realiza el uppercase en la tabla usuario del nombre, apellido y rol del mismo
 CREATE OR REPLACE FUNCTION uppercase_usuario() RETURNS trigger AS $uppercase_usuario$
     BEGIN        
         NEW.nombre = UPPER(NEW.nombre);
@@ -327,6 +339,8 @@ $uppercase_usuario$ LANGUAGE plpgsql;
 CREATE TRIGGER uppercase_usuario_trigger BEFORE INSERT OR UPDATE ON usuario
     FOR EACH ROW EXECUTE PROCEDURE uppercase_usuario();
 
+
+--Este trigger cuando se crea un nuevo usuario crea un carrito para este en estado activo
 CREATE OR REPLACE FUNCTION crear_carrito_usuario() RETURNS trigger AS $crear_carrito_usuario$
     BEGIN        
         INSERT INTO carrito("id_usuario") VALUES (NEW.id_usuario);
@@ -337,6 +351,8 @@ $crear_carrito_usuario$ LANGUAGE plpgsql;
 CREATE TRIGGER crear_carrito_usuario_trigger AFTER INSERT ON usuario
     FOR EACH ROW EXECUTE PROCEDURE crear_carrito_usuario();
 
+
+--Este trigger se activa cuando se crea o actualiza una valoracion actualizando la valoracion general del libro
 CREATE OR REPLACE FUNCTION valoracion_general() RETURNS trigger AS $valoracion_general$
     BEGIN        
         call actualizar_valoracion_general(NEW.isbn);
@@ -350,326 +366,358 @@ CREATE TRIGGER valoracion_general_trigger AFTER INSERT OR UPDATE ON valoracion
 
 /*    
     ######## ##     ## ##    ##  ######  ####  #######  ##    ## ########  ######  
-    ##       ##     ## ###   ## ##    ##  ##  ##     ## ###   ## ##       ##    ## 
-    ##       ##     ## ####  ## ##        ##  ##     ## ####  ## ##       ##       
+    ##       ##     ## ###   ## ##    ##  ##  ##     ## ###   ## ##       ##    ##
+    ##       ##     ## ####  ## ##        ##  ##     ## ####  ## ##       ##      
     ######   ##     ## ## ## ## ##        ##  ##     ## ## ## ## ######    ######  
-    ##       ##     ## ##  #### ##        ##  ##     ## ##  #### ##             ## 
-    ##       ##     ## ##   ### ##    ##  ##  ##     ## ##   ### ##       ##    ## 
-    ##        #######  ##    ##  ######  ####  #######  ##    ## ########  ######                 
+    ##       ##     ## ##  #### ##        ##  ##     ## ##  #### ##             ##
+    ##       ##     ## ##   ### ##    ##  ##  ##     ## ##   ### ##       ##    ##
+    ##        #######  ##    ##  ######  ####  #######  ##    ## ########  ######                
 */  
-
-
-CREATE OR REPLACE PROCEDURE actualizar_saga (id_saga_a_actualizar integer)
+ 
+ --este procedimiento actualiza el precio y stock de una saga recorriendo los libros pertenecientes a la misma
+CREATE OR REPLACE PROCEDURE actualizar_saga (id_saga_a_actualizar INTEGER)
 AS $$
 DECLARE
-precio_final real;
-precio real;
-stock_s integer;
+precio_final REAL;
+precio REAL;
+stock_s INTEGER;
 BEGIN
 precio_final = 0;
-FOR precio IN select l.precio from libro l, saga s where (s.id_saga = id_saga_a_actualizar and s.id_saga = l.id_saga)
+FOR precio IN SELECT l.precio FROM libro l, saga s WHERE (s.id_saga = id_saga_a_actualizar AND s.id_saga = l.id_saga)
 LOOP
 precio_final = precio_final + precio;
 END LOOP;
-stock_s = (select min(stock) from libro l  where (l.id_saga = id_saga_a_actualizar));
-if (stock_s is null) THEN
+stock_s = (SELECT MIN(stock) FROM libro l  WHERE (l.id_saga = id_saga_a_actualizar));
+IF (stock_s IS NULL) THEN
   stock_s = 0;
 END IF;
-update saga set precio_saga = precio_final*0.9, stock_saga = stock_s where(saga.id_saga = id_saga_a_actualizar);
+UPDATE saga SET precio_saga = precio_final , stock_saga = stock_s where(saga.id_saga = id_saga_a_actualizar);
 END $$
 LANGUAGE plpgsql;
-
-
-CREATE VIEW datos_libros_completos as 
-select t1.id_producto, t1.titulo, t1.stock, t1.isbn, t1.precio, t1.id_promocion, t1.descripcion, t1.nombre_editorial, t1.idioma, t1.edicion, t1.id_saga, t1.autores, t1.nacionalidades, t2.categorias from
-(SELECT l.id_producto, l.titulo, l.stock, l.isbn, l.precio, l.id_promocion, l.descripcion, l.idioma, e.nombre_editorial, l.edicion, l.id_saga, array_agg(a.autor) as autores, array_agg(a.nacionalidad) as nacionalidades 
+ 
+ --esta vista muestra los datos completos de un libro con los datos de este sus autores y categorias
+CREATE VIEW datos_libros_completos AS
+SELECT t1.imagen, t1.id_producto, t1.titulo, t1.stock, t1.isbn, t1.precio, t1.id_promocion, t1.descripcion, t1.nombre_editorial, t1.idioma, t1.edicion, t1.id_saga, t1.autores, t1.nacionalidades, t2.categorias FROM
+(SELECT l.imagen, l.id_producto, l.titulo, l.stock, l.isbn, l.precio, l.id_promocion, l.descripcion, l.idioma, e.nombre_editorial, l.edicion, l.id_saga, ARRAY_AGG(a.autor) AS autores, ARRAY_AGG(a.nacionalidad) AS nacionalidades
 FROM autorxlibro axl
 INNER JOIN autor a  ON a.id_autor = axl.id_autor
 INNER JOIN libro l ON l.isbn = axl.isbn,
 editorial e
-where l.id_editorial = e.id_editorial
+WHERE l.id_editorial = e.id_editorial
 GROUP BY l.isbn,
          l.titulo,
-		 e.nombre_editorial) as t1,
-(SELECT l.id_producto, array_agg(c.nombre_categoria) as categorias 
+         e.nombre_editorial) AS t1,
+(SELECT l.id_producto, ARRAY_AGG(c.nombre_categoria) AS categorias
 FROM categoriaxlibro cxl
 INNER JOIN categoria c  ON c.id_categoria = cxl.id_categoria
 INNER JOIN libro l ON l.isbn = cxl.isbn
-GROUP BY l.id_producto) as t2
+GROUP BY l.id_producto) AS t2
 WHERE (t1.id_producto = t2.id_producto);
+ 
 
-
-CREATE OR REPLACE FUNCTION es_libro (id_producto_buscado integer)
-RETURNS boolean AS
+--esta funcion nos devuelve si el id de producto que le pasamos como parametro es un libro o no
+CREATE OR REPLACE FUNCTION es_libro (id_producto_buscado INTEGER)
+RETURNS BOOLEAN AS
 $es_libro$
 DECLARE
 BEGIN
-IF (select id_producto_buscado in (select id_producto from libro where id_producto = id_producto_buscado)) THEN
-    RETURN true;
+IF (SELECT id_producto_buscado IN (SELECT id_producto FROM libro WHERE id_producto = id_producto_buscado)) THEN
+    RETURN TRUE;
 ELSE
-	RETURN false;
+    RETURN FALSE;
 END IF;
 END $es_libro$
 LANGUAGE plpgsql;
+ 
 
-
-CREATE OR REPLACE PROCEDURE new_libro (isbn integer, idioma varchar, titulo varchar, stock integer, precio real, edicion varchar, descripcion varchar, id_editorial integer, id_saga integer, id_promocion integer, ids_autores integer[], ids_categorias integer[])
+--este procedimiento realiza la carga de un libro, su autor/autores y su categorria/categorias
+CREATE OR REPLACE PROCEDURE new_libro (isbn INTEGER, idioma VARCHAR, titulo VARCHAR, stock INTEGER, precio REAL, edicion VARCHAR, descripcion VARCHAR, id_editorial INTEGER, id_saga INTEGER, id_promocion INTEGER, ids_autores INTEGER[], ids_categorias INTEGER[], imagen VARCHAR)
 AS $$
 DECLARE
-id_aut smallint;
-id_cat smallint;
+id_aut SMALLINT;
+id_cat SMALLINT;
 BEGIN
-insert into libro ("isbn","idioma","titulo","stock","precio","edicion","descripcion","id_editorial", "id_saga", "id_promocion") values (isbn,idioma,titulo,stock,precio,edicion,descripcion,id_editorial,id_saga,id_promocion);
+INSERT INTO libro ("isbn","idioma","titulo","stock","precio","edicion","descripcion","id_editorial", "id_saga", "id_promocion", "imagen") VALUES (isbn,idioma,titulo,stock,precio,edicion,descripcion,id_editorial,id_saga,id_promocion, imagen);
 FOREACH id_aut IN ARRAY ids_autores
 LOOP
-    insert into autorxlibro values (isbn, id_aut);
+    INSERT INTO autorxlibro VALUES (isbn, id_aut);
 END LOOP;
 FOREACH id_cat IN ARRAY ids_categorias
 LOOP
-    insert into categoriaxlibro values (isbn, id_cat);
+    INSERT INTO categoriaxlibro VALUES (isbn, id_cat);
 END LOOP;
 END $$
 LANGUAGE plpgsql;
+ 
 
-
-CREATE OR REPLACE PROCEDURE new_pedido (isbn integer , cantidad integer, id_usuario integer)
+CREATE OR REPLACE PROCEDURE new_pedido (isbn INTEGER , cantidad INTEGER, id_usuario INTEGER)
 AS $$
 DECLARE
 BEGIN
-insert into pedido ("isbn","cantidad","fecha_pedido","id_usuario") values (isbn,cantidad,now(),id_usuario);
+INSERT INTO pedido ("isbn","cantidad","fecha_pedido","id_usuario") VALUES (isbn,cantidad,NOW(),id_usuario);
 END $$
 LANGUAGE plpgsql;
+ 
 
-
-CREATE OR REPLACE PROCEDURE update_libro (new_isbn integer, new_idioma varchar, new_titulo varchar, new_stock integer, new_precio real, new_edicion varchar, new_descripcion varchar, new_id_editorial integer, new_id_saga integer, new_id_promocion integer, new_ids_autores integer[], new_ids_categorias integer[])
+--este procedimiento actualiza un libro como tambien sus autores y categorias
+CREATE OR REPLACE PROCEDURE update_libro (new_isbn INTEGER, new_idioma VARCHAR, new_titulo VARCHAR, new_stock INTEGER, new_precio REAL, new_edicion VARCHAR, new_descripcion VARCHAR, new_id_editorial INTEGER, new_id_saga INTEGER, new_id_promocion INTEGER, new_ids_autores INTEGER[], new_ids_categorias INTEGER[], new_imagen VARCHAR)
 AS $$
 DECLARE
-id_aut integer;
-id_cat integer;
-id_auto integer;
-id_cate integer;
-array_autores integer[];
-array_categorias integer[];
+id_aut INTEGER;
+id_cat INTEGER;
+id_auto INTEGER;
+id_cate INTEGER;
+array_autores INTEGER[];
+array_categorias INTEGER[];
 BEGIN
-update libro set idioma = new_idioma, titulo = new_titulo, stock = new_stock, precio = new_precio, edicion = new_edicion, descripcion= new_descripcion, id_editorial = new_id_editorial, id_saga = new_id_saga, id_promocion = new_id_promocion where (isbn = new_isbn);
-array_autores = (SELECT array_agg(axl.id_autor) FROM autorxlibro axl where axl.isbn = new_isbn);
-array_categorias = (SELECT array_agg(cxl.id_categoria) FROM categoriaxlibro cxl where cxl.isbn = new_isbn);
+UPDATE libro SET idioma=new_idioma, titulo=new_titulo, stock=new_stock, precio=new_precio, edicion=new_edicion, descripcion= new_descripcion, id_editorial=new_id_editorial, id_saga=new_id_saga, id_promocion=new_id_promocion, imagen=new_imagen WHERE (isbn=new_isbn);
+array_autores = (SELECT ARRAY_AGG(axl.id_autor) FROM autorxlibro axl WHERE axl.isbn = new_isbn);
+array_categorias = (SELECT ARRAY_AGG(cxl.id_categoria) FROM categoriaxlibro cxl WHERE cxl.isbn = new_isbn);
 FOREACH id_auto IN ARRAY array_autores
 LOOP
-    IF (id_auto = ANY (new_ids_autores)) = false THEN
-        delete from autorxlibro where (id_autor = id_auto and isbn = new_isbn);
-	END IF;
+    IF (id_auto = ANY (new_ids_autores)) = FALSE THEN
+        DELETE FROM autorxlibro WHERE (id_autor = id_auto AND isbn = new_isbn);
+    END IF;
 END LOOP;
 FOREACH id_cate IN ARRAY array_categorias
 LOOP
-    IF (id_auto = ANY (new_ids_categorias::int[])) = false THEN
-        delete from categoriaxlibro where (id_categoria = id_cate and isbn = new_isbn);
-	END IF;
+    IF (id_auto = ANY (new_ids_categorias::INT[])) = FALSE THEN
+        DELETE FROM categoriaxlibro WHERE (id_categoria = id_cate AND isbn = new_isbn);
+    END IF;
 END LOOP;
 FOREACH id_aut IN ARRAY new_ids_autores
 LOOP
-    IF (select exists(select 1 from autorxlibro axl where axl.id_autor = id_aut and axl.isbn = new_isbn) = FALSE) THEN
-        insert into autorxlibro values (new_isbn, id_aut);
+    IF (SELECT exists(SELECT 1 FROM autorxlibro axl WHERE axl.id_autor = id_aut AND axl.isbn = new_isbn) = FALSE) THEN
+        INSERT INTO autorxlibro VALUES (new_isbn, id_aut);
     END IF;
 END LOOP;
 FOREACH id_cat IN ARRAY new_ids_categorias
 LOOP
-    IF (select exists(select 1 from categoriaxlibro cxl where cxl.id_categoria = id_cat and cxl.isbn = new_isbn) = FALSE) THEN
-        insert into categoriaxlibro values (new_isbn, id_cat);
+    IF (SELECT exists(SELECT 1 FROM categoriaxlibro cxl WHERE cxl.id_categoria = id_cat AND cxl.isbn = new_isbn) = FALSE) THEN
+        INSERT INTO categoriaxlibro VALUES (new_isbn, id_cat);
     END IF;
 END LOOP;
 END $$
 LANGUAGE plpgsql;
+ 
 
-
-CREATE OR REPLACE PROCEDURE update_producto (id_fotocopia_updated integer, isbn_updated integer, idioma_updated varchar, titulo_updated varchar, stock_updated integer, precio_updated real, edicion_updated varchar, descripcion_updated varchar, id_editorial_updated integer, id_saga_updated integer, id_promocion_updated integer, ids_autores_updated integer[], ids_categorias_updated integer[], id_usuario_updated integer)
+--este procedimiento actualiza un producto no importa si es un libro o una fotocopia
+CREATE OR REPLACE PROCEDURE update_producto (
+  id_fotocopia_updated INTEGER,
+  isbn_updated INTEGER,
+  idioma_updated VARCHAR,
+  titulo_updated VARCHAR,
+  stock_updated INTEGER,
+  precio_updated REAL,
+  edicion_updated VARCHAR,
+  descripcion_updated VARCHAR,
+  id_editorial_updated INTEGER,
+  id_saga_updated INTEGER,
+  id_promocion_updated INTEGER,
+  ids_autores_updated INTEGER[],
+  ids_categorias_updated INTEGER[],
+  id_usuario_updated INTEGER,
+  imagen_updated VARCHAR
+)
 AS $$
 DECLARE
 BEGIN
 IF (isbn_updated IS NULL) THEN
-  update fotocopia set titulo = titulo_updated, stock = stock_updated, precio = precio_updated, id_promocion = id_promocion_updated, descripcion = descripcion_updated, id_usuario = id_usuario_updated where (id_fotocopia = id_fotocopia_updated);
+  UPDATE fotocopia SET titulo = titulo_updated, stock = stock_updated, precio = precio_updated, id_promocion = id_promocion_updated, descripcion = descripcion_updated, id_usuario = id_usuario_updated WHERE (id_fotocopia = id_fotocopia_updated);
 ELSE
-  call update_libro(isbn_updated, idioma_updated, titulo_updated, stock_updated, precio_updated, edicion_updated, descripcion_updated, id_editorial_updated, id_saga_updated, id_promocion_updated, ids_autores_updated, ids_categorias_updated);
+  call update_libro(isbn_updated, idioma_updated, titulo_updated, stock_updated, precio_updated, edicion_updated, descripcion_updated, id_editorial_updated, id_saga_updated, id_promocion_updated, ids_autores_updated, ids_categorias_updated, imagen_updated);
 END IF;
-
+ 
 END $$
 LANGUAGE plpgsql;
+ 
 
-
-CREATE OR REPLACE PROCEDURE delete_producto (id_producto_a_borrar integer) AS
+ --este procedimiento elimina un producto como asi tambielas filas en las tablas intermedias en que este se encuentre
+CREATE OR REPLACE PROCEDURE delete_producto (id_producto_a_borrar INTEGER) AS
 $delete_producto$
 DECLARE
-isbn_libro integer;
-id_foto integer;
+isbn_libro INTEGER;
+id_foto INTEGER;
 BEGIN
-IF ((select f.id_fotocopia from fotocopia f where f.id_producto = id_producto_a_borrar) > 0) THEN
-	id_foto = (select id_fotocopia from fotocopia f where (f.id_producto = id_producto_a_borrar));
-	delete from fotocopiaxcarrito where (id_fotocopia = id_foto);
-	delete from fotocopia where (id_producto = id_producto_a_borrar);
+IF ((SELECT f.id_fotocopia FROM fotocopia f WHERE f.id_producto = id_producto_a_borrar) > 0) THEN
+    id_foto = (SELECT id_fotocopia FROM fotocopia f WHERE (f.id_producto = id_producto_a_borrar));
+    DELETE FROM fotocopiaxcarrito WHERE (id_fotocopia = id_foto);
+    DELETE FROM fotocopia WHERE (id_producto = id_producto_a_borrar);
 ELSE
-	isbn_libro = (select isbn from libro l where (l.id_producto = id_producto_a_borrar));
-	delete from autorxlibro where (isbn = isbn_libro);
-	delete from categoriaxlibro where (isbn = isbn_libro);
-	delete from valoracion where (isbn = isbn_libro);
-	delete from pedido where (isbn = isbn_libro);
-	delete from libroxcarrito where (isbn = isbn_libro);
-    delete from libro where (id_producto =id_producto_a_borrar);
+    isbn_libro = (SELECT isbn FROM libro l WHERE (l.id_producto = id_producto_a_borrar));
+    DELETE FROM autorxlibro WHERE (isbn = isbn_libro);
+    DELETE FROM categoriaxlibro WHERE (isbn = isbn_libro);
+    DELETE FROM valoracion WHERE (isbn = isbn_libro);
+    DELETE FROM pedido WHERE (isbn = isbn_libro);
+    DELETE FROM libroxcarrito WHERE (isbn = isbn_libro);
+    DELETE FROM libro WHERE (id_producto =id_producto_a_borrar);
 END IF;
 END $delete_producto$
 LANGUAGE plpgsql;
+ 
 
-
-CREATE OR REPLACE PROCEDURE new_producto (isbn integer, idioma varchar, titulo varchar, stock integer, precio real, edicion varchar, descripcion varchar, id_editorial integer, id_saga integer, id_promocion integer, ids_autores integer[], ids_categorias integer[], id_usuario integer)
+--este procedimiento crea un producto y segun los datos que se le pasen creara una fotocopia o un libro
+CREATE OR REPLACE PROCEDURE new_producto (isbn INTEGER, idioma VARCHAR, titulo VARCHAR, stock INTEGER, precio REAL, edicion VARCHAR, descripcion VARCHAR, id_editorial INTEGER, id_saga INTEGER, id_promocion INTEGER, ids_autores INTEGER[], ids_categorias INTEGER[], id_usuario INTEGER, imagen VARCHAR)
 AS $$
 DECLARE
 BEGIN
 IF (isbn IS NULL) THEN
-  insert into fotocopia("titulo", "stock", "precio", "id_promocion", "descripcion", "id_usuario") values (titulo, stock, precio, id_promocion, descripcion, id_usuario);
+  INSERT INTO fotocopia("titulo", "stock", "precio", "id_promocion", "descripcion", "id_usuario") VALUES (titulo, stock, precio, id_promocion, descripcion, id_usuario);
 ELSE
-  call new_libro(isbn, idioma, titulo, stock, precio, edicion, descripcion, id_editorial, id_saga, id_promocion, ids_autores, ids_categorias);
+  call new_libro(isbn, idioma, titulo, stock, precio, edicion, descripcion, id_editorial, id_saga, id_promocion, ids_autores, ids_categorias, imagen);
 END IF;
-
+ 
 END $$
 LANGUAGE plpgsql;
-
-
-CREATE OR REPLACE FUNCTION datos_producto (id_producto_a_buscar integer)
-RETURNS table(id_producto integer, id_fotocopia integer, titulo varchar, stock integer, isbn integer, precio real, id_promocion integer, descripcion varchar,id_usuario integer, nombre_editorial text, idioma text, edicion text, id_saga integer, nombre_saga text, stock_saga integer, precio_saga real, autores varchar[], nacionalidades varchar[], categorias varchar[]) AS
+ 
+ 
+ --esta funcion devuelve una tabla con los datos de un producto
+CREATE OR REPLACE FUNCTION datos_producto (id_producto_a_buscar INTEGER)
+RETURNS table(id_producto INTEGER, id_fotocopia INTEGER, titulo VARCHAR, stock INTEGER, isbn INTEGER, precio REAL, id_promocion INTEGER, descripcion VARCHAR,id_usuario INTEGER, nombre_editorial TEXT, idioma TEXT, edicion TEXT, id_saga INTEGER, nombre_saga TEXT, stock_saga INTEGER, precio_saga REAL, autores VARCHAR[], nacionalidades VARCHAR[], categorias VARCHAR[], imagen TEXT) AS
 $datos_producto$
 DECLARE
 BEGIN
-IF (select f.id_fotocopia from fotocopia f where f.id_producto = id_producto_a_buscar) > 0 THEN
-	raise notice 'soy una fotocopia';
-    RETURN query select f.id_producto, f.id_fotocopia, f.titulo, f.stock, cast(null as integer) as isbn , f.precio, cast(f.id_promocion as integer), f.descripcion, f.id_usuario, null as nombre_editorial, null as idioma, null as edicion, cast(null as integer) as id_saga, null as nombre_saga, cast(null as integer) as stock_saga, cast(null as real) as precio_saga, ARRAY['0']::varchar[] as autores, ARRAY['0']::varchar[] as nacionalidades, ARRAY['0']::varchar[] as categorias from fotocopia f where (f.id_producto = id_producto_a_buscar);
-ELSIF (select l.id_saga from libro l where l.id_producto = id_producto_a_buscar) > 0 THEN
-    raise notice 'soy unlibro con saga';
-	RETURN query select dlc.id_producto, cast(null as integer) as id_fotocopia, dlc.titulo, dlc.stock, dlc.isbn , dlc.precio, cast(dlc.id_promocion as integer), dlc.descripcion, cast(null as integer), cast(dlc.nombre_editorial as text), cast(dlc.idioma as text), cast(dlc.edicion as text), dlc.id_saga, cast(s.nombre_saga as text), s.stock_saga, s.precio_saga, dlc.autores, dlc.nacionalidades, dlc.categorias from datos_libros_completos dlc, saga s where (dlc.id_producto = id_producto_a_buscar and dlc.id_saga = s.id_saga);
+IF (SELECT f.id_fotocopia FROM fotocopia f WHERE f.id_producto = id_producto_a_buscar) > 0 THEN
+    RETURN query SELECT f.id_producto, f.id_fotocopia, f.titulo, f.stock, cast(NULL AS INTEGER) AS isbn , f.precio, cast(f.id_promocion AS INTEGER), f.descripcion, f.id_usuario, NULL AS nombre_editorial, NULL AS idioma, NULL AS edicion, cast(NULL AS INTEGER) AS id_saga, NULL AS nombre_saga, cast(NULL AS INTEGER) AS stock_saga, cast(NULL AS REAL) AS precio_saga, ARRAY['0']::VARCHAR[] AS autores, ARRAY['0']::VARCHAR[] AS nacionalidades, ARRAY['0']::VARCHAR[] AS categorias, NULL AS imagen FROM fotocopia f WHERE (f.id_producto = id_producto_a_buscar);
+ELSIF (SELECT l.id_saga FROM libro l WHERE l.id_producto = id_producto_a_buscar) > 0 THEN
+    RETURN query SELECT dlc.id_producto, cast(NULL AS INTEGER) AS id_fotocopia, dlc.titulo, dlc.stock, dlc.isbn , dlc.precio, cast(dlc.id_promocion AS INTEGER), dlc.descripcion, cast(NULL AS INTEGER), cast(dlc.nombre_editorial AS TEXT), cast(dlc.idioma AS TEXT), cast(dlc.edicion AS TEXT), dlc.id_saga, cast(s.nombre_saga AS TEXT), s.stock_saga, s.precio_saga, dlc.autores, dlc.nacionalidades, dlc.categorias, cast(dlc.imagen AS TEXT) FROM datos_libros_completos dlc, saga s WHERE (dlc.id_producto = id_producto_a_buscar AND dlc.id_saga = s.id_saga);
 ELSE
-	raise notice 'soy unlibro sin saga';
-	RETURN query select dlc.id_producto, cast(null as integer) as id_fotocopia, dlc.titulo, dlc.stock, dlc.isbn , dlc.precio, cast(dlc.id_promocion as integer), dlc.descripcion, cast(null as integer), cast(dlc.nombre_editorial as text), cast(dlc.idioma as text), cast(dlc.edicion as text), dlc.id_saga, null as nombre_saga, 0 as stock_saga, cast(0 as real) as precio_saga, dlc.autores, dlc.nacionalidades, dlc.categorias from datos_libros_completos dlc where (dlc.id_producto = id_producto_a_buscar);
+    RETURN query SELECT dlc.id_producto, cast(NULL AS INTEGER) AS id_fotocopia, dlc.titulo, dlc.stock, dlc.isbn , dlc.precio, cast(dlc.id_promocion AS INTEGER), dlc.descripcion, cast(NULL AS INTEGER), cast(dlc.nombre_editorial AS TEXT), cast(dlc.idioma AS TEXT), cast(dlc.edicion AS TEXT), dlc.id_saga, NULL AS nombre_saga, 0 AS stock_saga, cast(0 AS REAL) AS precio_saga, dlc.autores, dlc.nacionalidades, dlc.categorias, cast(dlc.imagen AS TEXT) FROM datos_libros_completos dlc WHERE (dlc.id_producto = id_producto_a_buscar);
 END IF;
 END $datos_producto$
 LANGUAGE plpgsql;
+ 
 
-
-CREATE OR REPLACE PROCEDURE actualizar_valoracion_general (isbn_a_actualizar integer)
+--este procedimiento actualiza la valoracion general de un libro dado
+CREATE OR REPLACE PROCEDURE actualizar_valoracion_general (isbn_a_actualizar INTEGER)
 AS $$
 DECLARE
-suma_valoraciones integer;
-valoracion_promedio float;
-puntaje_valoracion integer;
-contador integer;
+suma_valoraciones INTEGER;
+valoracion_promedio FLOAT;
+puntaje_valoracion INTEGER;
+contador INTEGER;
 BEGIN
 suma_valoraciones = 0;
 contador = 0;
-FOR puntaje_valoracion IN select v.puntaje from valoracion v, libro l where (l.isbn = isbn_a_actualizar and v.isbn = l.isbn)
+FOR puntaje_valoracion IN SELECT v.puntaje FROM valoracion v, libro l WHERE (l.isbn = isbn_a_actualizar AND v.isbn = l.isbn)
 LOOP
     suma_valoraciones = suma_valoraciones + puntaje_valoracion;
     contador = contador + 1;
 END LOOP;
-valoracion_promedio = suma_valoraciones::float / contador::float;
-update libro set valoracion_general = valoracion_promedio where(isbn = isbn_a_actualizar);
+valoracion_promedio = suma_valoraciones::FLOAT / contador::FLOAT;
+UPDATE libro SET valoracion_general = valoracion_promedio where(isbn = isbn_a_actualizar);
 END $$
 LANGUAGE plpgsql;
+ 
 
-
-CREATE OR REPLACE FUNCTION eliminar_del_carrito (id_producto_a_eliminar integer, id_carrito_objetivo integer)
-RETURNS integer AS
+--esta funcion elimina un producto de un carrito(ya sea libro o fotocopia) y devuelve el id de este producto
+CREATE OR REPLACE FUNCTION eliminar_del_carrito (id_producto_a_eliminar INTEGER, id_carrito_objetivo INTEGER)
+RETURNS INTEGER AS
 $eliminar_del_carrito$
 DECLARE
-isbn_libro_a_eliminar integer;
-id_fotocopia_a_eliminar integer;
+isbn_libro_a_eliminar INTEGER;
+id_fotocopia_a_eliminar INTEGER;
 BEGIN
-IF (select * from es_libro(id_producto_a_eliminar)) THEN
-	isbn_libro_a_eliminar = (select isbn from libro where id_producto = id_producto_a_eliminar);
-    DELETE FROM libroxcarrito WHERE (isbn = isbn_libro_a_eliminar and id_carrito = id_carrito_objetivo);
+IF (SELECT * FROM es_libro(id_producto_a_eliminar)) THEN
+    isbn_libro_a_eliminar = (SELECT isbn FROM libro WHERE id_producto = id_producto_a_eliminar);
+    DELETE FROM libroxcarrito WHERE (isbn = isbn_libro_a_eliminar AND id_carrito = id_carrito_objetivo);
 ELSE
-	id_fotocopia_a_eliminar = (select id_fotocopia from fotocopia where id_producto = id_producto_a_eliminar);
-	DELETE FROM fotocopiaxcarrito where (id_fotocopia = id_fotocopia_a_eliminar and id_carrito = id_carrito_objetivo);
+    id_fotocopia_a_eliminar = (SELECT id_fotocopia FROM fotocopia WHERE id_producto = id_producto_a_eliminar);
+    DELETE FROM fotocopiaxcarrito WHERE (id_fotocopia = id_fotocopia_a_eliminar AND id_carrito = id_carrito_objetivo);
 END IF;
-return id_producto_a_eliminar;
+RETURN id_producto_a_eliminar;
 END $eliminar_del_carrito$
 LANGUAGE plpgsql;
+ 
 
-
-CREATE OR REPLACE FUNCTION añadir_al_carrito (id_producto_a_añadir integer, cantidad_producto integer, id_carrito_objetivo integer)
-RETURNS integer AS
+-- esta funcion agrega un producto a un carrito y devuelve el id del producto que agrego
+CREATE OR REPLACE FUNCTION añadir_al_carrito (id_producto_a_añadir INTEGER, cantidad_producto INTEGER, id_carrito_objetivo INTEGER)
+RETURNS INTEGER AS
 $añadir_al_carrito$
 DECLARE
-isbn_libro_a_añadir integer;
-id_fotocopia_a_añadir integer;
+isbn_libro_a_añadir INTEGER;
+id_fotocopia_a_añadir INTEGER;
 BEGIN
-IF (select * from es_libro(id_producto_a_añadir)) THEN
-	isbn_libro_a_añadir = (select isbn from libro where id_producto = id_producto_a_añadir);
-    insert into libroxcarrito (isbn, id_carrito, cantidad) values (isbn_libro_a_añadir, id_carrito_objetivo, cantidad_producto);
+IF (SELECT * FROM es_libro(id_producto_a_añadir)) THEN
+    isbn_libro_a_añadir = (SELECT isbn FROM libro WHERE id_producto = id_producto_a_añadir);
+    INSERT INTO libroxcarrito (isbn, id_carrito, cantidad) VALUES (isbn_libro_a_añadir, id_carrito_objetivo, cantidad_producto);
 ELSE
-	id_fotocopia_a_añadir = (select id_fotocopia from fotocopia where id_producto = id_producto_a_añadir);
-	insert into fotocopiaxcarrito (id_fotocopia, id_carrito, cantidad) values (id_fotocopia_a_añadir, id_carrito_objetivo, cantidad_producto);
+    id_fotocopia_a_añadir = (SELECT id_fotocopia FROM fotocopia WHERE id_producto = id_producto_a_añadir);
+    INSERT INTO fotocopiaxcarrito (id_fotocopia, id_carrito, cantidad) VALUES (id_fotocopia_a_añadir, id_carrito_objetivo, cantidad_producto);
 END IF;
-return id_producto_a_añadir;
+RETURN id_producto_a_añadir;
 END $añadir_al_carrito$
 LANGUAGE plpgsql;
-
-
-CREATE OR REPLACE FUNCTION cantidad_productos_carrito (id_carrito_a_buscar integer)
-RETURNS integer AS
+ 
+ 
+ --esta funcion devuelve la cantidad de productos de un carrito dado
+CREATE OR REPLACE FUNCTION cantidad_productos_carrito (id_carrito_a_buscar INTEGER)
+RETURNS INTEGER AS
 $cantidad_productos_carrito$
 DECLARE
-cantidad integer;
+cantidad INTEGER;
 BEGIN
-cantidad =(select t1.suma + t2.suma 
-from(select count(l.id_producto) as suma from libro l, libroxcarrito lxc where (l.isbn = lxc.isbn and lxc.id_carrito = id_carrito_a_buscar)) as t1, 
-	 (select count(f.id_producto) as suma from fotocopia f, fotocopiaxcarrito fxc where (f.id_fotocopia = fxc.id_fotocopia and fxc.id_carrito = id_carrito_a_buscar)) as t2);
+cantidad =(SELECT t1.suma + t2.suma
+from(SELECT COUNT(l.id_producto) AS suma FROM libro l, libroxcarrito lxc WHERE (l.isbn = lxc.isbn AND lxc.id_carrito = id_carrito_a_buscar)) AS t1,
+     (SELECT COUNT(f.id_producto) AS suma FROM fotocopia f, fotocopiaxcarrito fxc WHERE (f.id_fotocopia = fxc.id_fotocopia AND fxc.id_carrito = id_carrito_a_buscar)) AS t2);
 RETURN cantidad;
 END $cantidad_productos_carrito$
 LANGUAGE plpgsql;
-
-
-CREATE OR REPLACE FUNCTION productos_carrito (id_carrito_a_buscar integer)
-RETURNS table(id_producto integer, id_fotocopia integer, isbn integer, cantidad integer) AS
+ 
+ 
+ --esta funcion devuleve una tabla con los datos de los productos de un carrito dado
+CREATE OR REPLACE FUNCTION productos_carrito (id_carrito_a_buscar INTEGER)
+RETURNS table(id_producto INTEGER, id_fotocopia INTEGER, isbn INTEGER, cantidad INTEGER) AS
 $productos_carrito$
 DECLARE
 BEGIN
-RETURN query select l.id_producto, cast(null as integer) as id_fotocopia, l.isbn , lxc.cantidad as cantidad  from libro l, libroxcarrito lxc where (l.isbn = lxc.isbn and lxc.id_carrito = id_carrito_a_buscar) 
-UNION 
-select f.id_producto, f.id_fotocopia, cast(null as integer) as isbn, fxc.cantidad as cantidad from fotocopia f, fotocopiaxcarrito fxc where (f.id_fotocopia = fxc.id_fotocopia and fxc.id_carrito = id_carrito_a_buscar);
+RETURN query SELECT l.id_producto, cast(NULL AS INTEGER) AS id_fotocopia, l.isbn , lxc.cantidad AS cantidad  FROM libro l, libroxcarrito lxc WHERE (l.isbn = lxc.isbn AND lxc.id_carrito = id_carrito_a_buscar)
+UNION
+SELECT f.id_producto, f.id_fotocopia, cast(NULL AS INTEGER) AS isbn, fxc.cantidad AS cantidad FROM fotocopia f, fotocopiaxcarrito fxc WHERE (f.id_fotocopia = fxc.id_fotocopia AND fxc.id_carrito = id_carrito_a_buscar);
 END $productos_carrito$
 LANGUAGE plpgsql;
-
-
-CREATE OR REPLACE PROCEDURE confirmar_compra (id_carrito_compra integer)
+ 
+ 
+ --esta funcion se encarga de confirmar la compra de un carrito dado, pasando el estado activo del carrito a false y creando un nuevo carrito para el usuario y ademas calcula el precio final de la compra y actualiza el stock de los productos de la compra
+CREATE OR REPLACE PROCEDURE confirmar_compra (id_carrito_compra INTEGER)
 AS $$
 DECLARE
-precio_compra real;
+precio_compra REAL;
 fila_libro libroxcarrito%rowtype;
 fila_fotocopia fotocopiaxcarrito%rowtype;
 fila_saga sagaxcarrito%rowtype;
 usuario INTEGER;
 BEGIN
 precio_compra = 0;
-FOR fila_libro IN select lxc.isbn, lxc.id_carrito, lxc.cantidad from libroxcarrito lxc, carrito c where (id_carrito_compra = c.id_carrito and c.id_carrito = lxc.id_carrito)
+FOR fila_libro IN SELECT lxc.isbn, lxc.id_carrito, lxc.cantidad FROM libroxcarrito lxc, carrito c WHERE (id_carrito_compra = c.id_carrito AND c.id_carrito = lxc.id_carrito)
 LOOP
-    precio_compra = precio_compra + ((select l.precio from libro l where (fila_libro.isbn = l.isbn))*fila_libro.cantidad);
-    update libro set stock = stock - fila_libro.cantidad where (isbn = fila_libro.isbn);
+    precio_compra = precio_compra + ((SELECT l.precio FROM libro l WHERE (fila_libro.isbn = l.isbn))*fila_libro.cantidad);
+    UPDATE libro SET stock = stock - fila_libro.cantidad WHERE (isbn = fila_libro.isbn);
 END LOOP;
-
-FOR fila_fotocopia IN select fxc.id_fotocopia, fxc.id_carrito, fxc.cantidad from fotocopiaxcarrito fxc, carrito c where (id_carrito_compra = c.id_carrito and c.id_carrito = fxc.id_carrito)
+ 
+FOR fila_fotocopia IN SELECT fxc.id_fotocopia, fxc.id_carrito, fxc.cantidad FROM fotocopiaxcarrito fxc, carrito c WHERE (id_carrito_compra = c.id_carrito AND c.id_carrito = fxc.id_carrito)
 LOOP
-    precio_compra = precio_compra + ((select f.precio from fotocopia f where (fila_fotocopia.id_fotocopia = f.id_fotocopia))*fila_fotocopia.cantidad);
-    update fotocopia set stock = stock - fila_fotocopia.cantidad where (id_fotocopia = fila_fotocopia.id_fotocopia);
+    precio_compra = precio_compra + ((SELECT f.precio FROM fotocopia f WHERE (fila_fotocopia.id_fotocopia = f.id_fotocopia))*fila_fotocopia.cantidad);
+    UPDATE fotocopia SET stock = stock - fila_fotocopia.cantidad WHERE (id_fotocopia = fila_fotocopia.id_fotocopia);
 END LOOP;
-
-FOR fila_saga IN select sxc.id_saga, sxc.id_carrito, sxc.cantidad from sagaxcarrito sxc, carrito c where (id_carrito_compra = c.id_carrito and c.id_carrito = sxc.id_carrito)
-LOOP
-    precio_compra = precio_compra + ((select s.precio_saga from saga s where (fila_saga.id_saga = s.id_saga))*fila_fotocopia.cantidad);
-    update saga set stock_saga = stock_saga - fila_saga.cantidad where (id_saga = fila_saga.id_saga);
-END LOOP;
-
 INSERT INTO compra("precio_total", "id_carrito") VALUES (precio_compra,id_carrito_compra);
-UPDATE carrito set activo = false where (id_carrito = id_carrito_compra);
-usuario = (select u.id_usuario from usuario u, carrito c where (c.id_usuario = u.id_usuario and c.id_carrito = id_carrito_compra));
+UPDATE carrito SET activo = FALSE WHERE (id_carrito = id_carrito_compra);
+usuario = (SELECT u.id_usuario FROM usuario u, carrito c WHERE (c.id_usuario = u.id_usuario AND c.id_carrito = id_carrito_compra));
 INSERT INTO carrito("id_usuario") VALUES(usuario);
 END $$
+LANGUAGE plpgsql;
+
+
+--esta funcion devuelve una tabla con los datos de las compras realizadas por un asuario
+CREATE OR REPLACE FUNCTION compras_usuario (id_usuario_a_buscar INTEGER)
+RETURNS table(id_compra INTEGER, fecha_compra DATE, precio_total REAL, id_carrito INTEGER) AS
+$compras_usuario$
+DECLARE
+BEGIN
+RETURN query select com.id_compra, com.fecha_compra, com.precio_total, com.id_carrito from carrito ca, compra com, usuario u 
+where(u.id_usuario = ca.id_usuario and ca.id_carrito = com.id_carrito and ca.activo = FALSE and u.id_usuario = id_usuario_a_buscar)
+group by com.id_compra;
+END $compras_usuario$
 LANGUAGE plpgsql;/*    
     ########     ###    ########  #######   ######  
     ##     ##   ## ##      ##    ##     ## ##    ## 
@@ -748,16 +796,25 @@ INSERT INTO saga("nombre_saga") VALUES('The Maze Runner');
 
 
 -- LIBROS
-call new_libro(1,'inglés','Juego de Tronos', 4, 100, 'primera','descripcion1', 1, 7, 1, array[1], array[3, 10]);
-call new_libro(2,'español','El hobbit', 5, 200, 'segunda','descripcion2',2, null, 2, array[2], array[3,1]);
-call new_libro(3,'portugués','Harry Potter y la Piedra Filosofal', 6, 300, 'tercera','descripcion3',3, 1, 3, array[3], array[3,1]);
-call new_libro(4,'italiano','El Aleph', 9, 400, 'cuarta','descripcion4',4,null, 4, array[4], array[3,1]);
-call new_libro(5,'aleman','Gran Hermano', 8, 500, 'quinta','descripcion5',5,null, 5, array[5,10], array[3,1]);
-call new_libro(6,'francés','El código Da Vinci', 6, 600, 'sexta','descripcion6',6,null, 6, array[8,6], array[3,2]);
-call new_libro(7,'guaraní','Yo robot', 5, 700, 'séptima','descripcion7',7,null, 7, array[7], array[3, 10, 4]);
-call new_libro(8,'chino','Cien años de soledad', 5, 800, 'octava','descripcion8',8,null, 8, array[11], array[8]);
-call new_libro(9,'japonés','La carta robada', 7, 900, 'novena','descripcion9',9,null, 9, array[9], array[5]);
-call new_libro(10,'sueco','Las venas abiertas de América Latina', 10, 1000, 'décima','descripcion10',10,null, 10, array[12,11], array[3, 7, 6]);
+call new_libro(1,'inglés','Juego de Tronos', 4, 100, 'primera','descripcion1', 1, 7, 1, array[1], array[3, 10], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+
+call new_libro(2,'español','El hobbit', 5, 200, 'segunda','descripcion2',2, null, 2, array[2], array[3,1], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+
+call new_libro(3,'portugués','Harry Potter y la Piedra Filosofal', 6, 300, 'tercera','descripcion3',3, 1, 3, array[3], array[3,1], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+
+call new_libro(4,'italiano','El Aleph', 9, 400, 'cuarta','descripcion4',4,null, 4, array[4], array[3,1], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+
+call new_libro(5,'aleman','Gran Hermano', 8, 500, 'quinta','descripcion5',5,null, 5, array[5,10], array[3,1], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+
+call new_libro(6,'francés','El código Da Vinci', 6, 600, 'sexta','descripcion6',6,null, 6, array[8,6], array[3,2], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+
+call new_libro(7,'guaraní','Yo robot', 5, 700, 'séptima','descripcion7',7,null, 7, array[7], array[3, 10, 4], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+
+call new_libro(8,'chino','Cien años de soledad', 5, 800, 'octava','descripcion8',8,null, 8, array[11], array[8], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+
+call new_libro(9,'japonés','La carta robada', 7, 900, 'novena','descripcion9',9,null, 9, array[9], array[5], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+
+call new_libro(10,'sueco','Las venas abiertas de América Latina', 10, 1000, 'décima','descripcion10',10,null, 10, array[12,11], array[3, 7, 6], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
 
 
 -- USUARIOS
@@ -849,28 +906,53 @@ INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (
 INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (7, 9, 1);
 INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (1, 3, 2);
 
--- SAGA x CARRITO
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (9, 1, 1); 
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (10, 4, 1); 
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (6, 3, 1); 
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (1, 2, 2); 
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (4, 2, 1);
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (5, 10, 1);
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (3, 8, 1);
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (6, 9, 1);
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (8, 1, 1);
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (4, 7, 1);
 
 --TODOS: hacer función que devuelva el producto (si es libro un libro, si es fotocopia una fotocopia) cuando se busca en productoxcarrito. 
 /*CONSULTAS:
-todos las compras realizadas por un usuario entre 2 fechas
-todos los pedidos aceptados a la fecha
-categorias y cantididad de libros asociadas a esta
-usuario que realizaron mas de 4 compras
-libros que posean mas de 2 autores
-libros con valoracion promedio mayor a 3.5
+#todos las compras realizadas por un usuario entre 2 fechas
 
+select t1.titulos_libros,t2.titulos_fotocopias,com.fecha_compra,com.precio_total,com.id_compra from
+(select array_agg(l.titulo) as titulos_libros
+from carrito c, libro l, libroxcarrito lxc
+where (lxc.isbn = l.isbn and c.id_carrito = lxc.id_carrito and c.id_usuario = 11)) as t1,
+(select array_agg(f.titulo) as titulos_fotocopias
+from carrito c, fotocopia f, fotocopiaxcarrito fxc
+where (fxc.id_fotocopia = f.id_fotocopia and c.id_carrito = fxc.id_carrito and c.id_usuario = 11)) as t2,
+compra com, carrito c
+where (c.activo = false and c.id_carrito = com.id_carrito and id_usuario = 11 and fecha_compra < '2019-12-11'::date and fecha_compra > '2019-08-21'::date)
 
+#todos los pedidos aceptados a la fecha
+
+select id_pedido 
+from pedido 
+where (pedido_aceptado = TRUE)
+
+#categorias y cantididad de libros asociadas a esta
+
+select c.nombre_categoria, count(l.isbn) 
+from categoria c, libro l, categoriaxlibro cxl 
+where (c.id_categoria = cxl.id_categoria and cxl.isbn = l.isbn)
+group by c.nombre_categoria
+
+#usuario que realizaron mas de 4 compras
+
+select u.id_usuario, u.nombre, count(com.id_compra) 
+from carrito ca, compra com, usuario u 
+where(u.id_usuario = ca.id_usuario and ca.id_carrito = com.id_carrito and ca.activo = FALSE)
+group by u.id_usuario
+having count(com.id_compra) > 4
+
+#libros que posean mas de 2 autores
+
+select l.titulo, count(a.id_autor) from autor a, libro l, autorxlibro axl where (a.id_autor = axl.id_autor and axl.isbn = l.isbn)
+group by l.titulo
+having count(a.id_autor)>2
+
+#libros con valoracion promedio mayor a 3.5
+
+select l.titulo, avg(v.puntaje) from valoracion v, libro l where (v.isbn = l.isbn)
+group by l.titulo
+having avg(v.puntaje)>3.5
 
 
 CREATE USER gestor_pedidos PASSWORD 'hoyvoyabailar';

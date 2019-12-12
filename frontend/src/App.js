@@ -11,6 +11,7 @@ import Header from './components/Header';
 import Carrito from './components/Carrito';
 import Error404 from './components/Error404';
 import RealizarCheckout from './components/Carrito/RealizarCheckout';
+import Compras from './components/Compras';
 
 let App = () => {
 	const usuarioActual = useSelector(state => state.usuario.usuarioActual);
@@ -18,6 +19,8 @@ let App = () => {
 	const rutaAdministrar = <Route path='/administrar' component={Administrar} />;
 	const rutaEditarPerfil = <Route path='/editar_perfil' component={EditarPerfil} key='1' />;
 	const rutaCarrito = <Route path='/carrito' component={Carrito} key='2' />;
+	const rutaCompras = <Route path='/compras' component={Compras} key='3' />;
+
 	const checkout = <Route path='/checkout' component={RealizarCheckout} />;
 	return (
 		<Fragment>
@@ -26,7 +29,7 @@ let App = () => {
 				<Switch>
 					<Route exact path='/producto/:id_producto' render={props => <Producto props={props} />} />
 					{usuarioActual && usuarioActual.rol === 'ADMIN' ? rutaAdministrar : null}
-					{usuarioActual ? [rutaEditarPerfil, rutaCarrito] : null}
+					{usuarioActual ? [rutaEditarPerfil, rutaCarrito, rutaCompras] : null}
 					<Route exact path={['/', '/productos']} component={Productos} />
 					{localStorage.getItem('checkoutID') ? checkout : null /* SOLO DISPONIBLE SI SE REALIZA UNA COMPRA */}
 					<Route component={Error404} />

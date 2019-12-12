@@ -76,16 +76,16 @@ INSERT INTO saga("nombre_saga") VALUES('The Maze Runner');
 
 
 -- LIBROS
-call new_libro(1,'inglés','Juego de Tronos', 4, 100, 'primera','descripcion1', 1, 7, 1, array[1], array[3, 10]);
-call new_libro(2,'español','El hobbit', 5, 200, 'segunda','descripcion2',2, null, 2, array[2], array[3,1]);
-call new_libro(3,'portugués','Harry Potter y la Piedra Filosofal', 6, 300, 'tercera','descripcion3',3, 1, 3, array[3], array[3,1]);
-call new_libro(4,'italiano','El Aleph', 9, 400, 'cuarta','descripcion4',4,null, 4, array[4], array[3,1]);
-call new_libro(5,'aleman','Gran Hermano', 8, 500, 'quinta','descripcion5',5,null, 5, array[5,10], array[3,1]);
-call new_libro(6,'francés','El código Da Vinci', 6, 600, 'sexta','descripcion6',6,null, 6, array[8,6], array[3,2]);
-call new_libro(7,'guaraní','Yo robot', 5, 700, 'séptima','descripcion7',7,null, 7, array[7], array[3, 10, 4]);
-call new_libro(8,'chino','Cien años de soledad', 5, 800, 'octava','descripcion8',8,null, 8, array[11], array[8]);
-call new_libro(9,'japonés','La carta robada', 7, 900, 'novena','descripcion9',9,null, 9, array[9], array[5]);
-call new_libro(10,'sueco','Las venas abiertas de América Latina', 10, 1000, 'décima','descripcion10',10,null, 10, array[12,11], array[3, 7, 6]);
+call new_libro(1,'inglés','Juego de Tronos', 4, 100, 'primera','descripcion1', 1, 7, 1, array[1], array[3, 10], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+call new_libro(2,'español','El hobbit', 5, 200, 'segunda','descripcion2',2, null, 2, array[2], array[3,1], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+call new_libro(3,'portugués','Harry Potter y la Piedra Filosofal', 6, 300, 'tercera','descripcion3',3, 1, 3, array[3], array[3,1], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+call new_libro(4,'italiano','El Aleph', 9, 400, 'cuarta','descripcion4',4,null, 4, array[4], array[3,1], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+call new_libro(5,'aleman','Gran Hermano', 8, 500, 'quinta','descripcion5',5,null, 5, array[5,10], array[3,1], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+call new_libro(6,'francés','El código Da Vinci', 6, 600, 'sexta','descripcion6',6,null, 6, array[8,6], array[3,2], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+call new_libro(7,'guaraní','Yo robot', 5, 700, 'séptima','descripcion7',7,null, 7, array[7], array[3, 10, 4], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+call new_libro(8,'chino','Cien años de soledad', 5, 800, 'octava','descripcion8',8,null, 8, array[11], array[8], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+call new_libro(9,'japonés','La carta robada', 7, 900, 'novena','descripcion9',9,null, 9, array[9], array[5], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
+call new_libro(10,'sueco','Las venas abiertas de América Latina', 10, 1000, 'décima','descripcion10',10,null, 10, array[12,11], array[3, 7, 6], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
 
 
 -- USUARIOS
@@ -177,28 +177,53 @@ INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (
 INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (7, 9, 1);
 INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (1, 3, 2);
 
--- SAGA x CARRITO
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (9, 1, 1); 
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (10, 4, 1); 
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (6, 3, 1); 
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (1, 2, 2); 
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (4, 2, 1);
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (5, 10, 1);
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (3, 8, 1);
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (6, 9, 1);
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (8, 1, 1);
-INSERT INTO sagaxcarrito("id_saga", "id_carrito", "cantidad") VALUES (4, 7, 1);
 
 --TODOS: hacer función que devuelva el producto (si es libro un libro, si es fotocopia una fotocopia) cuando se busca en productoxcarrito. 
 /*CONSULTAS:
-todos las compras realizadas por un usuario entre 2 fechas
-todos los pedidos aceptados a la fecha
-categorias y cantididad de libros asociadas a esta
-usuario que realizaron mas de 4 compras
-libros que posean mas de 2 autores
-libros con valoracion promedio mayor a 3.5
+#todos las compras realizadas por un usuario entre 2 fechas
 
+select t1.titulos_libros,t2.titulos_fotocopias,com.fecha_compra,com.precio_total,com.id_compra from
+(select array_agg(l.titulo) as titulos_libros
+from carrito c, libro l, libroxcarrito lxc
+where (lxc.isbn = l.isbn and c.id_carrito = lxc.id_carrito and c.id_usuario = 11)) as t1,
+(select array_agg(f.titulo) as titulos_fotocopias
+from carrito c, fotocopia f, fotocopiaxcarrito fxc
+where (fxc.id_fotocopia = f.id_fotocopia and c.id_carrito = fxc.id_carrito and c.id_usuario = 11)) as t2,
+compra com, carrito c
+where (c.activo = false and c.id_carrito = com.id_carrito and id_usuario = 11 and fecha_compra < '2019-12-11'::date and fecha_compra > '2019-08-21'::date)
 
+#todos los pedidos aceptados a la fecha
+
+select id_pedido 
+from pedido 
+where (pedido_aceptado = TRUE)
+
+#categorias y cantididad de libros asociadas a esta
+
+select c.nombre_categoria, count(l.isbn) 
+from categoria c, libro l, categoriaxlibro cxl 
+where (c.id_categoria = cxl.id_categoria and cxl.isbn = l.isbn)
+group by c.nombre_categoria
+
+#usuario que realizaron mas de 4 compras
+
+select u.id_usuario, u.nombre, count(com.id_compra) 
+from carrito ca, compra com, usuario u 
+where(u.id_usuario = ca.id_usuario and ca.id_carrito = com.id_carrito and ca.activo = FALSE)
+group by u.id_usuario
+having count(com.id_compra) > 4
+
+#libros que posean mas de 2 autores
+
+select l.titulo, count(a.id_autor) from autor a, libro l, autorxlibro axl where (a.id_autor = axl.id_autor and axl.isbn = l.isbn)
+group by l.titulo
+having count(a.id_autor)>2
+
+#libros con valoracion promedio mayor a 3.5
+
+select l.titulo, avg(v.puntaje) from valoracion v, libro l where (v.isbn = l.isbn)
+group by l.titulo
+having avg(v.puntaje)>3.5
 
 
 CREATE USER gestor_pedidos PASSWORD 'hoyvoyabailar';
