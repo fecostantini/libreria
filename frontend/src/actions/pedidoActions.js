@@ -4,6 +4,7 @@ import {
 	ACEPTAR_PEDIDO,
 	RECHAZAR_PEDIDO,
 	FETCH_PEDIDOS_USUARIO,
+	SET_FECHA_LLEGADA_PEDIDO,
 	UPDATE_LAST_REQUEST_STATUS
 } from './types';
 import axios from 'axios';
@@ -81,6 +82,21 @@ export const aceptarORechazarPedido = async (dispatch, infoPedido) => {
 
 export const pagarPedido = async (dispatch, idPedido) => {
 	const resp = await axios.put(`${URL}/pagarPedido`, { id_pedido: idPedido });
+
+	dispatch({
+		type: UPDATE_LAST_REQUEST_STATUS,
+		payload: { status: resp.data.status }
+	});
+};
+
+export const setFechaLlegada = async (dispatch, idPedido, fechaLlegada) => {
+	const resp = await axios.put(`${URL}/setFechaLlegada`, { id_pedido: idPedido, fecha_llegada: fechaLlegada });
+
+	if (resp.data.status === estados.ACTUALIZADO)
+		dispatch({
+			type: SET_FECHA_LLEGADA_PEDIDO,
+			payload: { id_pedido: idPedido, fecha_llegada: fechaLlegada }
+		});
 
 	dispatch({
 		type: UPDATE_LAST_REQUEST_STATUS,

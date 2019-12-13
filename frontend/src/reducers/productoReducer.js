@@ -22,7 +22,8 @@ export const estadoInicialProducto = {
 		autores: [],
 		ids_autores: [],
 		categorias: [],
-		ids_categorias: []
+		ids_categorias: [],
+		imagen: ''
 	},
 	items: []
 };

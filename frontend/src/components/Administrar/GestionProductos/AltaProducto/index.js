@@ -212,7 +212,7 @@ const AltaProducto = () => {
 		let name = e.target.name;
 		let value = parseInt(e.target.value, 10);
 
-		if (['id_saga', 'id_editorial', 'id_promocion'].includes(name))
+		if (['id_saga', 'id_editorial', 'id_promocion', 'imagen'].includes(name))
 			updateProducto(dispatch, {
 				...producto,
 				[name]: value ? value : null
@@ -383,6 +383,12 @@ const AltaProducto = () => {
 						</div>
 					</div>
 					{formularioNuevaSaga ? <FormularioNuevaSaga setMostrarAlerta={setMostrarAlerta} /> : null}
+					<hr className='mt-4' />
+					<div className='form-row'>
+						{[{ titulo: 'URL Imagen', type: 'text', name: 'imagen' }].map(e => (
+							<InputFormulario key={e.titulo} titulo={e.titulo} type={e.type} name={e.name} containterClass='col-12' />
+						))}
+					</div>
 				</Fragment>
 			);
 		} else if (tipoProducto === tiposProducto.FOTOCOPIA) return <Fragment>{inputDescripcion()}</Fragment>;

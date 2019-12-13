@@ -28,4 +28,10 @@ rutasPedido.post('/getPedidosUsuario', function(req, res) {
 	Pedido.getPedidosUsuario(idUsuario).then(respuesta => res.send(respuesta));
 });
 
+rutasPedido.put('/setFechaLlegada', function(req, res) {
+	const idPedido = req.body.id_pedido;
+	const fechaLlegada = req.body.fecha_llegada;
+	Pedido.setFechaLlegada(idPedido, fechaLlegada).then(respuesta => res.send(respuesta));
+});
+
 module.exports = rutasPedido;

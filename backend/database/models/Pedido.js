@@ -11,7 +11,8 @@ const querys = {
 	PAGAR_PEDIDO: 'update pedido set pagado=true where id_pedido={};',
 	INSERT: String.raw`INSERT INTO pedido("isbn","cantidad", "id_usuario") VALUES({isbn}, {cantidad}, {id_usuario}) RETURNING id_pedido, fecha_pedido, pagado, aceptado, entregado, fecha_llegada;`,
 	ACEPTAR_PEDIDO: String.raw`UPDATE pedido SET aceptado=true WHERE id_pedido={};`,
-	RECHAZAR_PEDIDO: String.raw`UPDATE pedido SET rechazado=true WHERE id_pedido={};`
+	RECHAZAR_PEDIDO: String.raw`UPDATE pedido SET rechazado=true WHERE id_pedido={};`,
+	SET_FECHA_LLEGADA: String.raw`UPDATE pedido SET fecha_llegada='{fecha_llegada}' WHERE id_pedido={id_pedido};`
 };
 
 let getPedidos = async tipoPedidos => {
@@ -19,14 +20,13 @@ let getPedidos = async tipoPedidos => {
 		let response;
 		if (tipoPedidos === 'SIN_DECIDIR') response = await pool.query(querys.GET_PEDIDOS_SIN_DECIDIR);
 		else if (tipoPedidos === 'PAGADOS') response = await pool.query(querys.GET_PEDIDOS_PAGADOS);
-		console.log(response);
+
 		let pedidos = response.rows;
 		return {
 			status: pedidos ? estados.EXITO : estados.FRACASO,
 			pedidos: pedidos
 		};
 	} catch (error) {
-		console.log(error);
 		switch (error.code) {
 			case estados.CONEXION_FALLIDA:
 				return { status: estados.CONEXION_FALLIDA };
@@ -45,7 +45,6 @@ let pagarPedido = async idPedido => {
 			status: pedidoPagado ? estados.ACTUALIZADO : estados.FRACASO
 		};
 	} catch (error) {
-		console.log(error);
 		switch (error.code) {
 			case estados.CONEXION_FALLIDA:
 				return { status: estados.CONEXION_FALLIDA };
@@ -66,7 +65,6 @@ let getPedidosUsuario = async idUsuario => {
 			pedidos: pedidos
 		};
 	} catch (error) {
-		console.log(error);
 		switch (error.code) {
 			case estados.CONEXION_FALLIDA:
 				return { status: estados.CONEXION_FALLIDA };
@@ -78,7 +76,6 @@ let getPedidosUsuario = async idUsuario => {
 
 let createPedido = async nuevoPedido => {
 	try {
-		console.log(querys.INSERT.format(nuevoPedido));
 		let response = await pool.query(querys.INSERT.format(nuevoPedido));
 		let filasModificadas = response.rowCount;
 		let pedidoCreado = filasModificadas > 0;
@@ -91,7 +88,6 @@ let createPedido = async nuevoPedido => {
 			};
 		} else return { status: estados.FRACASO };
 	} catch (error) {
-		console.log(error);
 		switch (error.code) {
 			case estados.YA_EXISTE:
 				return { status: estados.YA_EXISTE };
@@ -113,6 +109,27 @@ let aceptarORechazarPedido = async (idPedido, decision) => {
 		let pedidoActualizado = filasModificadas > 0;
 		return { status: pedidoActualizado ? estados.ACTUALIZADO : estados.FRACASO };
 	} catch (error) {
+		switch (error.code) {
+			case estados.YA_EXISTE:
+				return { status: estados.YA_EXISTE };
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
+			default:
+				return { status: estados.ERROR_DESCONOCIDO };
+		}
+	}
+};
+
+let setFechaLlegada = async (idPedido, fechaLlegada) => {
+	try {
+		console.log(querys.SET_FECHA_LLEGADA.format({ id_pedido: idPedido, fecha_llegada: fechaLlegada }));
+		let response = await pool.query(
+			querys.SET_FECHA_LLEGADA.format({ id_pedido: idPedido, fecha_llegada: fechaLlegada })
+		);
+		let pedidoActualizado = response.rowCount > 0;
+
+		return { status: pedidoActualizado ? estados.ACTUALIZADO : estados.FRACASO };
+	} catch (error) {
 		console.log(error);
 		switch (error.code) {
 			case estados.YA_EXISTE:
@@ -125,4 +142,4 @@ let aceptarORechazarPedido = async (idPedido, decision) => {
 	}
 };
 
-module.exports = { getPedidos, createPedido, aceptarORechazarPedido, getPedidosUsuario, pagarPedido };
+module.exports = { getPedidos, createPedido, aceptarORechazarPedido, getPedidosUsuario, pagarPedido, setFechaLlegada };

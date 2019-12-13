@@ -46,6 +46,7 @@ export const FETCH_PEDIDOS_USUARIO = 'FETCH_PEDIDOS_USUARIO';
 export const CREATE_PEDIDO = 'CREATE_PEDIDO';
 export const ACEPTAR_PEDIDO = 'ACEPTAR_PEDIDO';
 export const RECHAZAR_PEDIDO = 'RECHAZAR_PEDIDO';
+export const SET_FECHA_LLEGADA_PEDIDO = 'SET_FECHA_LLEGADA_PEDIDO';
 
 // status global de la ultima request que se realizó al backend
 export const UPDATE_LAST_REQUEST_STATUS = 'UPDATE_LAST_REQUEST_STATUS';

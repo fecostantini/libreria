@@ -35,8 +35,12 @@ let getProductos = async () => {
 
 let createProducto = async nuevoProducto => {
 	try {
-		//FIXME
-		nuevoProducto = { ...nuevoProducto, imagen: null };
+		console.log(nuevoProducto);
+		const imagen =
+			nuevoProducto.imagen !== ''
+				? nuevoProducto.imagen
+				: 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png';
+		nuevoProducto = { ...nuevoProducto, imagen };
 
 		console.log(querys.INSERT.format(nuevoProducto));
 		let response = await pool.query(querys.INSERT.format(nuevoProducto));
@@ -98,8 +102,11 @@ let deleteProducto = async idProducto => {
 
 let updateProducto = async productoActualizado => {
 	try {
-		//FIXME
-		productoActualizado = { ...productoActualizado, imagen: null };
+		const imagen =
+			productoActualizado.imagen !== ''
+				? productoActualizado.imagen
+				: 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png';
+		productoActualizado = { ...productoActualizado, imagen };
 
 		console.log(querys.UPDATE.format(productoActualizado));
 		let response = await pool.query(querys.UPDATE.format(productoActualizado));

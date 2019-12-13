@@ -22,7 +22,7 @@ let ProductoIndividual = ({ producto }) => {
 				<Card.Title>{producto.titulo}</Card.Title>
 			</Card.Body>
 			<div className='text-center my-3'>
-				<Card.Img variant='top' src={producto.imagen} style={{ width: '120px' }} />
+				<Card.Img variant='top' src={producto.imagen} style={{ height: '83px', width: 'auto' }} />
 			</div>
 			<Card.Footer>
 				<div className='row'>
