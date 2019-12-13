@@ -8,7 +8,7 @@ import IconoCarrito from './IconoCarrito';
 const Header = () => {
 	const usuarioActual = useSelector(state => state.usuario.usuarioActual);
 
-	const linkAdministrar = usuarioActual && (usuarioActual.rol === 'ADMIN' || usuarioActual.rol === 'GESTOR_PEDIDOS') && (
+	const linkAdministrar = usuarioActual && (
 		<li className='nav-item'>
 			<NavLink to='/administrar/gestion_productos/alta' className='nav-link' activeClassName='active'>
 				Administrar

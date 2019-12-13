@@ -12,7 +12,8 @@ const querys = {
 	INSERT: String.raw`INSERT INTO pedido("isbn","cantidad", "id_usuario") VALUES({isbn}, {cantidad}, {id_usuario}) RETURNING id_pedido, fecha_pedido, pagado, aceptado, entregado, fecha_llegada;`,
 	ACEPTAR_PEDIDO: String.raw`UPDATE pedido SET aceptado=true WHERE id_pedido={};`,
 	RECHAZAR_PEDIDO: String.raw`UPDATE pedido SET rechazado=true WHERE id_pedido={};`,
-	SET_FECHA_LLEGADA: String.raw`UPDATE pedido SET fecha_llegada='{fecha_llegada}' WHERE id_pedido={id_pedido};`
+	SET_FECHA_LLEGADA: String.raw`UPDATE pedido SET fecha_llegada='{fecha_llegada}' WHERE id_pedido={id_pedido};`,
+	GET_MAIL_USUARIO: String.raw`select mail from usuario where (id_usuario =(select id_usuario from pedido where id_pedido={}));`
 };
 
 let getPedidos = async tipoPedidos => {
@@ -142,4 +143,31 @@ let setFechaLlegada = async (idPedido, fechaLlegada) => {
 	}
 };
 
-module.exports = { getPedidos, createPedido, aceptarORechazarPedido, getPedidosUsuario, pagarPedido, setFechaLlegada };
+let getMailUsuario = async idPedido => {
+	try {
+		console.log(querys.GET_MAIL_USUARIO.format(idPedido));
+		let response = await pool.query(querys.GET_MAIL_USUARIO.format(idPedido));
+		let mailEncontrado = response.rowCount > 0;
+		if (mailEncontrado) return { status: estados.EXITO, mail: response.rows[0].mail };
+		else return { status: estados.FRACASO };
+	} catch (error) {
+		switch (error.code) {
+			case estados.YA_EXISTE:
+				return { status: estados.YA_EXISTE };
+			case estados.CONEXION_FALLIDA:
+				return { status: estados.CONEXION_FALLIDA };
+			default:
+				return { status: estados.ERROR_DESCONOCIDO };
+		}
+	}
+};
+
+module.exports = {
+	getPedidos,
+	createPedido,
+	aceptarORechazarPedido,
+	getPedidosUsuario,
+	pagarPedido,
+	setFechaLlegada,
+	getMailUsuario
+};

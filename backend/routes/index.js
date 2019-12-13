@@ -12,6 +12,7 @@ router.use('/producto', require('./rutasProducto'));
 router.use('/promocion', require('./rutasPromocion'));
 router.use('/carrito', require('./rutasCarrito'));
 router.use('/pedido', require('./rutasPedido'));
+router.use('/mailsender', require('./rutasMailSender'));
 
 // mercadopago
 router.use('/mercadopago', require('./rutasMercadoPago'));

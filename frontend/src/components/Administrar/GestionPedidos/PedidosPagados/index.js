@@ -2,6 +2,8 @@ import React, { useEffect, useState, Fragment } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Table } from 'react-bootstrap';
 import { fetchPedidos, setFechaLlegada } from '../../../../actions/pedidoActions';
+import axios from 'axios';
+import { dateToString } from '../../../Common/utils';
 
 function PedidosPagados() {
 	const dispatch = useDispatch();
@@ -52,7 +54,16 @@ function PedidosPagados() {
 						type='button'
 						className='btn btn-primary'
 						disabled={fechasLlegada[pedido.id_pedido] === null}
-						onClick={() => setFechaLlegada(dispatch, pedido.id_pedido, fechasLlegada[pedido.id_pedido])}
+						onClick={() => {
+							setFechaLlegada(dispatch, pedido.id_pedido, fechasLlegada[pedido.id_pedido]);
+							axios.post('http://localhost:3210/mailsender/enviarMail', {
+								id_pedido: pedido.id_pedido,
+								subject: 'Pedido enviado!',
+								text: `Su pedido de ${pedido.cantidad} unidad/es del libro con ISBN ${
+									pedido.isbn
+								} ha sido despachado y llegará aproximadamente el ${dateToString(fechasLlegada[pedido.id_pedido])}.`
+							});
+						}}
 					>
 						Confirmar
 					</button>

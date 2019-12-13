@@ -18,10 +18,6 @@ import PagarPedido from './components/Pedidos/PagarPedido';
 let App = () => {
 	const usuarioActual = useSelector(state => state.usuario.usuarioActual);
 
-	const rutaAdministrar = usuarioActual &&
-		(usuarioActual.rol === 'ADMIN' || usuarioActual.rol === 'GESTOR_PEDIDOS') && (
-			<Route path='/administrar' component={Administrar} />
-		);
 	const rutaEditarPerfil = <Route path='/editar_perfil' component={EditarPerfil} key='1' />;
 	const rutaCarrito = <Route path='/carrito' component={Carrito} key='2' />;
 	const rutaCompras = <Route path='/compras' component={Compras} key='3' />;
@@ -35,8 +31,8 @@ let App = () => {
 			<main className='container mt-5'>
 				<Switch>
 					<Route exact path='/producto/:id_producto' render={props => <Producto props={props} />} />
-					{rutaAdministrar}
-					{usuarioActual ? [rutaEditarPerfil, rutaCarrito, rutaCompras, rutaPedidos] : null}
+					{usuarioActual && <Route path='/administrar' component={Administrar} />}
+					{usuarioActual && [rutaEditarPerfil, rutaCarrito, rutaCompras, rutaPedidos]}
 					<Route exact path={['/', '/productos']} component={Productos} />
 					{localStorage.getItem('checkoutID')
 						? [checkout, pagarPedido]

@@ -2,12 +2,15 @@ import React, { useEffect, useState, Fragment } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Table, Container } from 'react-bootstrap';
 import { fetchProductos, deleteProducto } from '../../../../actions/productoActions';
+import { fetchFotocopias } from '../../../../actions/fotocopiaActions';
 
 import { ordenar } from '../../../Common/utils';
 
 const BajaProducto = () => {
 	const dispatch = useDispatch();
 	const productos = useSelector(state => state.producto.items);
+	const fotocopias = useSelector(state => state.fotocopias.items);
+	const usuarioActual = useSelector(state => state.usuario.usuarioActual);
 
 	const [campoAOrdenar, setCampoAOrdenar] = useState('titulo');
 	const [ordenCreciente, setOrdenCreciente] = useState(false);
@@ -33,8 +36,28 @@ const BajaProducto = () => {
 	// cargar los autores y las categorias cuando cargue la página
 	useEffect(() => {
 		fetchProductos(dispatch);
+		fetchFotocopias(dispatch);
 	}, []);
 
+	const filasProducto = () => {
+		if (usuarioActual.rol === 'ADMIN')
+			// es admin, puede borrar cualquier producto
+			return productos
+				.sort(ordenar(campoAOrdenar, ordenCreciente))
+				.map(producto => <FilaProducto key={producto.id_producto} producto={producto} />);
+		else {
+			// como no es admin solo puede borras las fotocopias que el usuario creó
+			const productosUsuario = productos.filter(producto =>
+				fotocopias.some(
+					fotocopia =>
+						fotocopia.id_producto === producto.id_producto && fotocopia.id_usuario === usuarioActual.id_usuario
+				)
+			);
+			return productosUsuario
+				.sort(ordenar(campoAOrdenar, ordenCreciente))
+				.map(producto => <FilaProducto key={producto.id_producto} producto={producto} />);
+		}
+	};
 	return (
 		<Fragment>
 			<Container className='my-4'>
@@ -65,11 +88,7 @@ const BajaProducto = () => {
 						<th></th>
 					</tr>
 				</thead>
-				<tbody>
-					{productos.sort(ordenar(campoAOrdenar, ordenCreciente)).map(producto => (
-						<FilaProducto key={producto.id_producto} producto={producto} />
-					))}
-				</tbody>
+				<tbody>{filasProducto()}</tbody>
 			</Table>
 		</Fragment>
 	);

@@ -61,6 +61,10 @@ const AltaProducto = () => {
 	}, []);
 
 	useEffect(() => {
+		if (usuarioActual.rol !== 'ADMIN') setTipoProducto(tiposProducto.FOTOCOPIA);
+	}, [usuarioActual]);
+
+	useEffect(() => {
 		// solo queremos mostrar el error si mostrarAlerta es verdadero
 		if (!mostrarAlerta) return;
 
@@ -104,7 +108,9 @@ const AltaProducto = () => {
 			setError({ activo: false });
 			resetProducto(dispatch).then(() => {
 				document.getElementById('formulario-producto').reset();
-				setTipoProducto(''); // para que no quede desplegado el formulario de la fotocopia o el libro
+				if (usuarioActual.rol === 'ADMIN') setTipoProducto('');
+				// para que no quede desplegado el formulario de la fotocopia o el libro
+				else setTipoProducto(tiposProducto.FOTOCOPIA);
 			});
 		});
 	};
@@ -443,35 +449,39 @@ const AltaProducto = () => {
 							))}
 					</select>
 				</div>
-				<legend className='text-center'>Tipo de producto</legend>
-				<div className='text-center'>
-					<div className='form-check form-check-inline'>
-						<input
-							className='form-check-input'
-							type='radio'
-							checked={tipoProducto === tiposProducto.LIBRO}
-							value='LIBRO'
-							onChange={e => {
-								setTipoProducto(e.target.value);
-							}}
-						/>
-						<label className='form-check-label'>Libro</label>
-					</div>
 
-					<div className='form-check form-check-inline'>
-						<input
-							className='form-check-input'
-							type='radio'
-							checked={tipoProducto === tiposProducto.FOTOCOPIA}
-							value='FOTOCOPIA'
-							onChange={e => {
-								setTipoProducto(e.target.value);
-							}}
-						/>
-						<label className='form-check-label'>Fotocopia</label>
-					</div>
-				</div>
+				{usuarioActual.rol === 'ADMIN' && (
+					<Fragment>
+						<legend className='text-center'>Tipo de producto</legend>
+						<div className='text-center'>
+							<div className='form-check form-check-inline'>
+								<input
+									className='form-check-input'
+									type='radio'
+									checked={tipoProducto === tiposProducto.LIBRO}
+									value='LIBRO'
+									onChange={e => {
+										setTipoProducto(e.target.value);
+									}}
+								/>
+								<label className='form-check-label'>Libro</label>
+							</div>
 
+							<div className='form-check form-check-inline'>
+								<input
+									className='form-check-input'
+									type='radio'
+									checked={tipoProducto === tiposProducto.FOTOCOPIA}
+									value='FOTOCOPIA'
+									onChange={e => {
+										setTipoProducto(e.target.value);
+									}}
+								/>
+								<label className='form-check-label'>Fotocopia</label>
+							</div>
+						</div>
+					</Fragment>
+				)}
 				{formularioRestante()}
 
 				<input

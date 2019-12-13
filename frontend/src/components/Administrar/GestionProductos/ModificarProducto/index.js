@@ -15,6 +15,7 @@ import { fetchCategorias } from '../../../../actions/categoriaActions';
 import { fetchSagas } from '../../../../actions/sagaActions';
 import { fetchEditoriales } from '../../../../actions/editorialActions';
 import { fetchPromociones } from '../../../../actions/promocionActions';
+import { fetchFotocopias } from '../../../../actions/fotocopiaActions';
 
 import Swal from 'sweetalert2';
 import estados from '../../../../estados';
@@ -29,6 +30,9 @@ const ModificarProducto = () => {
 	const todasLasCategorias = useSelector(state => state.categorias.items);
 	const todasLasSagas = useSelector(state => state.sagas.items);
 	const todasLasPromociones = useSelector(state => state.promociones.items);
+
+	const fotocopias = useSelector(state => state.fotocopias.items);
+	const usuarioActual = useSelector(state => state.usuario.usuarioActual);
 
 	const [idProductoAModificar, setIdProductoAModificar] = useState(null);
 	const [autores, setAutores] = useState([]);
@@ -45,6 +49,7 @@ const ModificarProducto = () => {
 		fetchSagas(dispatch);
 		fetchEditoriales(dispatch);
 		fetchPromociones(dispatch);
+		fetchFotocopias(dispatch);
 	}, []);
 
 	useEffect(() => {
@@ -370,21 +375,42 @@ const ModificarProducto = () => {
 			/>
 		</form>
 	);
-
+	const selects = () => {
+		if (usuarioActual.rol === 'ADMIN')
+			// es un admin, puede modificar todo.
+			return productos
+				.concat({ titulo: '-SELECCIONE UN PRODUCTO-', id_producto: 0 })
+				.sort(ordenar('titulo'))
+				.map(producto => (
+					<option value={producto.id_producto} key={producto.id_producto}>
+						{producto.titulo}
+					</option>
+				));
+		else {
+			// solo puede modificar sus fotocopias si es un usuario no administrador
+			const productosUsuario = productos.filter(producto =>
+				fotocopias.some(
+					fotocopia =>
+						fotocopia.id_producto === producto.id_producto && fotocopia.id_usuario === usuarioActual.id_usuario
+				)
+			);
+			return productosUsuario
+				.concat({ titulo: '-SELECCIONE UN PRODUCTO-', id_producto: 0 })
+				.sort(ordenar('titulo'))
+				.map(producto => (
+					<option value={producto.id_producto} key={producto.id_producto}>
+						{producto.titulo}
+					</option>
+				));
+		}
+	};
 	return (
 		<Container>
 			<div className='col'>
 				<h1 className='text-center mt-4'>Modificar un producto</h1>
 				<div className='text-center my-3'>
 					<select onChange={e => setIdProductoAModificar(parseInt(e.target.value, 10))} id='select-producto'>
-						{productos
-							.concat({ titulo: '-SELECCIONE UN PRODUCTO-', id_producto: 0 })
-							.sort(ordenar('titulo'))
-							.map(producto => (
-								<option value={producto.id_producto} key={producto.id_producto}>
-									{producto.titulo}
-								</option>
-							))}
+						{selects()}
 					</select>
 				</div>
 				{error.activo ? <Error mensaje={error.mensaje} /> : null}
