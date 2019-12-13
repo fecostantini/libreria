@@ -371,12 +371,16 @@ precio_compra REAL;
 fila_libro libroxcarrito%rowtype;
 fila_fotocopia fotocopiaxcarrito%rowtype;
 usuario INTEGER;
+descuento real;
 BEGIN
 precio_compra = 0;
 FOR fila_libro IN SELECT lxc.isbn, lxc.id_carrito, lxc.cantidad FROM libroxcarrito lxc, carrito c WHERE (id_carrito_compra = c.id_carrito AND c.id_carrito = lxc.id_carrito)
 LOOP
-    precio_compra = precio_compra + ((SELECT l.precio FROM libro l WHERE (fila_libro.isbn = l.isbn))*fila_libro.cantidad);
-    UPDATE libro SET stock = stock - fila_libro.cantidad WHERE (isbn = fila_libro.isbn);
+    IF (select l.id_promocion from libro l where (fila_libro.isbn = l.isbn)) > 0 THEN
+        descuento = 100 - (select p.descuento from libro l, promocion p where (fila_libro.isbn = l.isbn and l.id_promocion = p.id_promocion));
+    END IF;
+    precio_compra = precio_compra + ((select l.precio from libro l where (fila_libro.isbn = l.isbn))*fila_libro.cantidad*(descuento/100));
+    update libro set stock = stock - fila_libro.cantidad where (isbn = fila_libro.isbn);
 END LOOP;
  
 FOR fila_fotocopia IN SELECT fxc.id_fotocopia, fxc.id_carrito, fxc.cantidad FROM fotocopiaxcarrito fxc, carrito c WHERE (id_carrito_compra = c.id_carrito AND c.id_carrito = fxc.id_carrito)

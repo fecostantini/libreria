@@ -67,17 +67,18 @@ let Carrito = () => {
 				title: producto.titulo,
 				quantity: producto.cantidad,
 				currency_id: 'ARS',
-				unit_price: producto.precio
+				unit_price: producto.precio_descuento
 			};
 		});
 
 		// agregamos el IVA como si fuera un producto más.
+		const impuestoIVA = calcularImpuestos();
 		productos.push({
 			id: 999, // id arbitrario (solo se va a romper si compra más de 1000 elementos)
 			title: 'IVA',
 			quantity: 1,
 			currency_id: 'ARS',
-			unit_price: calcularImpuestos()
+			unit_price: impuestoIVA
 		});
 
 		const comprador = {
