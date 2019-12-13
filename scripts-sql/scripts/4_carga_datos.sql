@@ -114,18 +114,6 @@ INSERT INTO valoracion("puntaje", "id_usuario", "isbn") VALUES (2, 9, 2);
 INSERT INTO valoracion("puntaje", "id_usuario", "isbn") VALUES (5, 10, 4);
 
 
--- SUGERENCIAS
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar El universo en una cáscara de nuez, de Stephen Hawking');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Breve historia del tiempo, de Stephen Hawking');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar El gran diseño, de Stephen Hawking');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Breves respuestas a las grandes preguntas, de Stephen Hawking');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Agujeros negros, de Stephen Hawking');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Mi visión del mundo, de Albert Einstein');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Sobre la teoría de la relatividad general y especial, de Albert Einstein');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar El futuro de nuestra mente, de Michio Kaku');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Mundos Paralelos, de Michio Kaku');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar La energía nuclear, de Michio Kaku');
-
 
 -- FOTOCOPIAS
 INSERT INTO fotocopia("titulo", "stock", "precio", "descripcion","id_usuario") VALUES ('Apuntes Cálculo I', 5, 100, 'Apuntes de Cálculo I de primer año de Sistemas.',5);
@@ -178,112 +166,24 @@ INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (
 INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (1, 3, 2);
 
 
---TODOS: hacer función que devuelva el producto (si es libro un libro, si es fotocopia una fotocopia) cuando se busca en productoxcarrito. 
-/*CONSULTAS:
-#todos las compras realizadas por un usuario entre 2 fechas
-
-select t1.titulos_libros,t2.titulos_fotocopias,com.fecha_compra,com.precio_total,com.id_compra from
-(select array_agg(l.titulo) as titulos_libros
-from carrito c, libro l, libroxcarrito lxc
-where (lxc.isbn = l.isbn and c.id_carrito = lxc.id_carrito and c.id_usuario = 11)) as t1,
-(select array_agg(f.titulo) as titulos_fotocopias
-from carrito c, fotocopia f, fotocopiaxcarrito fxc
-where (fxc.id_fotocopia = f.id_fotocopia and c.id_carrito = fxc.id_carrito and c.id_usuario = 11)) as t2,
-compra com, carrito c
-where (c.activo = false and c.id_carrito = com.id_carrito and id_usuario = 11 and fecha_compra < '2019-12-11'::date and fecha_compra > '2019-08-21'::date)
-
-#todos los pedidos aceptados a la fecha
-
-select id_pedido 
-from pedido 
-where (pedido_aceptado = TRUE)
-
-#categorias y cantididad de libros asociadas a esta
-
-select c.nombre_categoria, count(l.isbn) 
-from categoria c, libro l, categoriaxlibro cxl 
-where (c.id_categoria = cxl.id_categoria and cxl.isbn = l.isbn)
-group by c.nombre_categoria
-
-#usuario que realizaron mas de 4 compras
-
-select u.id_usuario, u.nombre, count(com.id_compra) 
-from carrito ca, compra com, usuario u 
-where(u.id_usuario = ca.id_usuario and ca.id_carrito = com.id_carrito and ca.activo = FALSE)
-group by u.id_usuario
-having count(com.id_compra) > 4
-
-#libros que posean mas de 2 autores
-
-select l.titulo, count(a.id_autor) from autor a, libro l, autorxlibro axl where (a.id_autor = axl.id_autor and axl.isbn = l.isbn)
-group by l.titulo
-having count(a.id_autor)>2
-
-#libros con valoracion promedio mayor a 3.5
-
-select l.titulo, avg(v.puntaje) from valoracion v, libro l where (v.isbn = l.isbn)
-group by l.titulo
-having avg(v.puntaje)>3.5
+--realizo estas cargas para que puedan chequear las consultas realizadas para el tp
+call confirmar_compra(9);
+call confirmar_compra(4);
+call confirmar_compra(7);
+call confirmar_compra(5);
+call confirmar_compra(3);
+call confirmar_compra(1);
+call confirmar_compra(6);
+select * from añadir_al_carrito(7, 2, 2);
+select * from añadir_al_carrito(1, 1, 2);
+select * from añadir_al_carrito(5, 3, 2);
+call confirmar_compra(2);
+select * from añadir_al_carrito(10, 1, 18);
+call confirmar_compra(18);
+select * from añadir_al_carrito(7, 1, 19);
+call confirmar_compra(19);
+select * from añadir_al_carrito(5, 1, 20);
+call confirmar_compra(20);
 
 
-CREATE USER gestor_pedidos PASSWORD 'hoyvoyabailar';
-CREATE USER usuario_comun PASSWORD 'alanavedelolvido';
-GRANT ALL ON promocion TO postgres;
-GRANT ALL ON producto TO postgres;
-GRANT ALL ON editorial TO postgres;
-GRANT ALL ON saga TO postgres;
-GRANT ALL ON libro TO postgres;
-GRANT ALL ON autor TO postgres;
-GRANT ALL ON categoria TO postgres;
-GRANT ALL ON valoracion TO postgres;
-GRANT ALL ON sugerencia TO postgres;
-GRANT ALL ON usuario TO postgres;
-GRANT ALL ON fotocopia TO postgres;
-GRANT ALL ON pedido TO postgres;
-GRANT ALL ON compra TO postgres;
-GRANT ALL ON autorxlibro TO postgres;
-GRANT ALL ON categoriaxlibro TO postgres;
-GRANT ALL ON libroxcarrito TO postgres;
-GRANT ALL ON fotocopiaxcarrito TO postgres;
-GRANT ALL ON sagaxcarrito TO postgres;
-
-GRANT select ON promocion TO usuario_comun;
-GRANT select ON producto TO usuario_comun;
-GRANT select ON editorial TO usuario_comun;
-GRANT select ON saga TO usuario_comun;
-GRANT select ON libro TO usuario_comun;
-GRANT select ON autor TO usuario_comun;
-GRANT select ON categoria TO usuario_comun;
-GRANT select, insert, update, delete ON valoracion TO usuario_comun;
-GRANT select, insert, update, delete ON sugerencia TO usuario_comun;
-GRANT select, update, insert, delete ON usuario TO usuario_comun;
-GRANT select, insert, update, delete ON fotocopia TO usuario_comun;
-GRANT select, insert, delete ON pedido TO usuario_comun;
-GRANT select ON compra TO usuario_comun;
-GRANT select, insert, update, delete ON autorxlibro TO usuario_comun;
-GRANT select, insert, update, delete ON categoriaxlibro TO usuario_comun;
-GRANT select, insert, update, delete ON libroxcarrito TO usuario_comun;
-GRANT select, insert, update, delete ON fotocopiaxcarrito TO usuario_comun;
-GRANT select, insert, update, delete ON sagaxcarrito TO usuario_comun;
-
-GRANT select ON promocion TO gestor_pedidos;
-GRANT select ON producto TO gestor_pedidos;
-GRANT select ON editorial TO gestor_pedidos;
-GRANT select ON saga TO gestor_pedidos;
-GRANT select ON libro TO gestor_pedidos;
-GRANT select ON autor TO gestor_pedidos;
-GRANT select ON categoria TO gestor_pedidos;
-GRANT select, insert, update, delete ON valoracion TO gestor_pedidos;
-GRANT select, insert, update, delete ON sugerencia TO gestor_pedidos;
-GRANT select, update, insert, delete ON usuario TO gestor_pedidos;
-GRANT select, insert, update, delete ON fotocopia TO gestor_pedidos;
-GRANT select, insert, delete ON pedido TO gestor_pedidos;
-GRANT select ON compra TO gestor_pedidos;
-GRANT select, insert, update, delete ON autorxlibro TO gestor_pedidos;
-GRANT select, insert, update, delete ON categoriaxlibro TO gestor_pedidos;
-GRANT select, insert, update, delete ON libroxcarrito TO gestor_pedidos;
-GRANT select, insert, update, delete ON fotocopiaxcarrito TO gestor_pedidos;
-GRANT select, insert, update, delete ON sagaxcarrito TO gestor_pedidos;
-
-
-*/
+update pedido set aceptado = true where (id_pedido = 1 or id_pedido = 5 or id_pedido = 9 or id_pedido = 3)

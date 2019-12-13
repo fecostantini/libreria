@@ -10,6 +10,7 @@ import promocionReducer from './promocionReducer';
 import libroReducer from './libroReducer';
 import fotocopiaReducer from './fotocopiaReducer';
 import carritoReducer from './carritoReducer';
+import pedidoReducer from './pedidoReducer';
 import usuarioReducer from './usuarioReducer';
 
 import productoReducer from './productoReducer';
@@ -26,6 +27,7 @@ const createRootReducer = history =>
 		libros: libroReducer,
 		fotocopias: fotocopiaReducer,
 		carrito: carritoReducer,
+		pedido: pedidoReducer,
 		usuario: usuarioReducer,
 		producto: productoReducer,
 		ultimaRequest: ultimaRequestReducer

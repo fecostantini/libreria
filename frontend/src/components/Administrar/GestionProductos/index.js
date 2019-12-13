@@ -19,10 +19,7 @@ const GestionProductos = () => (
 				</NavLink>
 			</li>
 			<li className='nav-item'>
-				<NavLink
-					to='/administrar/gestion_productos/modificar'
-					className='nav-link'
-				>
+				<NavLink to='/administrar/gestion_productos/modificar' className='nav-link'>
 					Modificar
 				</NavLink>
 			</li>
@@ -31,21 +28,11 @@ const GestionProductos = () => (
 		<Switch>
 			<Route
 				exact
-				path={[
-					'/administrar/gestion_productos',
-					'/administrar/gestion_productos/alta'
-				]}
+				path={['/administrar/gestion_productos', '/administrar/gestion_productos/alta']}
 				component={AltaProducto}
 			/>
-			<Route
-				path='/administrar/gestion_productos/baja'
-				component={BajaProducto}
-			/>
-			<Route
-				path='/administrar/gestion_productos/modificar'
-				component={ModificarProducto}
-			/>
-			<Route render={() => <h1 className='text-center'>!</h1>} />
+			<Route path='/administrar/gestion_productos/baja' component={BajaProducto} />
+			<Route path='/administrar/gestion_productos/modificar' component={ModificarProducto} />
 		</Switch>
 	</div>
 );

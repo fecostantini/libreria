@@ -40,6 +40,13 @@ export const FETCH_COMPRAS_USUARIO = 'FETCH_COMPRAS_USUARIO';
 export const SET_USUARIO_ACTUAL = 'SET_USUARIO_ACTUAL';
 export const UPDATE_USUARIO = 'SET_USUARIO_ACTUAL';
 
+//acciones de pedido
+export const FETCH_PEDIDOS = 'FETCH_PEDIDOS';
+export const FETCH_PEDIDOS_USUARIO = 'FETCH_PEDIDOS_USUARIO';
+export const CREATE_PEDIDO = 'CREATE_PEDIDO';
+export const ACEPTAR_PEDIDO = 'ACEPTAR_PEDIDO';
+export const RECHAZAR_PEDIDO = 'RECHAZAR_PEDIDO';
+
 // status global de la ultima request que se realizó al backend
 export const UPDATE_LAST_REQUEST_STATUS = 'UPDATE_LAST_REQUEST_STATUS';
 

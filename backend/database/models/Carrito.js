@@ -41,6 +41,7 @@ let getCarritoActivo = async idUsuario => {
 
 let añadirAlCarrito = async infoProducto => {
 	try {
+		console.log(querys.AÑADIR_PRODUCTO_AL_CARRITO.format(infoProducto));
 		let response = await pool.query(querys.AÑADIR_PRODUCTO_AL_CARRITO.format(infoProducto));
 		let filasModificadas = response.rowCount;
 		let productoAgregado = filasModificadas > 0;
@@ -103,6 +104,7 @@ let getProductosCarrito = async idCarrito => {
 
 let realizarCheckout = async idCarrito => {
 	try {
+		console.log(querys.REALIZAR_CHECKOUT.format(idCarrito));
 		let response = await pool.query(querys.REALIZAR_CHECKOUT.format(idCarrito));
 		let respuestaObtenida = response.rowCount > 0;
 		console.log(response);

@@ -12,26 +12,35 @@ import Carrito from './components/Carrito';
 import Error404 from './components/Error404';
 import RealizarCheckout from './components/Carrito/RealizarCheckout';
 import Compras from './components/Compras';
+import Pedidos from './components/Pedidos';
+import PagarPedido from './components/Pedidos/PagarPedido';
 
 let App = () => {
 	const usuarioActual = useSelector(state => state.usuario.usuarioActual);
 
-	const rutaAdministrar = <Route path='/administrar' component={Administrar} />;
+	const rutaAdministrar = usuarioActual &&
+		(usuarioActual.rol === 'ADMIN' || usuarioActual.rol === 'GESTOR_PEDIDOS') && (
+			<Route path='/administrar' component={Administrar} />
+		);
 	const rutaEditarPerfil = <Route path='/editar_perfil' component={EditarPerfil} key='1' />;
 	const rutaCarrito = <Route path='/carrito' component={Carrito} key='2' />;
 	const rutaCompras = <Route path='/compras' component={Compras} key='3' />;
+	const rutaPedidos = <Route path='/pedidos' component={Pedidos} key='4' />;
 
 	const checkout = <Route path='/checkout' component={RealizarCheckout} />;
+	const pagarPedido = <Route path='/pago_pedido' component={PagarPedido} />;
 	return (
 		<Fragment>
 			<Header />
 			<main className='container mt-5'>
 				<Switch>
 					<Route exact path='/producto/:id_producto' render={props => <Producto props={props} />} />
-					{usuarioActual && usuarioActual.rol === 'ADMIN' ? rutaAdministrar : null}
-					{usuarioActual ? [rutaEditarPerfil, rutaCarrito, rutaCompras] : null}
+					{rutaAdministrar}
+					{usuarioActual ? [rutaEditarPerfil, rutaCarrito, rutaCompras, rutaPedidos] : null}
 					<Route exact path={['/', '/productos']} component={Productos} />
-					{localStorage.getItem('checkoutID') ? checkout : null /* SOLO DISPONIBLE SI SE REALIZA UNA COMPRA */}
+					{localStorage.getItem('checkoutID')
+						? [checkout, pagarPedido]
+						: null /* SOLO DISPONIBLE SI SE REALIZA UNA COMPRA */}
 					<Route component={Error404} />
 				</Switch>
 			</main>

@@ -1,4 +1,34 @@
 /*    
+##     ## ####  ######  ########    ###    
+##     ##  ##  ##    ##    ##      ## ##   
+##     ##  ##  ##          ##     ##   ##  
+##     ##  ##   ######     ##    ##     ## 
+ ##   ##   ##        ##    ##    ######### 
+  ## ##    ##  ##    ##    ##    ##     ## 
+   ###    ####  ######     ##    ##     ##               
+*/ 
+
+ --esta vista muestra los datos completos de un libro con los datos de este sus autores y categorias
+CREATE VIEW datos_libros_completos AS
+SELECT t1.imagen, t1.id_producto, t1.titulo, t1.stock, t1.isbn, t1.precio, t1.id_promocion, t1.descripcion, t1.nombre_editorial, t1.idioma, t1.edicion, t1.id_saga, t1.autores, t1.nacionalidades, t2.categorias FROM
+(SELECT l.imagen, l.id_producto, l.titulo, l.stock, l.isbn, l.precio, l.id_promocion, l.descripcion, l.idioma, e.nombre_editorial, l.edicion, l.id_saga, ARRAY_AGG(a.autor) AS autores, ARRAY_AGG(a.nacionalidad) AS nacionalidades
+FROM autorxlibro axl
+INNER JOIN autor a  ON a.id_autor = axl.id_autor
+INNER JOIN libro l ON l.isbn = axl.isbn,
+editorial e
+WHERE l.id_editorial = e.id_editorial
+GROUP BY l.isbn,
+         l.titulo,
+         e.nombre_editorial) AS t1,
+(SELECT l.id_producto, ARRAY_AGG(c.nombre_categoria) AS categorias
+FROM categoriaxlibro cxl
+INNER JOIN categoria c  ON c.id_categoria = cxl.id_categoria
+INNER JOIN libro l ON l.isbn = cxl.isbn
+GROUP BY l.id_producto) AS t2
+WHERE (t1.id_producto = t2.id_producto);
+
+
+/*    
     ######## ##     ## ##    ##  ######  ####  #######  ##    ## ########  ######  
     ##       ##     ## ###   ## ##    ##  ##  ##     ## ###   ## ##       ##    ##
     ##       ##     ## ####  ## ##        ##  ##     ## ####  ## ##       ##      
@@ -29,25 +59,6 @@ UPDATE saga SET precio_saga = precio_final , stock_saga = stock_s where(saga.id_
 END $$
 LANGUAGE plpgsql;
  
- --esta vista muestra los datos completos de un libro con los datos de este sus autores y categorias
-CREATE VIEW datos_libros_completos AS
-SELECT t1.imagen, t1.id_producto, t1.titulo, t1.stock, t1.isbn, t1.precio, t1.id_promocion, t1.descripcion, t1.nombre_editorial, t1.idioma, t1.edicion, t1.id_saga, t1.autores, t1.nacionalidades, t2.categorias FROM
-(SELECT l.imagen, l.id_producto, l.titulo, l.stock, l.isbn, l.precio, l.id_promocion, l.descripcion, l.idioma, e.nombre_editorial, l.edicion, l.id_saga, ARRAY_AGG(a.autor) AS autores, ARRAY_AGG(a.nacionalidad) AS nacionalidades
-FROM autorxlibro axl
-INNER JOIN autor a  ON a.id_autor = axl.id_autor
-INNER JOIN libro l ON l.isbn = axl.isbn,
-editorial e
-WHERE l.id_editorial = e.id_editorial
-GROUP BY l.isbn,
-         l.titulo,
-         e.nombre_editorial) AS t1,
-(SELECT l.id_producto, ARRAY_AGG(c.nombre_categoria) AS categorias
-FROM categoriaxlibro cxl
-INNER JOIN categoria c  ON c.id_categoria = cxl.id_categoria
-INNER JOIN libro l ON l.isbn = cxl.isbn
-GROUP BY l.id_producto) AS t2
-WHERE (t1.id_producto = t2.id_producto);
- 
 
 --esta funcion nos devuelve si el id de producto que le pasamos como parametro es un libro o no
 CREATE OR REPLACE FUNCTION es_libro (id_producto_buscado INTEGER)
@@ -65,7 +76,20 @@ LANGUAGE plpgsql;
  
 
 --este procedimiento realiza la carga de un libro, su autor/autores y su categorria/categorias
-CREATE OR REPLACE PROCEDURE new_libro (isbn INTEGER, idioma VARCHAR, titulo VARCHAR, stock INTEGER, precio REAL, edicion VARCHAR, descripcion VARCHAR, id_editorial INTEGER, id_saga INTEGER, id_promocion INTEGER, ids_autores INTEGER[], ids_categorias INTEGER[], imagen VARCHAR)
+CREATE OR REPLACE PROCEDURE new_libro (
+    isbn INTEGER, 
+    idioma VARCHAR, 
+    titulo VARCHAR, 
+    stock INTEGER, 
+    precio REAL, 
+    edicion VARCHAR, 
+    descripcion VARCHAR, 
+    id_editorial INTEGER, 
+    id_saga INTEGER, 
+    id_promocion INTEGER, 
+    ids_autores INTEGER[], 
+    ids_categorias INTEGER[], 
+    imagen VARCHAR)
 AS $$
 DECLARE
 id_aut SMALLINT;
@@ -94,7 +118,20 @@ LANGUAGE plpgsql;
  
 
 --este procedimiento actualiza un libro como tambien sus autores y categorias
-CREATE OR REPLACE PROCEDURE update_libro (new_isbn INTEGER, new_idioma VARCHAR, new_titulo VARCHAR, new_stock INTEGER, new_precio REAL, new_edicion VARCHAR, new_descripcion VARCHAR, new_id_editorial INTEGER, new_id_saga INTEGER, new_id_promocion INTEGER, new_ids_autores INTEGER[], new_ids_categorias INTEGER[], new_imagen VARCHAR)
+CREATE OR REPLACE PROCEDURE update_libro (
+    new_isbn INTEGER, 
+    new_idioma VARCHAR, 
+    new_titulo VARCHAR, 
+    new_stock INTEGER, 
+    new_precio REAL, 
+    new_edicion VARCHAR, 
+    new_descripcion VARCHAR, 
+    new_id_editorial INTEGER, 
+    new_id_saga INTEGER, 
+    new_id_promocion INTEGER, 
+    new_ids_autores INTEGER[], 
+    new_ids_categorias INTEGER[], 
+    new_imagen VARCHAR)
 AS $$
 DECLARE
 id_aut INTEGER;
@@ -191,7 +228,21 @@ LANGUAGE plpgsql;
  
 
 --este procedimiento crea un producto y segun los datos que se le pasen creara una fotocopia o un libro
-CREATE OR REPLACE PROCEDURE new_producto (isbn INTEGER, idioma VARCHAR, titulo VARCHAR, stock INTEGER, precio REAL, edicion VARCHAR, descripcion VARCHAR, id_editorial INTEGER, id_saga INTEGER, id_promocion INTEGER, ids_autores INTEGER[], ids_categorias INTEGER[], id_usuario INTEGER, imagen VARCHAR)
+CREATE OR REPLACE PROCEDURE new_producto (
+    isbn INTEGER, 
+    idioma VARCHAR, 
+    titulo VARCHAR, 
+    stock INTEGER, 
+    precio REAL, 
+    edicion VARCHAR, 
+    descripcion VARCHAR, 
+    id_editorial INTEGER, 
+    id_saga INTEGER, 
+    id_promocion INTEGER, 
+    ids_autores INTEGER[], 
+    ids_categorias INTEGER[], 
+    id_usuario INTEGER, 
+    imagen VARCHAR)
 AS $$
 DECLARE
 BEGIN
@@ -319,7 +370,6 @@ DECLARE
 precio_compra REAL;
 fila_libro libroxcarrito%rowtype;
 fila_fotocopia fotocopiaxcarrito%rowtype;
-fila_saga sagaxcarrito%rowtype;
 usuario INTEGER;
 BEGIN
 precio_compra = 0;

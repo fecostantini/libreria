@@ -28,6 +28,9 @@ export default function UsuarioLoggeado() {
 					<Dropdown.Item onClick={() => history.push('/compras')}>
 						<i className='fas fa-shopping-bag'></i> Compras
 					</Dropdown.Item>
+					<Dropdown.Item onClick={() => history.push('/pedidos')}>
+						<i className='fas fa-paste'></i> Pedidos
+					</Dropdown.Item>
 
 					<Dropdown.Divider />
 					<Dropdown.Item onClick={desloggear}>

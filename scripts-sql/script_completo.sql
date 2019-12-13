@@ -21,7 +21,7 @@ CREATE TABLE "producto" (
 "id_producto" serial not null,
 "titulo" varchar not null,
 "stock" integer not null CHECK("stock" >= 0),
-"precio" real not null,
+"precio" real not null CHECK("precio" >= 0),
 "id_promocion" integer default null,
 "imagen" varchar default '',
 constraint PK_producto primary key ("id_producto"),
@@ -52,7 +52,7 @@ CREATE TABLE "libro" (
 "idioma" varchar(15) not null,
 "edicion" varchar,
 "descripcion" varchar,
-"id_editorial" integer,
+"id_editorial" integer not null,
 "id_saga" integer default null,
 "valoracion_general" float default 0,
 constraint PK_libro primary key ("isbn"),
@@ -64,7 +64,7 @@ constraint FK_saga_libro foreign key ("id_saga") references "saga"("id_saga")
 CREATE TABLE "autor" (
 "id_autor" serial not null,
 "autor" varchar not null,
-"nacionalidad" varchar,
+"nacionalidad" varchar not null,
 UNIQUE(autor),
 constraint PK_autor primary key ("id_autor")
 );
@@ -75,14 +75,6 @@ CREATE TABLE "categoria" (
 "nombre_categoria" varchar not null,
 UNIQUE(nombre_categoria),
 constraint PK_categoria primary key ("id_categoria")
-);
-
-
-CREATE TABLE "sugerencia" (
-"id_sugerencia" serial not null,
-"mensaje" varchar not null,
-"fecha" date default NOW(),
-constraint PK_sugerencia primary key ("id_sugerencia")
 );
 
 
@@ -126,9 +118,10 @@ CREATE TABLE "pedido" (
 "cantidad" integer not null,
 "fecha_pedido" date default NOW(),
 "id_usuario" integer not null,
-"anticipo_pagado" boolean DEFAULT false,
-"pedido_aceptado" boolean DEFAULT null,
-"pedido_entregado" boolean DEFAULT false,
+"pagado" boolean DEFAULT false,
+"aceptado" boolean DEFAULT false,
+"rechazado" boolean DEFAULT false,
+"entregado" boolean DEFAULT false,
 "fecha_llegada" date default null,
 constraint FK_pedido_isbn foreign key ("isbn") references "libro"("isbn"),
 constraint FK_pedido_usuario foreign key ("id_usuario") references "usuario"("id_usuario"),
@@ -191,14 +184,6 @@ Constraint FK_fotocopia_carrito foreign key ("id_fotocopia") references "fotocop
 Constraint FK_carrito_fotocopia foreign key ("id_carrito") references "carrito"("id_carrito")
 );
 
-CREATE TABLE "sagaxcarrito" (
-"id_saga" integer,
-"id_carrito" integer,
-"cantidad" integer,
-constraint PK_sagaxcarrito primary key ("id_saga","id_carrito"),
-Constraint FK_saga_carrito foreign key ("id_saga") references "saga"("id_saga"),
-Constraint FK_carrito_saga foreign key ("id_carrito") references "carrito"("id_carrito")
-);
 
 /*    
     ######## ########  ####  ######    ######   ######## ########   ######  
@@ -365,6 +350,36 @@ CREATE TRIGGER valoracion_general_trigger AFTER INSERT OR UPDATE ON valoracion
 
 
 /*    
+##     ## ####  ######  ########    ###    
+##     ##  ##  ##    ##    ##      ## ##   
+##     ##  ##  ##          ##     ##   ##  
+##     ##  ##   ######     ##    ##     ## 
+ ##   ##   ##        ##    ##    ######### 
+  ## ##    ##  ##    ##    ##    ##     ## 
+   ###    ####  ######     ##    ##     ##               
+*/ 
+
+ --esta vista muestra los datos completos de un libro con los datos de este sus autores y categorias
+CREATE VIEW datos_libros_completos AS
+SELECT t1.imagen, t1.id_producto, t1.titulo, t1.stock, t1.isbn, t1.precio, t1.id_promocion, t1.descripcion, t1.nombre_editorial, t1.idioma, t1.edicion, t1.id_saga, t1.autores, t1.nacionalidades, t2.categorias FROM
+(SELECT l.imagen, l.id_producto, l.titulo, l.stock, l.isbn, l.precio, l.id_promocion, l.descripcion, l.idioma, e.nombre_editorial, l.edicion, l.id_saga, ARRAY_AGG(a.autor) AS autores, ARRAY_AGG(a.nacionalidad) AS nacionalidades
+FROM autorxlibro axl
+INNER JOIN autor a  ON a.id_autor = axl.id_autor
+INNER JOIN libro l ON l.isbn = axl.isbn,
+editorial e
+WHERE l.id_editorial = e.id_editorial
+GROUP BY l.isbn,
+         l.titulo,
+         e.nombre_editorial) AS t1,
+(SELECT l.id_producto, ARRAY_AGG(c.nombre_categoria) AS categorias
+FROM categoriaxlibro cxl
+INNER JOIN categoria c  ON c.id_categoria = cxl.id_categoria
+INNER JOIN libro l ON l.isbn = cxl.isbn
+GROUP BY l.id_producto) AS t2
+WHERE (t1.id_producto = t2.id_producto);
+
+
+/*    
     ######## ##     ## ##    ##  ######  ####  #######  ##    ## ########  ######  
     ##       ##     ## ###   ## ##    ##  ##  ##     ## ###   ## ##       ##    ##
     ##       ##     ## ####  ## ##        ##  ##     ## ####  ## ##       ##      
@@ -395,25 +410,6 @@ UPDATE saga SET precio_saga = precio_final , stock_saga = stock_s where(saga.id_
 END $$
 LANGUAGE plpgsql;
  
- --esta vista muestra los datos completos de un libro con los datos de este sus autores y categorias
-CREATE VIEW datos_libros_completos AS
-SELECT t1.imagen, t1.id_producto, t1.titulo, t1.stock, t1.isbn, t1.precio, t1.id_promocion, t1.descripcion, t1.nombre_editorial, t1.idioma, t1.edicion, t1.id_saga, t1.autores, t1.nacionalidades, t2.categorias FROM
-(SELECT l.imagen, l.id_producto, l.titulo, l.stock, l.isbn, l.precio, l.id_promocion, l.descripcion, l.idioma, e.nombre_editorial, l.edicion, l.id_saga, ARRAY_AGG(a.autor) AS autores, ARRAY_AGG(a.nacionalidad) AS nacionalidades
-FROM autorxlibro axl
-INNER JOIN autor a  ON a.id_autor = axl.id_autor
-INNER JOIN libro l ON l.isbn = axl.isbn,
-editorial e
-WHERE l.id_editorial = e.id_editorial
-GROUP BY l.isbn,
-         l.titulo,
-         e.nombre_editorial) AS t1,
-(SELECT l.id_producto, ARRAY_AGG(c.nombre_categoria) AS categorias
-FROM categoriaxlibro cxl
-INNER JOIN categoria c  ON c.id_categoria = cxl.id_categoria
-INNER JOIN libro l ON l.isbn = cxl.isbn
-GROUP BY l.id_producto) AS t2
-WHERE (t1.id_producto = t2.id_producto);
- 
 
 --esta funcion nos devuelve si el id de producto que le pasamos como parametro es un libro o no
 CREATE OR REPLACE FUNCTION es_libro (id_producto_buscado INTEGER)
@@ -431,7 +427,20 @@ LANGUAGE plpgsql;
  
 
 --este procedimiento realiza la carga de un libro, su autor/autores y su categorria/categorias
-CREATE OR REPLACE PROCEDURE new_libro (isbn INTEGER, idioma VARCHAR, titulo VARCHAR, stock INTEGER, precio REAL, edicion VARCHAR, descripcion VARCHAR, id_editorial INTEGER, id_saga INTEGER, id_promocion INTEGER, ids_autores INTEGER[], ids_categorias INTEGER[], imagen VARCHAR)
+CREATE OR REPLACE PROCEDURE new_libro (
+    isbn INTEGER, 
+    idioma VARCHAR, 
+    titulo VARCHAR, 
+    stock INTEGER, 
+    precio REAL, 
+    edicion VARCHAR, 
+    descripcion VARCHAR, 
+    id_editorial INTEGER, 
+    id_saga INTEGER, 
+    id_promocion INTEGER, 
+    ids_autores INTEGER[], 
+    ids_categorias INTEGER[], 
+    imagen VARCHAR)
 AS $$
 DECLARE
 id_aut SMALLINT;
@@ -460,7 +469,20 @@ LANGUAGE plpgsql;
  
 
 --este procedimiento actualiza un libro como tambien sus autores y categorias
-CREATE OR REPLACE PROCEDURE update_libro (new_isbn INTEGER, new_idioma VARCHAR, new_titulo VARCHAR, new_stock INTEGER, new_precio REAL, new_edicion VARCHAR, new_descripcion VARCHAR, new_id_editorial INTEGER, new_id_saga INTEGER, new_id_promocion INTEGER, new_ids_autores INTEGER[], new_ids_categorias INTEGER[], new_imagen VARCHAR)
+CREATE OR REPLACE PROCEDURE update_libro (
+    new_isbn INTEGER, 
+    new_idioma VARCHAR, 
+    new_titulo VARCHAR, 
+    new_stock INTEGER, 
+    new_precio REAL, 
+    new_edicion VARCHAR, 
+    new_descripcion VARCHAR, 
+    new_id_editorial INTEGER, 
+    new_id_saga INTEGER, 
+    new_id_promocion INTEGER, 
+    new_ids_autores INTEGER[], 
+    new_ids_categorias INTEGER[], 
+    new_imagen VARCHAR)
 AS $$
 DECLARE
 id_aut INTEGER;
@@ -557,7 +579,21 @@ LANGUAGE plpgsql;
  
 
 --este procedimiento crea un producto y segun los datos que se le pasen creara una fotocopia o un libro
-CREATE OR REPLACE PROCEDURE new_producto (isbn INTEGER, idioma VARCHAR, titulo VARCHAR, stock INTEGER, precio REAL, edicion VARCHAR, descripcion VARCHAR, id_editorial INTEGER, id_saga INTEGER, id_promocion INTEGER, ids_autores INTEGER[], ids_categorias INTEGER[], id_usuario INTEGER, imagen VARCHAR)
+CREATE OR REPLACE PROCEDURE new_producto (
+    isbn INTEGER, 
+    idioma VARCHAR, 
+    titulo VARCHAR, 
+    stock INTEGER, 
+    precio REAL, 
+    edicion VARCHAR, 
+    descripcion VARCHAR, 
+    id_editorial INTEGER, 
+    id_saga INTEGER, 
+    id_promocion INTEGER, 
+    ids_autores INTEGER[], 
+    ids_categorias INTEGER[], 
+    id_usuario INTEGER, 
+    imagen VARCHAR)
 AS $$
 DECLARE
 BEGIN
@@ -685,7 +721,6 @@ DECLARE
 precio_compra REAL;
 fila_libro libroxcarrito%rowtype;
 fila_fotocopia fotocopiaxcarrito%rowtype;
-fila_saga sagaxcarrito%rowtype;
 usuario INTEGER;
 BEGIN
 precio_compra = 0;
@@ -797,23 +832,14 @@ INSERT INTO saga("nombre_saga") VALUES('The Maze Runner');
 
 -- LIBROS
 call new_libro(1,'inglés','Juego de Tronos', 4, 100, 'primera','descripcion1', 1, 7, 1, array[1], array[3, 10], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
-
 call new_libro(2,'español','El hobbit', 5, 200, 'segunda','descripcion2',2, null, 2, array[2], array[3,1], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
-
 call new_libro(3,'portugués','Harry Potter y la Piedra Filosofal', 6, 300, 'tercera','descripcion3',3, 1, 3, array[3], array[3,1], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
-
 call new_libro(4,'italiano','El Aleph', 9, 400, 'cuarta','descripcion4',4,null, 4, array[4], array[3,1], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
-
 call new_libro(5,'aleman','Gran Hermano', 8, 500, 'quinta','descripcion5',5,null, 5, array[5,10], array[3,1], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
-
 call new_libro(6,'francés','El código Da Vinci', 6, 600, 'sexta','descripcion6',6,null, 6, array[8,6], array[3,2], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
-
 call new_libro(7,'guaraní','Yo robot', 5, 700, 'séptima','descripcion7',7,null, 7, array[7], array[3, 10, 4], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
-
 call new_libro(8,'chino','Cien años de soledad', 5, 800, 'octava','descripcion8',8,null, 8, array[11], array[8], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
-
 call new_libro(9,'japonés','La carta robada', 7, 900, 'novena','descripcion9',9,null, 9, array[9], array[5], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
-
 call new_libro(10,'sueco','Las venas abiertas de América Latina', 10, 1000, 'décima','descripcion10',10,null, 10, array[12,11], array[3, 7, 6], 'https://cdn.pixabay.com/photo/2014/03/25/16/31/book-297246_960_720.png');
 
 
@@ -842,18 +868,6 @@ INSERT INTO valoracion("puntaje", "id_usuario", "isbn") VALUES (1, 8, 5);
 INSERT INTO valoracion("puntaje", "id_usuario", "isbn") VALUES (2, 9, 2);
 INSERT INTO valoracion("puntaje", "id_usuario", "isbn") VALUES (5, 10, 4);
 
-
--- SUGERENCIAS
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar El universo en una cáscara de nuez, de Stephen Hawking');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Breve historia del tiempo, de Stephen Hawking');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar El gran diseño, de Stephen Hawking');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Breves respuestas a las grandes preguntas, de Stephen Hawking');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Agujeros negros, de Stephen Hawking');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Mi visión del mundo, de Albert Einstein');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Sobre la teoría de la relatividad general y especial, de Albert Einstein');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar El futuro de nuestra mente, de Michio Kaku');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar Mundos Paralelos, de Michio Kaku');
-INSERT INTO sugerencia("mensaje") VALUES ('Quería saber si pueden agregar La energía nuclear, de Michio Kaku');
 
 
 -- FOTOCOPIAS
@@ -907,112 +921,4 @@ INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (
 INSERT INTO fotocopiaxcarrito("id_fotocopia", "id_carrito", "cantidad") VALUES (1, 3, 2);
 
 
---TODOS: hacer función que devuelva el producto (si es libro un libro, si es fotocopia una fotocopia) cuando se busca en productoxcarrito. 
-/*CONSULTAS:
-#todos las compras realizadas por un usuario entre 2 fechas
 
-select t1.titulos_libros,t2.titulos_fotocopias,com.fecha_compra,com.precio_total,com.id_compra from
-(select array_agg(l.titulo) as titulos_libros
-from carrito c, libro l, libroxcarrito lxc
-where (lxc.isbn = l.isbn and c.id_carrito = lxc.id_carrito and c.id_usuario = 11)) as t1,
-(select array_agg(f.titulo) as titulos_fotocopias
-from carrito c, fotocopia f, fotocopiaxcarrito fxc
-where (fxc.id_fotocopia = f.id_fotocopia and c.id_carrito = fxc.id_carrito and c.id_usuario = 11)) as t2,
-compra com, carrito c
-where (c.activo = false and c.id_carrito = com.id_carrito and id_usuario = 11 and fecha_compra < '2019-12-11'::date and fecha_compra > '2019-08-21'::date)
-
-#todos los pedidos aceptados a la fecha
-
-select id_pedido 
-from pedido 
-where (pedido_aceptado = TRUE)
-
-#categorias y cantididad de libros asociadas a esta
-
-select c.nombre_categoria, count(l.isbn) 
-from categoria c, libro l, categoriaxlibro cxl 
-where (c.id_categoria = cxl.id_categoria and cxl.isbn = l.isbn)
-group by c.nombre_categoria
-
-#usuario que realizaron mas de 4 compras
-
-select u.id_usuario, u.nombre, count(com.id_compra) 
-from carrito ca, compra com, usuario u 
-where(u.id_usuario = ca.id_usuario and ca.id_carrito = com.id_carrito and ca.activo = FALSE)
-group by u.id_usuario
-having count(com.id_compra) > 4
-
-#libros que posean mas de 2 autores
-
-select l.titulo, count(a.id_autor) from autor a, libro l, autorxlibro axl where (a.id_autor = axl.id_autor and axl.isbn = l.isbn)
-group by l.titulo
-having count(a.id_autor)>2
-
-#libros con valoracion promedio mayor a 3.5
-
-select l.titulo, avg(v.puntaje) from valoracion v, libro l where (v.isbn = l.isbn)
-group by l.titulo
-having avg(v.puntaje)>3.5
-
-
-CREATE USER gestor_pedidos PASSWORD 'hoyvoyabailar';
-CREATE USER usuario_comun PASSWORD 'alanavedelolvido';
-GRANT ALL ON promocion TO postgres;
-GRANT ALL ON producto TO postgres;
-GRANT ALL ON editorial TO postgres;
-GRANT ALL ON saga TO postgres;
-GRANT ALL ON libro TO postgres;
-GRANT ALL ON autor TO postgres;
-GRANT ALL ON categoria TO postgres;
-GRANT ALL ON valoracion TO postgres;
-GRANT ALL ON sugerencia TO postgres;
-GRANT ALL ON usuario TO postgres;
-GRANT ALL ON fotocopia TO postgres;
-GRANT ALL ON pedido TO postgres;
-GRANT ALL ON compra TO postgres;
-GRANT ALL ON autorxlibro TO postgres;
-GRANT ALL ON categoriaxlibro TO postgres;
-GRANT ALL ON libroxcarrito TO postgres;
-GRANT ALL ON fotocopiaxcarrito TO postgres;
-GRANT ALL ON sagaxcarrito TO postgres;
-
-GRANT select ON promocion TO usuario_comun;
-GRANT select ON producto TO usuario_comun;
-GRANT select ON editorial TO usuario_comun;
-GRANT select ON saga TO usuario_comun;
-GRANT select ON libro TO usuario_comun;
-GRANT select ON autor TO usuario_comun;
-GRANT select ON categoria TO usuario_comun;
-GRANT select, insert, update, delete ON valoracion TO usuario_comun;
-GRANT select, insert, update, delete ON sugerencia TO usuario_comun;
-GRANT select, update, insert, delete ON usuario TO usuario_comun;
-GRANT select, insert, update, delete ON fotocopia TO usuario_comun;
-GRANT select, insert, delete ON pedido TO usuario_comun;
-GRANT select ON compra TO usuario_comun;
-GRANT select, insert, update, delete ON autorxlibro TO usuario_comun;
-GRANT select, insert, update, delete ON categoriaxlibro TO usuario_comun;
-GRANT select, insert, update, delete ON libroxcarrito TO usuario_comun;
-GRANT select, insert, update, delete ON fotocopiaxcarrito TO usuario_comun;
-GRANT select, insert, update, delete ON sagaxcarrito TO usuario_comun;
-
-GRANT select ON promocion TO gestor_pedidos;
-GRANT select ON producto TO gestor_pedidos;
-GRANT select ON editorial TO gestor_pedidos;
-GRANT select ON saga TO gestor_pedidos;
-GRANT select ON libro TO gestor_pedidos;
-GRANT select ON autor TO gestor_pedidos;
-GRANT select ON categoria TO gestor_pedidos;
-GRANT select, insert, update, delete ON valoracion TO gestor_pedidos;
-GRANT select, insert, update, delete ON sugerencia TO gestor_pedidos;
-GRANT select, update, insert, delete ON usuario TO gestor_pedidos;
-GRANT select, insert, update, delete ON fotocopia TO gestor_pedidos;
-GRANT select, insert, delete ON pedido TO gestor_pedidos;
-GRANT select ON compra TO gestor_pedidos;
-GRANT select, insert, update, delete ON autorxlibro TO gestor_pedidos;
-GRANT select, insert, update, delete ON categoriaxlibro TO gestor_pedidos;
-GRANT select, insert, update, delete ON libroxcarrito TO gestor_pedidos;
-GRANT select, insert, update, delete ON fotocopiaxcarrito TO gestor_pedidos;
-GRANT select, insert, update, delete ON sagaxcarrito TO gestor_pedidos;
-
-
-*/

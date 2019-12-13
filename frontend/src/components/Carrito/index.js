@@ -72,7 +72,7 @@ let Carrito = () => {
 		});
 
 		// agregamos el IVA como si fuera un producto más.
-		productos.concat({
+		productos.push({
 			id: 999, // id arbitrario (solo se va a romper si compra más de 1000 elementos)
 			title: 'IVA',
 			quantity: 1,
@@ -84,8 +84,16 @@ let Carrito = () => {
 			name: usuarioActual.nombre,
 			email: usuarioActual.mail
 		};
-
-		axios.post('http://localhost:3210/mercadopago/pagar', { items: productos, payer: comprador }).then(resp => {
+		const config = {
+			items: productos,
+			payer: comprador,
+			back_urls: {
+				success: 'http://localhost:3000/checkout',
+				pending: 'http://localhost:3000/',
+				failure: 'http://localhost:3000/'
+			}
+		};
+		axios.post('http://localhost:3210/mercadopago/pagar', { ...config }).then(resp => {
 			localStorage.setItem('checkoutID', resp.data.body.id); // seteamos el id de checkout para validarlo posteriormente en /checkout.
 			document.location = resp.data.body.sandbox_init_point;
 		});
@@ -149,15 +157,15 @@ let Carrito = () => {
 							<ul className='list-unstyled mb-4'>
 								<li className='d-flex justify-content-between py-3 border-bottom'>
 									<strong className='text-muted'>Subtotal compra </strong>
-									<strong>${calcularSubTotal()}</strong>
+									<strong>${calcularSubTotal().toFixed(2)}</strong>
 								</li>
 								<li className='d-flex justify-content-between py-3 border-bottom'>
 									<strong className='text-muted'>Impuestos</strong>
-									<strong>${calcularImpuestos()}</strong>
+									<strong>${calcularImpuestos().toFixed(2)}</strong>
 								</li>
 								<li className='d-flex justify-content-between py-3 border-bottom'>
 									<strong className='text-muted'>Total</strong>
-									<h5 className='font-weight-bold'>${calcularTotal()}</h5>
+									<h5 className='font-weight-bold'>${calcularTotal().toFixed(2)}</h5>
 								</li>
 							</ul>
 							<a className='btn btn-dark rounded-pill py-2 btn-block' onClick={pagarConMercadoPago}>

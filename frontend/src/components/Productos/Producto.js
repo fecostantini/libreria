@@ -5,6 +5,7 @@ import { fetchProducto } from '../../actions/productoActions';
 import { fetchPromociones } from '../../actions/promocionActions';
 import { fetchCarritoActivo, añadirAlCarrito } from '../../actions/carritoActions';
 import { getValoracionPromedio, getValoracion, valorarLibro } from '../../actions/libroActions';
+import { createPedido } from '../../actions/pedidoActions';
 import { zip, swalConfig, dateToString } from '../Common/utils';
 import estados from '../../estados';
 import Item from '../Common/Item';
@@ -104,6 +105,15 @@ function Producto({ props }) {
 					title: 'Debe estar loggeado para hacer esto'
 				});
 			}
+		};
+
+		let realizarPedido = () => {
+			const infoPedido = {
+				isbn: producto.isbn,
+				cantidad,
+				id_usuario: usuarioActual.id_usuario
+			};
+			createPedido(dispatch, infoPedido);
 		};
 
 		const ConjuntoItems = ({ texto, items }) => (
@@ -207,25 +217,23 @@ function Producto({ props }) {
 						</div>
 
 						<div className='row mt-3'>
-							{producto.stock !== 0 ? (
-								<div className='col-auto'>
-									Cantidad:{' '}
-									<input
-										type='number'
-										value={cantidad}
-										onChange={e => setCantidad(e.target.value ? parseInt(e.target.value, 10) : 1)}
-										min='1'
-										max={producto.stock}
-									/>
-								</div>
-							) : null}
+							<div className='col-auto'>
+								Cantidad:{' '}
+								<input
+									type='number'
+									value={cantidad}
+									onChange={e => setCantidad(e.target.value ? parseInt(e.target.value, 10) : 1)}
+									min='1'
+									max={producto.stock !== 0 ? producto.stock : Number.MAX_SAFE_INTEGER}
+								/>
+							</div>
 							<div className='col'>
-								{producto.stock !== 0 ? (
-									<Button block variant='primary' onClick={agregarAlCarrito}>
+								{producto.stock !== 0 || producto.id_fotocopia ? (
+									<Button block variant='primary' onClick={agregarAlCarrito} disabled={producto.stock === 0}>
 										Añadir al carrito
 									</Button>
 								) : (
-									<Button block variant='primary' onClick={() => {}}>
+									<Button block variant='primary' onClick={realizarPedido}>
 										Realizar pedido
 									</Button>
 								)}

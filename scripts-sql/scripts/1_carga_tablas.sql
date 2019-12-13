@@ -21,7 +21,7 @@ CREATE TABLE "producto" (
 "id_producto" serial not null,
 "titulo" varchar not null,
 "stock" integer not null CHECK("stock" >= 0),
-"precio" real not null,
+"precio" real not null CHECK("precio" >= 0),
 "id_promocion" integer default null,
 "imagen" varchar default '',
 constraint PK_producto primary key ("id_producto"),
@@ -52,7 +52,7 @@ CREATE TABLE "libro" (
 "idioma" varchar(15) not null,
 "edicion" varchar,
 "descripcion" varchar,
-"id_editorial" integer,
+"id_editorial" integer not null,
 "id_saga" integer default null,
 "valoracion_general" float default 0,
 constraint PK_libro primary key ("isbn"),
@@ -64,7 +64,7 @@ constraint FK_saga_libro foreign key ("id_saga") references "saga"("id_saga")
 CREATE TABLE "autor" (
 "id_autor" serial not null,
 "autor" varchar not null,
-"nacionalidad" varchar,
+"nacionalidad" varchar not null,
 UNIQUE(autor),
 constraint PK_autor primary key ("id_autor")
 );
@@ -75,14 +75,6 @@ CREATE TABLE "categoria" (
 "nombre_categoria" varchar not null,
 UNIQUE(nombre_categoria),
 constraint PK_categoria primary key ("id_categoria")
-);
-
-
-CREATE TABLE "sugerencia" (
-"id_sugerencia" serial not null,
-"mensaje" varchar not null,
-"fecha" date default NOW(),
-constraint PK_sugerencia primary key ("id_sugerencia")
 );
 
 
@@ -126,9 +118,10 @@ CREATE TABLE "pedido" (
 "cantidad" integer not null,
 "fecha_pedido" date default NOW(),
 "id_usuario" integer not null,
-"anticipo_pagado" boolean DEFAULT false,
-"pedido_aceptado" boolean DEFAULT null,
-"pedido_entregado" boolean DEFAULT false,
+"pagado" boolean DEFAULT false,
+"aceptado" boolean DEFAULT false,
+"rechazado" boolean DEFAULT false,
+"entregado" boolean DEFAULT false,
 "fecha_llegada" date default null,
 constraint FK_pedido_isbn foreign key ("isbn") references "libro"("isbn"),
 constraint FK_pedido_usuario foreign key ("id_usuario") references "usuario"("id_usuario"),
@@ -191,12 +184,4 @@ Constraint FK_fotocopia_carrito foreign key ("id_fotocopia") references "fotocop
 Constraint FK_carrito_fotocopia foreign key ("id_carrito") references "carrito"("id_carrito")
 );
 
-CREATE TABLE "sagaxcarrito" (
-"id_saga" integer,
-"id_carrito" integer,
-"cantidad" integer,
-constraint PK_sagaxcarrito primary key ("id_saga","id_carrito"),
-Constraint FK_saga_carrito foreign key ("id_saga") references "saga"("id_saga"),
-Constraint FK_carrito_saga foreign key ("id_carrito") references "carrito"("id_carrito")
-);
 
