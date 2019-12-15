@@ -70,13 +70,15 @@ function Pedidos() {
 
 		const calcularPrecioFinal = pedido => {
 			const libroPedido = libros.find(libro => libro.isbn === pedido.isbn);
-			const promoPedido = promociones.find(promo => promo.id_promocion === libroPedido.id_promocion);
+			const promoPedido = promociones.length
+				? promociones.find(promo => promo.id_promocion === libroPedido.id_promocion)
+				: null;
 
 			let precioLibro = libroPedido.precio;
 
 			if (promociones && promoPedido) precioLibro = precioLibro - (precioLibro * promoPedido.descuento) / 100;
 
-			return precioLibro * pedido.cantidad;
+			return precioLibro;
 		};
 
 		return (

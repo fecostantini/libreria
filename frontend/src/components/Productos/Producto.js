@@ -25,6 +25,7 @@ function Producto({ props }) {
 	const [rating, setRating] = useState(0);
 	const [cantidad, setCantidad] = useState(1);
 	const [mostrarAlerta, setMostrarAlerta] = useState(false);
+	const [esPedido, setEsPedido] = useState(false);
 
 	const valorarLibroActual = valoracion => {
 		setRating(valoracion);
@@ -44,8 +45,7 @@ function Producto({ props }) {
 	useEffect(() => {
 		if (producto.isbn) {
 			getValoracionPromedio(dispatch, producto.isbn);
-			if (usuarioActual)
-				getValoracion(dispatch, { id_usuario: usuarioActual.id_usuario, isbn: producto.isbn });
+			if (usuarioActual) getValoracion(dispatch, { id_usuario: usuarioActual.id_usuario, isbn: producto.isbn });
 		}
 	}, [producto]);
 
@@ -59,7 +59,7 @@ function Producto({ props }) {
 		};
 
 		if (statusUltimaPeticion === estados.CREADO) {
-			swalConfigNueva.title = 'Se añadió el producto al carrito';
+			swalConfigNueva.title = esPedido ? 'Se realizó el pedido con éxito' : 'Se añadió el producto al carrito';
 		} else if (statusUltimaPeticion === estados.YA_EXISTE)
 			swalConfigNueva.title = 'Ya posee este producto en el carrito';
 		else if (statusUltimaPeticion === estados.CONEXION_FALLIDA)
@@ -98,7 +98,10 @@ function Producto({ props }) {
 					cantidad
 				};
 
-				añadirAlCarrito(dispatch, infoProducto).then(() => setMostrarAlerta(true));
+				añadirAlCarrito(dispatch, infoProducto).then(() => {
+					setEsPedido(false);
+					setMostrarAlerta(true);
+				});
 			} else {
 				Swal.fire({
 					...swalConfig,
@@ -114,7 +117,10 @@ function Producto({ props }) {
 				cantidad,
 				id_usuario: usuarioActual.id_usuario
 			};
-			createPedido(dispatch, infoPedido);
+			createPedido(dispatch, infoPedido).then(() => {
+				setEsPedido(true);
+				setMostrarAlerta(true);
+			});
 		};
 
 		const ConjuntoItems = ({ texto, items }) => (
