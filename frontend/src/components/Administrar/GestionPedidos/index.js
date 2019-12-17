@@ -3,6 +3,7 @@ import { NavLink, Route, Switch } from 'react-router-dom';
 
 import PedidosSinDecidir from './PedidosSinDecidir';
 import PedidosPagados from './PedidosPagados';
+import TodosLosPedidos from './TodosLosPedidos';
 
 function GestionPedidos() {
 	return (
@@ -18,6 +19,11 @@ function GestionPedidos() {
 						Pedidos pagados
 					</NavLink>
 				</li>
+				<li className='nav-item'>
+					<NavLink to='/administrar/gestion_pedidos/todos' className='nav-link'>
+						Todos los pedidos
+					</NavLink>
+				</li>
 			</ul>
 
 			<Switch>
@@ -27,6 +33,7 @@ function GestionPedidos() {
 					component={PedidosSinDecidir}
 				/>
 				<Route path='/administrar/gestion_pedidos/pagados' component={PedidosPagados} />
+				<Route path='/administrar/gestion_pedidos/todos' component={TodosLosPedidos} />
 			</Switch>
 		</div>
 	);

@@ -5,6 +5,7 @@ const format = require('string-format');
 format.extend(String.prototype, {});
 
 const querys = {
+	GET_TODOS_LOS_PEDIDOS: 'select * from pedido;',
 	GET_PEDIDOS_SIN_DECIDIR: 'select * from pedido where aceptado=false and rechazado=false;',
 	GET_PEDIDOS_PAGADOS: 'select * from pedido where pagado=true;',
 	GET_PEDIDOS_USUARIO: 'select * from pedido where id_usuario={};',
@@ -21,6 +22,7 @@ let getPedidos = async tipoPedidos => {
 		let response;
 		if (tipoPedidos === 'SIN_DECIDIR') response = await pool.query(querys.GET_PEDIDOS_SIN_DECIDIR);
 		else if (tipoPedidos === 'PAGADOS') response = await pool.query(querys.GET_PEDIDOS_PAGADOS);
+		else if (tipoPedidos === 'TODOS') response = await pool.query(querys.GET_TODOS_LOS_PEDIDOS);
 
 		let pedidos = response.rows;
 		return {

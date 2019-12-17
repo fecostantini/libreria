@@ -29,15 +29,7 @@ const Header = () => {
 					Libreria
 				</Link>
 
-				<ul className='navbar-nav mr-auto'>
-					{linkAdministrar}
-
-					<li className='nav-item'>
-						<NavLink to='/productos' className='nav-link' activeClassName='active'>
-							Productos
-						</NavLink>
-					</li>
-				</ul>
+				<ul className='navbar-nav mr-auto'>{linkAdministrar}</ul>
 
 				<form className='form-inline my-2 my-lg-0'>
 					{usuarioActual ? [iconoCarrito, <UsuarioLoggeado key='2' />] : <Login />}

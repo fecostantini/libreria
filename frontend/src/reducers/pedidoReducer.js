@@ -10,7 +10,8 @@ import {
 export const estadoInicialProducto = {
 	pedidos_pagados: [],
 	pedidos_sin_decidir: [],
-	pedidos_usuario: []
+	pedidos_usuario: [],
+	todos_los_pedidos: []
 };
 
 export default function(state = estadoInicialProducto, action) {
@@ -26,6 +27,11 @@ export default function(state = estadoInicialProducto, action) {
 				return {
 					...state,
 					pedidos_pagados: action.payload.pedidos
+				};
+			else if (tipoPedidos === 'TODOS')
+				return {
+					...state,
+					todos_los_pedidos: action.payload.pedidos
 				};
 			break;
 

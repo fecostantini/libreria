@@ -309,6 +309,12 @@ const ModificarProducto = () => {
 							</select>{' '}
 						</div>
 					</div>
+					<hr className='mt-4' />
+					<div className='form-row'>
+						{[{ titulo: 'URL Imagen', type: 'text', name: 'imagen' }].map(e => (
+							<InputFormulario key={e.titulo} titulo={e.titulo} type={e.type} name={e.name} containterClass='col-12' />
+						))}
+					</div>
 				</Fragment>
 			);
 		} else if (producto.id_fotocopia) return <Fragment>{inputDescripcion()}</Fragment>;
@@ -361,12 +367,6 @@ const ModificarProducto = () => {
 				</select>
 			</div>
 			{formularioRestante()}
-			<hr className='mt-4' />
-			<div className='form-row'>
-				{[{ titulo: 'URL Imagen', type: 'text', name: 'imagen' }].map(e => (
-					<InputFormulario key={e.titulo} titulo={e.titulo} type={e.type} name={e.name} containterClass='col-12' />
-				))}
-			</div>
 			<input
 				type='submit'
 				className='font-weight-bold text-uppercase mt-5 btn btn-primary btn-block py-3'
