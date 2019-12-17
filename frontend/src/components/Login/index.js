@@ -8,7 +8,7 @@ import { loggearUsuario, registrarUsuario } from '../../actions/usuarioActions';
 import Swal from 'sweetalert2';
 import { Button, Modal, Col, Row, Form } from 'react-bootstrap';
 import Error from '../Common/Error';
-import estados from '../../estados';
+import { estados } from '../../components/Common/utils';
 import { swalConfig } from '../Common/utils';
 
 const imagenDefault = 'https://i.pinimg.com/originals/4f/8e/66/4f8e66cbf93a262d2039ccfd1639723d.png';

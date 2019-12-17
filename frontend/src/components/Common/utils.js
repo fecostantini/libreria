@@ -24,3 +24,19 @@ export let dateToString = dateStr => {
 	const date = new Date(dateStr);
 	return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 };
+
+export const estados = {
+	CREADO: 'CREADO',
+	ACTUALIZADO: 'ACTUALIZADO',
+	BORRADO: 'BORRADO',
+	EXITO: 'EXITO',
+	FRACASO: 'FRACASO',
+	YA_EXISTE: '23505',
+	CONEXION_FALLIDA: 'ECONNREFUSED',
+	ERROR_DESCONOCIDO: 'ERROR_DESCONOCIDO',
+	CONTRASEÑA_INCORRECTA: 'CONTRASEÑA_INCORRECTA'
+};
+
+export function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}

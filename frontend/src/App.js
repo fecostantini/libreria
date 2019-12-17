@@ -40,7 +40,9 @@ let App = () => {
 					<Route component={Error404} />
 				</Switch>
 			</main>
-			<p className='mt-4 p2 text-center'>Todos los derechos reservados &copy;</p>
+			<div className='container'>
+				<p className='mt-4 p2 text-center'>Todos los derechos reservados &copy;</p>
+			</div>
 		</Fragment>
 	);
 };

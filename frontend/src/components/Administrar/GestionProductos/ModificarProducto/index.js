@@ -18,7 +18,7 @@ import { fetchPromociones } from '../../../../actions/promocionActions';
 import { fetchFotocopias } from '../../../../actions/fotocopiaActions';
 
 import Swal from 'sweetalert2';
-import estados from '../../../../estados';
+import { estados } from '../../../Common/utils';
 
 const ModificarProducto = () => {
 	const dispatch = useDispatch();

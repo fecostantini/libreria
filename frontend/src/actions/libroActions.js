@@ -5,7 +5,7 @@ import {
 	VALORAR_LIBRO,
 	GET_VALORACION_PROMEDIO_LIBRO
 } from './types';
-import estados from '../estados';
+import { estados } from '../components/Common/utils';
 import axios from 'axios';
 const URL = 'http://localhost:3210/libro';
 

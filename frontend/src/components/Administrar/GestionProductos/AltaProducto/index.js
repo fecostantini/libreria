@@ -11,7 +11,7 @@ import FormularioNuevaSaga from './FormularioNuevaSaga';
 import FormularioNuevaEditorial from './FormularioNuevaEditorial';
 import InputFormulario from './InputFormulario';
 
-import estados from '../../../../estados';
+import { estados } from '../../../Common/utils';
 import { fetchAutores } from '../../../../actions/autorActions';
 import { fetchCategorias } from '../../../../actions/categoriaActions';
 import { fetchSagas } from '../../../../actions/sagaActions';

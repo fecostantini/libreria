@@ -7,7 +7,7 @@ import { fetchCarritoActivo, añadirAlCarrito } from '../../actions/carritoActio
 import { getValoracionPromedio, getValoracion, valorarLibro } from '../../actions/libroActions';
 import { createPedido } from '../../actions/pedidoActions';
 import { zip, swalConfig, dateToString } from '../Common/utils';
-import estados from '../../estados';
+import { estados } from '../Common/utils';
 import Item from '../Common/Item';
 import Swal from 'sweetalert2';
 import StarRatings from 'react-star-ratings';

@@ -8,7 +8,7 @@ import {
 	UPDATE_LAST_REQUEST_STATUS
 } from './types';
 import axios from 'axios';
-import estados from '../estados';
+import { estados } from '../components/Common/utils';
 
 const URL = 'http://localhost:3210/pedido';
 

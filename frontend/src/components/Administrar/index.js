@@ -12,7 +12,7 @@ const Administrar = () => {
 	return (
 		<div className='container'>
 			<div className='row'>
-				<ul className='nav flex-column'>
+				<ul className='nav nav-pills flex-column'>
 					<li className='nav-item'>
 						<NavLink to='/administrar/gestion_productos/alta' className='nav-link'>
 							Gestionar productos

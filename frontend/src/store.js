@@ -4,7 +4,7 @@ import { routerMiddleware } from 'connected-react-router';
 import thunk from 'redux-thunk';
 import createRootReducer from './reducers';
 
-export const history = createBrowserHistory({ forceRefresh: true });
+export const history = createBrowserHistory({ forceRefresh: true }); //cada vez que se navega a una ruta se refresca la página
 
 const initialState = {};
 const middleware = [routerMiddleware(history), thunk];

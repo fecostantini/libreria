@@ -8,7 +8,7 @@ import {
 	FETCH_COMPRAS_USUARIO
 } from './types';
 
-import estados from '../estados';
+import { estados } from '../components/Common/utils';
 import axios from 'axios';
 
 const URL = 'http://localhost:3210/carrito';

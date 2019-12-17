@@ -27,7 +27,7 @@ function Pedidos() {
 					id: pedido.id_pedido,
 					quantity: pedido.cantidad,
 					currency_id: 'ARS',
-					unit_price: calcularPrecioFinal(pedido)
+					unit_price: precioConDescuento(pedido)
 				}
 			];
 
@@ -46,14 +46,19 @@ function Pedidos() {
 			};
 			axios.post('http://localhost:3210/mercadopago/pagar', { ...config }).then(resp => {
 				localStorage.setItem('checkoutID', resp.data.body.id); // seteamos el id de checkout para validarlo posteriormente en /checkout.
-				document.location = resp.data.body.sandbox_init_point;
+				document.location = resp.data.body.sandbox_init_point; // redirigimos a la página de mercadopago
 			});
 		};
 
 		const botonPedido = () => {
 			if (!pedido.aceptado && !pedido.rechazado)
 				return <span className='font-italic'>Pedido en espera de aprobación</span>;
-			else if (pedido.rechazado) return <span className='font-italic'>Pedido rechazado</span>;
+			else if (pedido.rechazado)
+				return (
+					<button style={{ cursor: 'default' }} type='button' className='btn btn-danger' disabled>
+						Rechazado
+					</button>
+				);
 			else if (!pedido.pagado)
 				return (
 					<button type='button' className='btn btn-primary' onClick={() => pagarPedido(pedido)}>
@@ -68,11 +73,12 @@ function Pedidos() {
 				);
 		};
 
-		const calcularPrecioFinal = pedido => {
+		const precioConDescuento = pedido => {
 			const libroPedido = libros.find(libro => libro.isbn === pedido.isbn);
-			const promoPedido = promociones.length
-				? promociones.find(promo => promo.id_promocion === libroPedido.id_promocion)
-				: null;
+			const promoPedido =
+				promociones && promociones.length && libroPedido
+					? promociones.find(promo => promo.id_promocion === libroPedido.id_promocion)
+					: null;
 
 			let precioLibro = libroPedido.precio;
 
@@ -84,10 +90,12 @@ function Pedidos() {
 		return (
 			<tr>
 				<td>{dateToString(pedido.fecha_pedido)}</td>
-				<td>{pedido.fecha_llegada ? dateToString(pedido.fecha_llegada) : 'Pendiente'}</td>
+				<td>
+					{pedido.fecha_llegada ? dateToString(pedido.fecha_llegada) : <span className='font-italic'>Pendiente</span>}
+				</td>
 				<td>{pedido.isbn}</td>
 				<td>{pedido.cantidad}</td>
-				<td>${calcularPrecioFinal(pedido)}</td>
+				<td>${precioConDescuento(pedido) * pedido.cantidad}</td>
 				<td>{botonPedido()}</td>
 			</tr>
 		);

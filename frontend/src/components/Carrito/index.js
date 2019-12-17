@@ -119,7 +119,7 @@ let Carrito = () => {
 	if (elementosCarrito && elementosCarrito.length)
 		return (
 			<div className='row'>
-				<div className='col-lg-12 p-5 bg-white rounded shadow-sm mb-5'>
+				<div className='col-lg-12 p-5 bg-white rounded mb-5'>
 					<div className='table-responsive'>
 						<table className='table'>
 							<thead>
