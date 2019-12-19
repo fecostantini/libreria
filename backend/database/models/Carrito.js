@@ -116,7 +116,7 @@ let realizarCheckout = async idCarrito => {
 			case estados.CONEXION_FALLIDA:
 				return { status: estados.CONEXION_FALLIDA };
 			default:
-				return { status: estados.CONEXION_FALLIDA };
+				return { status: estados.ERROR_DESCONOCIDO };
 		}
 	}
 };

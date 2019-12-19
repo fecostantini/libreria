@@ -28,7 +28,7 @@ function PedidosPagados() {
 	}, [pedidosPagados.length]);
 
 	const formatearDateParaInput = date => {
-		return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate() + 1}`;
+		return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 	};
 
 	const [fechasLlegada, setFechasLlegada] = useState({});
@@ -44,7 +44,9 @@ function PedidosPagados() {
 						value={
 							fechasLlegada[pedido.id_pedido] ? formatearDateParaInput(new Date(fechasLlegada[pedido.id_pedido])) : ''
 						}
-						onChange={e => setFechaPedido(e.target.value, pedido.id_pedido)}
+						onChange={e => {
+							setFechaPedido(e.target.value.replace(/-/g, '/'), pedido.id_pedido);
+						}}
 						min={formatearDateParaInput(new Date())}
 						max={'2020-12-31'}
 					/>
