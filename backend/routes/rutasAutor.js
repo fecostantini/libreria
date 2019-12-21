@@ -3,7 +3,7 @@ var rutasAutor = express.Router();
 var Autor = require('../database/models/Autor');
 
 rutasAutor.get('/', function(req, res) {
-	Autor.getAutores().then(autores => res.send(autores));
+	Autor.getAutores().then(respuesta => res.send(respuesta));
 });
 
 rutasAutor.post('/', function(req, res) {
