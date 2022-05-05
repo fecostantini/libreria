@@ -2,5 +2,4 @@
 
 ## Integrantes
 - Costantini, Francisco
-- Ghiglione, Matías
 - Pretto, Maximiliano
